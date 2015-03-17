@@ -8,6 +8,7 @@
     <dimen name="add_button_margin">16dp</dimen>
     <dimen name="elevation_low">2dp</dimen>
     <dimen name="elevation_high">4dp</dimen>
+
     <dimen name="receive_button_diameter">90dp</dimen>
     <dimen name="negative_receive_button_diameter">-90dp</dimen>
 

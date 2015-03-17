@@ -1,4 +1,6 @@
 package com.xnote.wow.xnote.fragments;
+
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -10,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.Html;
@@ -26,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import com.xnote.wow.xnote.ArticleImageGetter;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
@@ -40,7 +44,9 @@ import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.NoteEngine;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
+
 import java.util.List;
+
 /**
  * Created by koopuluri on 2/22/15.
  */
@@ -56,15 +62,20 @@ public class ArticleFragment extends Fragment implements
     ParseArticle mArticle;
     String mArticleId;
     boolean mInitialized;
+
     // buttons:
     ImageButton mNewNoteButton;
     ImageButton mDeleteNoteButton;
     NoteEngine mNoteEngine;
     List<ParseNote> mNotes;
     ProgressBar mLoadingSpinner;
+
+
     public interface OnArticleLoaded {
         public void onArticleFragmentInitialized();
     }
+
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -74,6 +85,8 @@ public class ArticleFragment extends Fragment implements
             throw new ClassCastException(activity.toString() + " must implement ArticleFragmentInterface");
         }
     }
+
+
     public static Fragment newInstance(String articleId) {
         Bundle args = new Bundle();
         args.putString(Constants.ARTICLE_ID, articleId);
@@ -81,18 +94,22 @@ public class ArticleFragment extends Fragment implements
         frag.setArguments(args);
         return frag;
     }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mArticleId = getArguments().getString(Constants.ARTICLE_ID);
         mInitialized = false;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_read, container, false);
         mScrollView = (ScrollView) view.findViewById(R.id.read_scroll_view);
         mArticleView = new ArticleView(getActivity());
+
         // setting spinner:
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.fragment_article_loading_spinner);
         mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -101,26 +118,28 @@ public class ArticleFragment extends Fragment implements
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mArticleView.setLayoutParams(lp);
         mNoteSelectionView = (LinearLayout) view.findViewById(R.id.note_selection_options);
+
         // BUTTONS:
         mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
-        ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                // Or read size directly from the view's width/height
-                int size = getResources().getDimensionPixelSize(R.dimen.round_button_diameter);
-                outline.setOval(0, 0, size, size);
-            }
-        };
-        mNewNoteButton.setOutlineProvider(viewOutlineProvider);
-        mNewNoteButton.setClipToOutline(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    // Or read size directly from the view's width/height
+                    int size = getResources().getDimensionPixelSize(R.dimen.round_button_diameter);
+                    outline.setOval(0, 0, size, size);
+                }
+            };
+            mNewNoteButton.setOutlineProvider(viewOutlineProvider);
+            mNewNoteButton.setClipToOutline(true);
+        }
         mNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "newNoteButton onClick()");
                 int start = mArticleView.getSelectionStart();
                 int end = mArticleView.getSelectionEnd();
-                Log.d(TAG, "clipped text for new note: " +
-                        mContent.toString().substring(start, end));
                 if (end - start > 0 && !mNoteEngine.notesPresentWithinRange(start, end)) {
                     // launch note activity:
                     if (mArticle.getId() == null)
@@ -134,6 +153,8 @@ public class ArticleFragment extends Fragment implements
                 }
             }
         });
+
+
         mDeleteNoteButton = (ImageButton) view.findViewById(R.id.delete_note_button);
         mDeleteNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,9 +170,11 @@ public class ArticleFragment extends Fragment implements
                 }
             }
         });
+
         new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         return view;
     }
+
     public void redraw() {
         if (mBuffer != null) {
             mArticleView.setText(mBuffer.getBuffer());
@@ -160,32 +183,27 @@ public class ArticleFragment extends Fragment implements
         }
     }
 
-
-
     /**
-     * escapes the article html, and also adds the title and timestamp to the beginning of the content.
-     * @param article: the ParseArticle to get htmlEscapedContent for.
+     * @param content: the html string that needs to be converted to a Spanned.
+     * @param articleId:
      * @return Spanned
      */
-    public static Spanned htmlEscapedContent(ParseArticle article, Activity activity) {
+    public static Spanned htmlEscapedContent(String content, String articleId, Activity activity) {
         Spanned out;
-        String title = "<h2>" + article.getTitle() + "</h2>";
-        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
-        String content = article.getContent() + title + timestamp;
-
         try {
             out = Html.fromHtml(content,
-                    new ArticleImageGetter(article.getId(), activity),
+                    new ArticleImageGetter(articleId, activity),
                     new HtmlTagHandler());
         } catch (RuntimeException e) {
             // catching the "PARAGRAPH span must start at paragraph boundary" exception:
             Log.d(TAG, "Paragraph span exception caught, not handling the list items.");
             out = Html.fromHtml(content,
-                    new ArticleImageGetter(article.getId(), activity),
+                    new ArticleImageGetter(articleId, activity),
                     new HtmlTagHandlerWithoutList());
         }
         return out;
     }
+
 
     public void refresh() {
         new ArticleInitializeTask(this, true).execute();
@@ -195,28 +213,45 @@ public class ArticleFragment extends Fragment implements
     private class ArticleInitializeTask extends AsyncTask<Void, Void, Void> {
         ArticleFragment parent;
         boolean isRefresh;
+
         public ArticleInitializeTask(ArticleFragment parentFragment,
                                      boolean isRefresh) {
             parent = parentFragment;
             this.isRefresh = isRefresh;
         }
 
-
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "ArticleInitializeTask.doInBackground()");
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             mArticle = DB.getLocalArticle(mArticleId);
-            mContent = htmlEscapedContent(mArticle, parent.getActivity());
+            String content = mArticle.getContent();
+            String title = "<h2>" + mArticle.getTitle() + "</h2>";
+            String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
+            content = title + timestamp + content;
+            mContent = htmlEscapedContent(content, mArticleId, parent.getActivity());
             return null;
         }
+
         public void onPostExecute(Void _) {
             super.onPostExecute(_);
             // adding to parent scrollView.
             try {
                 mArticleView.setText(mContent);
                 mArticleView.setTextIsSelectable(true);
-                Util.setXnoteTypeFace(getActivity(), mArticleView);
+                Typeface normalTypeface = Typeface.createFromAsset(parent.getActivity().getAssets(),
+                        "Dual-300.ttf");
+                mArticleView.setTypeface(normalTypeface);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mArticleView.setElegantTextHeight(true);
+                    mArticleView.setLetterSpacing(-0.02f);
+                }
+                mArticleView.setIncludeFontPadding(true);
+                mArticleView.setLineSpacing(0.0f, 1.2f);
+                mArticleView.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
+                mArticleView.setTextSize(16);
+                mArticleView.setVisibility(View.VISIBLE);
+                mArticleView.setTextColor(Color.parseColor("#000000"));
                 mArticleView.setBackgroundColor(getResources().getColor(android.R.color.white));
                 mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
                 mArticleView.setCustomSelectionActionModeCallback(
@@ -246,10 +281,14 @@ public class ArticleFragment extends Fragment implements
             }
         }
     }
+
+
     private class BufferInitializeTask extends AsyncTask<Void, Void, Void> {
+
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
+
             if (Util.isNetworkAvailable(getActivity()) && (!Util.IS_ANON)) {
                 mNotes = DB.getNotesForArticleFromCloud(mArticleId);
                 Log.d(TAG, "mNotes obtained from cloud.");
@@ -257,6 +296,7 @@ public class ArticleFragment extends Fragment implements
                 mNotes = DB.getNotesForArticleLocally(mArticleId);
                 Log.d(TAG, "mNotes obtained from local datastore.");
             }
+
             mNoteEngine = NoteEngine.getInstance();
             mNoteEngine.initializeNotes(mNotes);
             Log.d(TAG, "value of articleView's layout in InitializeTask: " +
@@ -267,9 +307,12 @@ public class ArticleFragment extends Fragment implements
                 Log.d(TAG, "InitializationTask: note added with noteId: " + note.getId());
                 mBuffer.addNoteSpan(note);  // since initializing, all notes are new!
             }
+
             Log.d(TAG, "InitializeTask.doInBackground() complete");
             return null;
         }
+
+
         @Override
         public void onPostExecute(Void _) {
             redraw();  // sets text for ArticleView with mBuffer.getBuffer().
@@ -277,23 +320,31 @@ public class ArticleFragment extends Fragment implements
             mLoadingSpinner.setVisibility(View.GONE);
         }
     }
+
+
     public void addNote(ParseNote note) {
         mBuffer.addNoteSpan(note);
         mNoteEngine.addNote(note);
         // TODO:
         Log.d(TAG, "addNote()");
     }
+
+
     public void removeNote(ParseNote note) {
-        //  mBuffer.removeNoteSpan(note);
+       //  mBuffer.removeNoteSpan(note);
         mBuffer.removeNoteSpan(note);
         // mNoteEngine.removeNote(startIndex, endIndex, noteId);
         mNoteEngine.removeNote(note);
         Log.d(TAG, "remove note");
     }
+
+
     public void addNoteFromNoteActivity(ParseNote note, int state) {
         Log.d(TAG, "addNoteFromNoteActivity with state: " + state);
         new UpdateBuffersWithNoteTask(note, state).execute();
     }
+
+
     @Override
     public void onTextSelectionCreate() {
         int start = mArticleView.getSelectionStart();
@@ -309,12 +360,16 @@ public class ArticleFragment extends Fragment implements
             mNewNoteButton.setVisibility(View.VISIBLE);
         }
     }
+
+
     @Override
     public void onTextSelectionDestroy() {
         mNoteSelectionView.setVisibility(View.GONE);
         mDeleteNoteButton.setVisibility(View.INVISIBLE);
         mNewNoteButton.setVisibility(View.INVISIBLE);
     }
+
+
     /**
      * The ArticleView:
      */
@@ -322,6 +377,7 @@ public class ArticleFragment extends Fragment implements
         private Rect rect;
         private Canvas canvas;
         private Paint paint;
+
         private void initialize() {
             rect = new Rect(0, 0, 0, 0);
             canvas = new Canvas();
@@ -330,24 +386,32 @@ public class ArticleFragment extends Fragment implements
             paint.setColor(Color.parseColor("#000000"));
             setHighlightColor(Color.parseColor("#9CCC65"));
         }
+
         public ArticleView(Context context) {
             super(context);
             initialize();
         }
+
         public ArticleView(Context context, AttributeSet attrs) {
             super(context, attrs);
             initialize();
         }
+
+
         @Override
         public void onDraw(Canvas canvas) {
             super.onDraw(canvas);
             canvas.drawRect(rect, paint);
         }
+
+
         @Override
         protected void onSelectionChanged(int selStart, int selEnd) {
             // TODO: something.
         }
     }
+
+
     /**
      * This is called when the user is finished with the NoteActivity. Once the note activity is done,
      * 3 states are possible:
@@ -364,20 +428,25 @@ public class ArticleFragment extends Fragment implements
      */
     private class UpdateBuffersWithNoteTask extends AsyncTask<Void, Void, Void> {
         protected final String TAG = "UpdateBuffersNoteTask";
+
         int noteState;
         ParseNote note;
         String noteId;
+
         public UpdateBuffersWithNoteTask(ParseNote note, int state) {
             super();
             this.note = note;
             noteState = state;
             Log.d(TAG, "UpdateBufferswithNoteTask: state: " + state);
         }
+
+
         public UpdateBuffersWithNoteTask(String noteId, int state) {
             super();
             this.noteId = noteId;
             noteState = state;
         }
+
         @Override
         protected Void doInBackground(Void... params) {
             // get note from db:
@@ -386,8 +455,10 @@ public class ArticleFragment extends Fragment implements
                 Log.e(TAG, "note can'e be null mofo!");
                 note = DB.getNote(noteId);
             }
+
             Log.d(TAG, "UpdateBufferTask: note obtained: " + note.getStartIndex() + ", " + note.getEndIndex());
             Log.d(TAG, "UpdateBufferTask: noteState: " + noteState);
+
             if (noteState > 0) {
                 DB.saveNote(note);
                 Log.d(TAG, "note saved with noteId: " + note.getId());
@@ -395,10 +466,12 @@ public class ArticleFragment extends Fragment implements
                 DB.deleteNote(note);
                 Log.d(TAG, "note removed with noteId: " + note.getId());
             }
+
             updateBuffersWithNote(note, noteState);
             Log.d(TAG, "note obtained, and BuffersUpdated in doInBackground()");
             return null;
         }
+
         @Override
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
@@ -406,6 +479,8 @@ public class ArticleFragment extends Fragment implements
             redraw();
         }
     }
+
+
     private void updateBuffersWithNote(ParseNote note, int noteState) {
         if (noteState > 0) {
             addNote(note);

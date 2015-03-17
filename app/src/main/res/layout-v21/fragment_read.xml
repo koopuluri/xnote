@@ -43,8 +43,8 @@
             android:stateListAnimator="@anim/button_elevation"
             android:layout_marginBottom="@dimen/add_button_margin"
             android:layout_marginEnd="@dimen/add_button_margin"
-            android:layout_marginRight="@dimen/add_button_margin"
             android:background="@drawable/round_button"
+            android:elevation="@dimen/elevation_low"
             android:tint="@color/primary_palette_dark"
             android:src="@android:drawable/ic_input_add"/>
 

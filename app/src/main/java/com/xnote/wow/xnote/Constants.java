@@ -7,8 +7,10 @@ public class Constants {
     public static final String PARENT_ACTIVITY = "PARENT_ACTIVITY";
     public static int NOTE_REQUEST = 368;
     public static final String ARTICLE_ID = "ARTICLE_ID";
-
     public static final int TRIAL_ARTICLES = 10;
+
+    //Text padding in article fragment
+    public static final int PADDING = 30;
 
     // NoteActivity constants:
     public static final String NOTE_ID = "NOTE_ID";
@@ -22,9 +24,9 @@ public class Constants {
     // ArticleListActivity:
     public static final String LOADING_ARTICLE_ID = "LOADING_ARTICLE_ID";
 
+    // ?
     public static final String ARTICLE_CONTENT = "ARTICLE_CONTENT";
     public static final String NEW_ARTICLE_ID = "NEW_ARTICLE_ID";
-    public static final int ARTICLE_PADDING = 30;
 
     // for threads:
     public static final String NOT_DONE = "NOT_DONE";

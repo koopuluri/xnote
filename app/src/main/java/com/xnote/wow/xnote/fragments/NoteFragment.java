@@ -22,10 +22,8 @@ import com.parse.ParseUser;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
-import com.xnote.wow.xnote.spans.NoteQuoteSpan;
 
 /**
  * Created by koopuluri on 3/2/15.
@@ -75,8 +73,6 @@ public class NoteFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_note, container, false);
         mClippedText = (TextView) view.findViewById(R.id.note_clipped_text);
         mNoteEdit = (EditText) view.findViewById(R.id.note_edit_text);
-        Util.setXnoteTypeFace(getActivity(), mClippedText);
-        Util.setXnoteTypeFace(getActivity(), mNoteEdit);
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.note_loading_spinner);
         mDoneButton = (ImageButton) view.findViewById(R.id.done_button);
         mDoneButton.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +122,8 @@ public class NoteFragment extends Fragment {
                 // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
                 // between Article and Note.
                 String articleContent = ArticleFragment.htmlEscapedContent(
-                        mArticle,
+                        mArticle.getContent(),
+                        mArticle.getId(),
                         getActivity()).toString();
 
                 selectedText = articleContent.substring(
@@ -135,8 +132,9 @@ public class NoteFragment extends Fragment {
 
                 mNote.setSelectedText(selectedText);
             }
+            // TODO: space the quote line further from the clippedText
             clippedBuffer = new SpannableString(selectedText);
-            clippedBuffer.setSpan(new NoteQuoteSpan(), 0, selectedText.length() - 1,
+            clippedBuffer.setSpan(new QuoteSpan(Color.BLUE), 0, selectedText.length() - 1,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             return null;
         }
