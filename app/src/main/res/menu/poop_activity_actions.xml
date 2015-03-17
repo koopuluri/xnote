@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!--<item android:id="@+id/action_search"-->
+        <!--android:icon="@android:drawable/ic_menu_search"-->
+        <!--android:showAsAction="ifRoom|withText"-->
+        <!--android:title="@string/action_search"/>-->
+
+    <item android:id="@+id/action_share"
+        android:icon="@android:drawable/ic_menu_share"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_share"
+        android:actionProviderClass=
+            "android.widget.ShareActionProvider"
+        />
+
+    <item android:id="@+id/article_refresh"
+        android:icon="@android:drawable/ic_menu_rotate"
+        android:title="@string/action_refresh"
+        android:showAsAction="ifRoom|withText"/>
+</menu>
