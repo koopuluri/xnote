@@ -3,6 +3,7 @@ package com.xnote.wow.xnote.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -101,6 +102,19 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
             }
         }
         new ArticleListInitializationTask(getActivity(), true).execute();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration config) {
+        List<Object> itemList = getItemList();
+        for (Object obj : itemList) {
+            ParseArticle a = (ParseArticle) obj;
+            if (!a.isParsed()) {
+                Log.d(TAG, "there's an article that's not parsed, so not changing configuration.");
+                return;
+            }
+        }
+        super.onConfigurationChanged(config);
     }
 
 
