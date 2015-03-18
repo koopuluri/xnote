@@ -32,9 +32,11 @@ public class ParseArticleRunnable implements Runnable {
         ParseArticle updatedArticle = parser.parse();
         Log.d(TAG, "updateArticle: " + String.valueOf(updatedArticle));
         // setting task state to 'completed':
-        DB.saveArticleImmediately(updatedArticle);
+        if(updatedArticle != null) {
+            DB.saveArticleImmediately(updatedArticle);
+            mTask.setUpdatedArticle(updatedArticle);
+        }
         mTask.handleParseState(PARSE_COMPLETED);
-        mTask.setUpdatedArticle(updatedArticle);
     }
 
     public Thread getThread() {

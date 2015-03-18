@@ -25,7 +25,6 @@ import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
-import com.xnote.wow.xnote.spans.NoteQuoteSpan;
 
 /**
  * Created by koopuluri on 3/2/15.
@@ -76,8 +75,10 @@ public class NoteFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_note, container, false);
         mClippedText = (TextView) view.findViewById(R.id.note_clipped_text);
         mNoteEdit = (EditText) view.findViewById(R.id.note_edit_text);
+
         Util.setXnoteTypeFace(getActivity(), mClippedText);
         Util.setXnoteTypeFace(getActivity(), mNoteEdit);
+
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.note_loading_spinner);
         new NoteInitializeTask().execute();
         return view;
@@ -146,6 +147,7 @@ public class NoteFragment extends Fragment {
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
                 mNote.setId();
+
             }
             // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
             // between Article and Note.
@@ -157,6 +159,7 @@ public class NoteFragment extends Fragment {
                     mNote.getEndIndex());
             mNote.setSelectedText(selectedText);
             clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
+
             return null;
         }
 

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
@@ -99,7 +100,7 @@ public class SignUpFragment extends Fragment {
                     user.setUsername(email);
                     user.setPassword(password);
                     user.setEmail(email);
-                    user.put("Name", name);
+                    user.put(Constants.NAME, name);
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
                             if (e == null) {

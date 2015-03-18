@@ -168,6 +168,14 @@ public class DiffbotParser {
         }
         // extracting the content from diffbot's json:
         try {
+            String content = tags.getString("html");
+            Log.d(TAG, "tags.getString('html'): " + content);
+            Iterator<?> keys = tags.keys();
+            while( keys.hasNext() ) {
+                String key = (String)keys.next();
+                Log.d(TAG, "Key :" + key);
+            }
+            String title = tags.getString("title");
             String iconURL;
             try {
                 iconURL = tags.getString("icon");

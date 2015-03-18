@@ -1,4 +1,5 @@
 package com.xnote.wow.xnote;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,7 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
 import com.xnote.wow.xnote.models.ParseImage;
+
 /**
  * Created by koopuluri on 2/17/15.
  */
@@ -16,10 +19,12 @@ public class ArticleImageGetter implements Html.ImageGetter {
     public static final String TAG = "ArticleImageGetter";
     String mArticleId;
     Activity activity;
+
     public ArticleImageGetter(String articleId, Activity activity) {
         mArticleId = articleId;
         this.activity = activity;
     }
+
     @Override
     /**
      * uses: com/xnote/wow/xnote/ArticleImageGetter.java:23
@@ -38,18 +43,25 @@ public class ArticleImageGetter implements Html.ImageGetter {
             bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
             // returning a drawable:
             Drawable drawable = new BitmapDrawable(bmp);  // TODO: don't use a deprecated constructor.
+
             //Get screenwidth to zoom in images to fit phone size
             //http://stackoverflow.com/a/9316553/4671651
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager) activity.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-            // the results will be higher than using the activity context object or the getWindowManager() shortcut
+            WindowManager wm = (WindowManager) activity.getApplicationContext().
+                    getSystemService(Context.WINDOW_SERVICE);
             wm.getDefaultDisplay().getMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
             //Subtracting padding on either side so image fits
-            width = width - 2 * (Constants.ARTICLE_PADDING);
-            drawable.setBounds(0, 0, width,
-                    (image.getNaturalHeight() * width / image.getNaturalWidth()));
-            return drawable;
+            width = width - 2 * (Constants.PADDING);
+            if(image.getNaturalWidth() != 0) {
+                drawable.setBounds(0, 0, width,
+                        (image.getNaturalHeight() * width / image.getNaturalWidth()));
+                return drawable;
+            } else {
+                return null;
+                //TODO: Need to figure out what exactly you want to return here should be fine
+                //TODO: Have to make sure if this causes blue box or no image at all
+            }
         } else {
             return null;
         }

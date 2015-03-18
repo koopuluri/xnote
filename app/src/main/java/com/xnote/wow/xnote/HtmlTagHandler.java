@@ -43,7 +43,12 @@ public class HtmlTagHandler implements Html.TagHandler {
 
                 output.setSpan(new TypefaceSpan("monospace"), where, output.length(), 0);
             }
+        } else if(tag.equalsIgnoreCase("img")) {
+            if(opening) {
+                output.append("br");
+            }
         }
+        //TODO: Handle Pre tags
     }
 
     private Object getLast(Editable text, Class kind) {

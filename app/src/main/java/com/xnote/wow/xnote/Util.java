@@ -29,6 +29,7 @@ public class Util {
         return sdf.format(new java.util.Date(seconds));
     }
 
+
     /**
      * Copies contents of b into a.
      *
@@ -42,6 +43,7 @@ public class Util {
 //        a.setTitle(b.getTitle());
 //        a.setSourceIconUrl(b.getSourceIconUrl());
     }
+
 
     /**
      * from: http://stackoverflow.com/a/4239019/2713471
@@ -71,7 +73,7 @@ public class Util {
         tv.setTextSize(16);
         tv.setVisibility(View.VISIBLE);
         tv.setTextColor(Color.parseColor("#000000"));
-        tv.setPadding(Constants.ARTICLE_PADDING, 0, Constants.ARTICLE_PADDING, 0);
+        tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
         Log.d(TAG, "xnoteTypeFaceSet.");
     }
 
