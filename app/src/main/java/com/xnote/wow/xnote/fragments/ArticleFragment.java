@@ -19,7 +19,11 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
@@ -49,22 +53,19 @@ import java.util.List;
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleFragment extends Fragment implements
-    TextSelectionCallback.OnTextSelectionListener {
+public class ArticleFragment extends Fragment {
     public static final String TAG = "ArticleFragment";
     Spanned mContent;
     ArticleView mArticleView;
     ScrollView mScrollView;
     ReadBuffer mBuffer;
     OnArticleLoaded mListener;
-    LinearLayout mNoteSelectionView;
     ParseArticle mArticle;
     String mArticleId;
     boolean mInitialized;
 
     // buttons:
     ImageButton mNewNoteButton;
-    ImageButton mDeleteNoteButton;
     NoteEngine mNoteEngine;
     List<ParseNote> mNotes;
     ProgressBar mLoadingSpinner;
@@ -117,7 +118,6 @@ public class ArticleFragment extends Fragment implements
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mArticleView.setLayoutParams(lp);
-        mNoteSelectionView = (LinearLayout) view.findViewById(R.id.note_selection_options);
 
         // BUTTONS:
         mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
@@ -155,21 +155,21 @@ public class ArticleFragment extends Fragment implements
         });
 
 
-        mDeleteNoteButton = (ImageButton) view.findViewById(R.id.delete_note_button);
-        mDeleteNoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int start = mArticleView.getSelectionStart();
-                int end = mArticleView.getSelectionEnd();
-                if (mNoteEngine.noteExistsWithRange(start, end)) {
-                    new UpdateBuffersWithNoteTask(mNoteEngine.getNoteId(start, end), -1).execute();
-                    Log.d(TAG, "updateBuffer with note task launched to remove note: "
-                            + mNoteEngine.getNoteId(start, end));
-                } else {
-                    Log.d(TAG, "Must select existing note to delete it!");
-                }
-            }
-        });
+//        mDeleteNoteButton = (ImageButton) view.findViewById(R.id.delete_note_button);
+//        mDeleteNoteButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int start = mArticleView.getSelectionStart();
+//                int end = mArticleView.getSelectionEnd();
+//                if (mNoteEngine.noteExistsWithRange(start, end)) {
+//                    new UpdateBuffersWithNoteTask(mNoteEngine.getNoteId(start, end), -1).execute();
+//                    Log.d(TAG, "updateBuffer with note task launched to remove note: "
+//                            + mNoteEngine.getNoteId(start, end));
+//                } else {
+//                    Log.d(TAG, "Must select existing note to delete it!");
+//                }
+//            }
+//        });
         mIsNoteSelected = false;
         new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         return view;
@@ -277,7 +277,7 @@ public class ArticleFragment extends Fragment implements
                 mArticleView.setBackgroundColor(getResources().getColor(android.R.color.white));
                 mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
                 mArticleView.setCustomSelectionActionModeCallback(
-                        new TextSelectionCallback(parent));
+                        new TextSelectionCallback());
                 if (!isRefresh) {
                     mScrollView.addView(mArticleView);
                     ViewTreeObserver vto = mArticleView.getViewTreeObserver();
@@ -365,33 +365,7 @@ public class ArticleFragment extends Fragment implements
         new UpdateBuffersWithNoteTask(note, state).execute();
     }
 
-
-    @Override
-    public void onTextSelectionCreate() {
-        int start = mArticleView.getSelectionStart();
-        int end = mArticleView.getSelectionEnd();
-        if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
-                end >= mArticleView.getText().length())
-            mArticleView.clearFocus();
-
-        mNoteSelectionView.setVisibility(View.VISIBLE);
-        if (mNoteEngine.noteExistsWithRange(start, end)) {
-            Log.d(TAG, "note exists within range!");
-            // display edit, delete options:
-            mDeleteNoteButton.setVisibility(View.VISIBLE);
-            mNewNoteButton.setVisibility(View.INVISIBLE);
-            mIsNoteSelected = true;
-        } else {
-            Log.d(TAG, "note doesn't exist within range! new note:");
-            mNewNoteButton.setVisibility(View.VISIBLE);
-        }
-    }
-
-
-    @Override
-    public void onTextSelectionDestroy() {
-        mNoteSelectionView.setVisibility(View.GONE);
-        mDeleteNoteButton.setVisibility(View.INVISIBLE);
+    public void destroySelection() {
         mNewNoteButton.setVisibility(View.INVISIBLE);
         mArticleView.clearFocus();
     }
@@ -435,9 +409,9 @@ public class ArticleFragment extends Fragment implements
         @Override
         protected void onSelectionChanged(int selStart, int selEnd) {
             if (mIsNoteSelected) {
-                mArticleView.clearFocus();
+                mArticleView.clearFocus();  // TODO: this is reduntant, test without.
                 mIsNoteSelected = false;
-                onTextSelectionDestroy();
+                destroySelection();
             }
         }
     }
@@ -515,6 +489,68 @@ public class ArticleFragment extends Fragment implements
             removeNote(note);
         } else {
             // nothing needs to be done for an updated note.
+        }
+    }
+
+
+    public class TextSelectionCallback implements ActionMode.Callback {
+        public static final String TAG = "TextSelectionCallback";
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Log.d(TAG, "onActionItemClicked");
+            switch (item.getItemId()) {
+                case R.id.action_delete_note:
+                    // delete selected note:
+                    int start = mArticleView.getSelectionStart();
+                    int end = mArticleView.getSelectionEnd();
+                    String noteId = mNoteEngine.getNoteId(start, end);
+                    if (noteId == null) {
+                        Log.e(TAG, "this shouldn't be null");
+                        return true;
+                    }
+                    new UpdateBuffersWithNoteTask(noteId, -1).execute();
+                    Log.d(TAG, "note deleted with id: " + noteId);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            Log.d(TAG, "onCreateActionMode()");
+            MenuInflater inflater = mode.getMenuInflater();
+            menu.removeItem(android.R.id.selectAll);
+
+            // --------------------------------------------------------------------
+            int start = mArticleView.getSelectionStart();
+            int end = mArticleView.getSelectionEnd();
+            if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
+                    end >= mArticleView.getText().length())
+                mArticleView.clearFocus();
+            
+            if (mNoteEngine.noteExistsWithRange(start, end)) {
+                Log.d(TAG, "note exists within range!");
+                inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
+                // display edit, delete options:
+                mNewNoteButton.setVisibility(View.INVISIBLE);
+                mIsNoteSelected = true;
+            } else {
+                Log.d(TAG, "note doesn't exist within range! new note:");
+                mNewNoteButton.setVisibility(View.VISIBLE);
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            destroySelection();
+            Log.d(TAG, "onDestroyActionMode()");
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            Log.d(TAG, "onPrepareActionMode()");
+            return true;
         }
     }
 }
