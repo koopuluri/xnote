@@ -1,7 +1,28 @@
 <resources>
-    <!-- inherit from the material theme -->
+    <!-- inherit from the holo light theme -->
+
     <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <!-- Main theme colors -->
-        <!--   your app branding color for the app bar -->
+        <item name="android:actionBarTabBarStyle">@style/ActionBarTabStyle.Action_bar_tab</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:icon">@drawable/icon</item>
+        <item name="android:textColorLink">@color/accent_color_darker</item>
+        <item name="android:colorLongPressedHighlight">@color/primary_palette_medium</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Action_bar_tab" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_action_bar_tab</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:actionBarStyle">@color/primary_palette_medium</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+        parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/primary_palette_medium</item>
+        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
+    </style>
+
+    <style name="MyActionBarTitleText" parent="android:TextAppearance.WindowTitle">
+        <item name="android:textColor">@color/black</item>
     </style>
 </resources>

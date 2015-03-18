@@ -24,6 +24,7 @@
 
     <color name="accent_color_light">#FFF9C4</color>
     <color name="accent_color_dark">#FDD835</color>
+    <color name="accent_color_darker">#FBC02D</color>
 
     <string-array name="navigation_array">
         <item>articles</item>

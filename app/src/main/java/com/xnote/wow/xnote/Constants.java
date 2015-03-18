@@ -30,4 +30,6 @@ public class Constants {
 
     // for threads:
     public static final String NOT_DONE = "NOT_DONE";
+
+    public static final String NAME="Name";
 }

@@ -75,6 +75,8 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        getActivity().getActionBar().setDisplayShowHomeEnabled(false);
+        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
         mInitialized = false;
         getSwipeRefreshLayout().setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

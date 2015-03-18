@@ -569,10 +569,25 @@ public class DB {
     //------------------------------------SOME IMAGE STUFF------------------------------------------
 
     public static void saveImage(ParseImage image) {
+        saveImageLocally(image);
+        if(!Util.IS_ANON) {
+            saveImageToCloud(image);
+        }
+    }
+
+    public static void saveImageLocally(ParseImage image) {
         try {
             image.pin();
         } catch (ParseException e) {
-            Log.d(TAG, "saveImage(): " + e);
+            Log.d(TAG, "saveImageLocally(): " + e);
+        }
+    }
+
+    public static void saveImageToCloud(ParseImage image) {
+        try {
+            image.save();
+        } catch(ParseException e) {
+            Log.e(TAG, "saveImageToCloud()" + e);
         }
     }
 
@@ -586,10 +601,36 @@ public class DB {
             if (out.size() == 0) {
                 Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
                         imageUrlString);
+                if(!Util.IS_ANON) {
+                    return getImageFromCloud(imageUrlString);
+                } else {
+                    return null;
+                }
+            } else {
+                ParseImage img = (ParseImage) out.get(0);
+                Log.d(TAG, "image is not null! image: " + img.getUrl() + ", " + img.getArticleId());
+                return img;
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "getImage(): " + e);
+            return null;
+        }
+    }
+
+    public static ParseImage getImageFromCloud(String imageUrlString) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(IMAGE);
+        query.whereEqualTo(ParseImage.URL, imageUrlString);
+        List<ParseObject> out;
+        try {
+            out = query.find();
+            if (out.size() == 0) {
+                Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
+                        imageUrlString);
                 return null;
             } else {
                 ParseImage img = (ParseImage) out.get(0);
                 Log.d(TAG, "image is not null! image: " + img.getUrl() + ", " + img.getArticleId());
+                DB.saveImageLocally(img);
                 return img;
             }
         } catch (ParseException e) {
