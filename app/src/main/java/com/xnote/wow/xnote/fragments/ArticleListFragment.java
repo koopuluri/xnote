@@ -21,6 +21,7 @@ import com.xnote.wow.xnote.ParseArticleAndDownloadImagesTask;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
+import com.xnote.wow.xnote.models.ParseNote;
 
 import java.util.List;
 
@@ -124,6 +125,7 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
     }
 
 
+    // TODO: make more efficient (LATERRRR!).
     private List<ParseArticle> initializeAdapterList(Boolean fromCloud) {
         Log.d(TAG, "initializeAdapter");
         List<ParseArticle> articleList;
@@ -135,9 +137,14 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
             articleList = DB.getArticlesFromCloud();
             if(articleList != null) {
                 DB.clearLocalArticles();
+                DB.clearLocalNotes();
                 for (ParseArticle a : articleList) {
                     // saving article locally
                     DB.saveArticleLocally(a);
+                    List<ParseNote> cloudNotes = DB.getNotesForArticleFromCloud(a.getId());
+                    for (ParseNote cloudNote : cloudNotes) {
+                        DB.saveNoteLocally(cloudNote);
+                    }
                 }
             }
         } else {

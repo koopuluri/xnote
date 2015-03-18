@@ -26,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.parse.ParseUser;
 import com.xnote.wow.xnote.ArticleImageGetter;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
@@ -171,7 +173,7 @@ public class ArticleFragment extends Fragment implements
         Spanned out;
         String title = "<h2>" + article.getTitle() + "</h2>";
         String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
-        String content = article.getContent() + title + timestamp;
+        String content = title + timestamp + article.getContent();
 
         try {
             out = Html.fromHtml(content,
@@ -189,6 +191,23 @@ public class ArticleFragment extends Fragment implements
 
     public void refresh() {
         new ArticleInitializeTask(this, true).execute();
+    }
+
+
+    /**
+     * What to text to display when sharing an article.
+     * @return
+     */
+    public String getArticleShareMessage() {
+        String out = "";
+        // TODO: add more info (original article url, user name)
+        out += Constants.WEB_URL + mArticleId;
+        return out;
+    }
+
+
+    public String getArticleTitle() {
+        return mArticle.getTitle();
     }
 
 
@@ -383,12 +402,10 @@ public class ArticleFragment extends Fragment implements
             // get note from db:
             // note = DB.getNote(noteId);
             if (note == null) {
-                Log.e(TAG, "note can'e be null mofo!");
-                note = DB.getNote(noteId);
+                note = DB.getLocalNote(noteId);
             }
-            Log.d(TAG, "UpdateBufferTask: note obtained: " + note.getStartIndex() + ", " + note.getEndIndex());
             Log.d(TAG, "UpdateBufferTask: noteState: " + noteState);
-            if (noteState > 0) {
+            if (noteState >= 0) {
                 DB.saveNote(note);
                 Log.d(TAG, "note saved with noteId: " + note.getId());
             } else {
@@ -406,6 +423,8 @@ public class ArticleFragment extends Fragment implements
             redraw();
         }
     }
+
+
     private void updateBuffersWithNote(ParseNote note, int noteState) {
         if (noteState > 0) {
             addNote(note);

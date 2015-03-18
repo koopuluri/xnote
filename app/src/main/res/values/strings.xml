@@ -45,6 +45,8 @@
     <string name="continue_without_login">"Continue without login"</string>
     <string name="are_you_sure_logout">Are you sure you want to logout?</string>
 
+    <string name="article_share_message">Share Annotated Article</string>
+    <string name="note_share_message">Share Note</string>
 
     <string-array name="settings_list">
         <item>Logout</item>

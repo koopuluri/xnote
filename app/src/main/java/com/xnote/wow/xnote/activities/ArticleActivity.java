@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
 import com.xnote.wow.xnote.models.ParseNote;
 
@@ -106,7 +107,9 @@ public class ArticleActivity extends Activity implements ArticleFragment.OnArtic
                 return true;
 
             case R.id.action_share:
-                // TODO: share article.
+                Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
+                            getResources().getString(R.string.article_share_message), this);
+                Log.d(TAG, "article shared: " + mArticleFrag.getArticleTitle());
                 return true;
 
             case R.id.article_refresh:

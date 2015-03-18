@@ -65,7 +65,8 @@ public class NoteFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments().containsKey(Constants.NOTE_ID))
             mIsOld = true;
-        else mIsOld = false;
+        else
+            mIsOld = false;
     }
 
 
@@ -78,26 +79,51 @@ public class NoteFragment extends Fragment {
         Util.setXnoteTypeFace(getActivity(), mClippedText);
         Util.setXnoteTypeFace(getActivity(), mNoteEdit);
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.note_loading_spinner);
-        mDoneButton = (ImageButton) view.findViewById(R.id.done_button);
-        mDoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick() in done button. About to save note, and exit activity");
-                if (mIsOld) {
-                    done(0);
-                } else {
-                    done(1);
-                }
-            }
-        });
         new NoteInitializeTask().execute();
         return view;
     }
 
 
+    public void done() {
+        if (mIsOld) {
+            done(0);
+        } else {
+            done(1);
+        }
+    }
+
+
+    /**
+     * Sharing a note message with
+     *
+     * - clippedText
+     * - noteContent
+     * - author
+     * - timestamp
+     * - “from xnote-Android”
+     * - xnote.io link (for this user)
+     *
+     * @return string with above information.
+     */
+    public String getNoteShareMessage() {
+        String out = "";
+        out += (mClippedText.getText() + "\n");
+        out += ("Note by " + ParseUser.getCurrentUser().getUsername() + ": \n");
+        out += ("\"" + mNoteEdit.getText() + "\"\n\n");
+        out += ("original article url: \n" + mArticle.getArticleUrl() + "\n\n");
+        out += "sent from Xnote-Android";
+        return out;
+    }
+
+
+    public String getArticleTitle() {
+        return mArticle.getTitle();
+    }
+
+
     private class NoteInitializeTask extends AsyncTask<Void, Void, Void> {
         String selectedText;
-        SpannableString clippedBuffer;
+        Spanned clippedBuffer;
 
         @Override
         public void onPreExecute() {
@@ -108,36 +134,29 @@ public class NoteFragment extends Fragment {
         public Void doInBackground(Void... params) {
             Log.d(TAG, "NoteInitializationTask.doInBackground()");
             if (mIsOld) {
-                mNote = DB.getNote(getArguments().getString(Constants.NOTE_ID));
+                Log.d(TAG, "done(): OLD_NOTE!");
+                mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
-                selectedText = Html.fromHtml(mArticle.getContent()).toString().substring(
-                        mNote.getStartIndex(),
-                        mNote.getEndIndex());
             } else {
+                Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));
-                Log.d(TAG, "Current parse user: " + String.valueOf(ParseUser.getCurrentUser()));
                 mNote = new ParseNote();
                 mNote.setStartIndex(getArguments().getInt(Constants.START_INDEX));
                 mNote.setEndIndex(getArguments().getInt(Constants.END_INDEX));
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
                 mNote.setId();
-
-                // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
-                // between Article and Note.
-                String articleContent = ArticleFragment.htmlEscapedContent(
-                        mArticle,
-                        getActivity()).toString();
-
-                selectedText = articleContent.substring(
-                        mNote.getStartIndex(),
-                        mNote.getEndIndex());
-
-                mNote.setSelectedText(selectedText);
             }
-            clippedBuffer = new SpannableString(selectedText);
-            clippedBuffer.setSpan(new NoteQuoteSpan(), 0, selectedText.length() - 1,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
+            // between Article and Note.
+            String articleContent = ArticleFragment.htmlEscapedContent(
+                    mArticle,
+                    getActivity()).toString();
+            selectedText = articleContent.substring(
+                    mNote.getStartIndex(),
+                    mNote.getEndIndex());
+            mNote.setSelectedText(selectedText);
+            clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
             return null;
         }
 
@@ -147,12 +166,17 @@ public class NoteFragment extends Fragment {
             super.onPostExecute(_);
             mLoadingSpinner.setVisibility(View.GONE);
             mClippedText.setText(clippedBuffer);
-            if (mIsOld)
+            if (mIsOld) {
                 mNoteEdit.setText(mNote.getContent());
+                mNoteEdit.setSelection(mNoteEdit.getText().length());
+            }
             else mNoteEdit.setHint(R.string.note_hint);
         }
     }
 
+    public String getNoteId() {
+        return getArguments().getString(Constants.NOTE_ID);
+    }
 
     @Override
     public String toString() {

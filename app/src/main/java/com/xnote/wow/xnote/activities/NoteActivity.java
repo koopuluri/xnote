@@ -13,12 +13,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.NoteFragment;
 import com.xnote.wow.xnote.models.NoteEngine;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by koopuluri on 1/29/15.
@@ -26,6 +32,11 @@ import com.xnote.wow.xnote.models.NoteEngine;
  * Notes about the ViewPageAdapter:
  * - only used for old notes. New notes can't be swiped off screen to go to next note in order
  * because new notes aren't created until the user presses the doneButton.
+ * ViewPager error fix: http://stackoverflow.com/questions/14766347/null-pointer-exception-in-fragment-on-callback-from-activity
+ *
+ * Really cool "bug": After adding a ScrollView in NoteFragment, when a keyboard is opened (the user
+ * starts typing a note), the done button slides above the keyboard so the user can hit done while
+ * typing; more intuitive than anything I thought of :/. The Android Gods have blessed us.
  */
 public class NoteActivity extends Activity {
     public static final String TAG = "NoteActivity";
@@ -34,6 +45,8 @@ public class NoteActivity extends Activity {
     NotePagerAdapter mNotePagerAdapter;
     ViewPager mViewPager;
     NoteFragment mNoteFrag;
+    ImageButton mDoneButton;
+    Map<Integer, NoteFragment> mNoteFragMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +61,10 @@ public class NoteActivity extends Activity {
             mNotePagerAdapter = new NotePagerAdapter(getFragmentManager());
             mViewPager = (ViewPager) findViewById(R.id.note_view_pager);
             mViewPager.setAdapter(mNotePagerAdapter);
-            int currrentNotePosition = mNoteEngine.getPositionForNoteId(getIntent()
+            int currentNotePosition = mNoteEngine.getPositionForNoteId(getIntent()
                     .getStringExtra(Constants.NOTE_ID));
-            mViewPager.setCurrentItem(currrentNotePosition);
+            mViewPager.setCurrentItem(currentNotePosition);
+            mNoteFragMap = new HashMap<Integer, NoteFragment>();
         } else {
             mNoteEngine = null;
             // adding initial note frag.
@@ -70,6 +84,14 @@ public class NoteActivity extends Activity {
                 Log.d(TAG, "NoteFragment added to note_container");
             }
         }
+
+        mDoneButton = (ImageButton) findViewById(R.id.done_button);
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrentNoteFragment().done();
+            }
+        });
     }
 
 
@@ -134,16 +156,30 @@ public class NoteActivity extends Activity {
                     mNoteFrag.delete();
                 } else {
                     // when Note launched from ArticleFrag; Viewpager exists:
-                    NoteFragment noteFrag = (NoteFragment) mNotePagerAdapter.
-                                                           getItem(mViewPager.getCurrentItem());
+                    NoteFragment noteFrag = mNoteFragMap.get(mViewPager.getCurrentItem());
                     noteFrag.delete();
                     Log.d(TAG, "note deleted at position: " + mViewPager.getCurrentItem());
                 }
                 return true;
 
+            case R.id.note_action_share:
+                // Add data to the intent, the receiving app will decide what to do with it.
+                NoteFragment noteFrag = getCurrentNoteFragment();
+                Util.share(noteFrag.getArticleTitle(), noteFrag.getNoteShareMessage(),
+                            getResources().getString(R.string.note_share_message), this);
+                Log.d(TAG, "note shared for article: " + mNoteFrag.getArticleTitle());
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    private NoteFragment getCurrentNoteFragment() {
+        if (mNoteFrag != null)
+            return mNoteFrag;
+        else
+            return mNoteFragMap.get(mViewPager.getCurrentItem());
+    }
+
 
     // Since this is an object collection, use a FragmentStatePagerAdapter,
     // and NOT a FragmentPagerAdapter.
@@ -156,6 +192,7 @@ public class NoteActivity extends Activity {
         public Fragment getItem(int i) {
             String noteId = mNoteEngine.getNoteIdAtPos(i);
             Fragment noteFrag = NoteFragment.newInstance(noteId);
+            mNoteFragMap.put(i, (NoteFragment) noteFrag);  // keeping reference to created fragments.
             return noteFrag;
         }
 

@@ -69,7 +69,7 @@ public abstract class BaseBuffer {
         }
 
         // adding the transparent clickableSpan layer:
-        mBuffer.setSpan(new NoteReadSpan(noteId, mArticleId, mActivity, ArticleFragment.TAG),
+        mBuffer.setSpan(new NoteReadSpan(noteId, mActivity, ArticleFragment.TAG),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 

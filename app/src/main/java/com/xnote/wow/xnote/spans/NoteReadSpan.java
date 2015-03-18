@@ -23,7 +23,7 @@ public class NoteReadSpan extends ClickableSpan implements NoteSpan {
     Activity parentActivity;
     String mArticleId;
 
-    public NoteReadSpan(String noteId, String articleId, Activity activity, String parentName) {
+    public NoteReadSpan(String noteId, Activity activity, String parentName) {
         this.noteId = noteId;
         parentActivity = activity;
     }

@@ -54,7 +54,7 @@ public class DB {
         return null;
     }
 
-    public static ParseNote getNote(String noteId) {
+    public static ParseNote getLocalNote(String noteId) {
         Log.d(TAG, "getNote() with noteId: " + noteId);
         ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
         query.whereEqualTo(ParseNote.ID, noteId);
@@ -63,7 +63,6 @@ public class DB {
         try {
             out = query.find();
             Log.d(TAG, "length of getNote() output: " + out.size());
-            Log.d(TAG, "noteId: in getNote(): " + noteId);
             ParseNote outNote = (ParseNote) out.get(out.size() - 1);
             Log.d(TAG, "getNote() returns note w/: " + outNote.getStartIndex() + ", "
                     + outNote.getEndIndex());
@@ -266,7 +265,7 @@ public class DB {
         query.getFirstInBackground(new GetCallback() {
             public void done(ParseObject object, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "could not execute getFirstInBackground() in saveNoteLocally(): " + e);
+                    Log.e(TAG, "saveNoteLocally: " + e);
                 }
                 if (object != null) {
                     Log.d(TAG, "saveNoteLocally(): a note exists with same noteId.");
@@ -314,6 +313,24 @@ public class DB {
         }
     }
 
+
+    public static void clearLocalNotes() {
+        Log.d(TAG, "clearLocalNotes().");
+        ParseQuery query = ParseQuery.getQuery(DB.NOTE);
+        query.fromLocalDatastore();
+        try {
+            List<ParseObject> localNotes = query.find();
+            for (ParseObject note : localNotes) {
+                note.unpin();
+            }
+            Log.d(TAG, "local notes cleared.");
+        } catch (ParseException e) {
+            Log.e(TAG, "could not delete local notes: " + e);
+        }
+    }
+
+
+
     private static void deleteLocalNotesForArticleInBackground(final String articleId) {
         final String tag = TAG + ".deleteLocalNotesForArticleInBackground(): ";
         Log.d(tag, "");
@@ -348,7 +365,7 @@ public class DB {
         });
     }
 
-    private static void deleteLocalNotesForArticle(final String articleId) {
+    public static void deleteLocalNotesForArticle(final String articleId) {
         final String tag = TAG + ".deleteLocalNotesForArticle(): ";
         Log.d(tag, "");
         ParseQuery query = ParseQuery.getQuery(NOTE);
