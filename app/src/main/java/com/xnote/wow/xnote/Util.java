@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class Util {
     }
 
     /**
+     * @TargetApi
      * @param activity: the activity that contains the textView
      * @param tv: textView to stylize.
      */
@@ -65,10 +67,12 @@ public class Util {
         Typeface normalTypeface = Typeface.createFromAsset(activity.getAssets(),
                 "Dual-300.ttf");
         tv.setTypeface(normalTypeface);
-        tv.setElegantTextHeight(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tv.setElegantTextHeight(true);
+            tv.setLetterSpacing(-0.02f);
+        }
         tv.setIncludeFontPadding(true);
         tv.setLineSpacing(0.0f, 1.2f);
-        tv.setLetterSpacing(-0.02f);
         tv.setPadding(30, 0, 30, 0);
         tv.setTextSize(16);
         tv.setVisibility(View.VISIBLE);

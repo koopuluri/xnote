@@ -9,6 +9,7 @@ import android.text.style.LineBackgroundSpan;
 import android.util.Log;
 
 import com.xnote.wow.xnote.NoteSpan;
+import com.xnote.wow.xnote.buffers.BaseBuffer;
 
 /**
  * Created by koopuluri on 1/30/15.
@@ -51,7 +52,7 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
 //        Log.d(TAG, "mLayout.getPrimaryHorizontal(end): " + mLayout.getPrimaryHorizontal(end));
 
         // setting color:
-        p.setColor(Color.parseColor("#6666E0FF"));
+        p.setColor(Color.parseColor(BaseBuffer.NOTE_COLOR));
 
         Rect rect = new Rect();
 
@@ -84,13 +85,10 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
                 rect.bottom = bottom;
             }
         }
-
         canvas.drawRect(rect, p);
-
         // resetting color:
         p.setColor(originalColor);
     }
-
 
 
     /**

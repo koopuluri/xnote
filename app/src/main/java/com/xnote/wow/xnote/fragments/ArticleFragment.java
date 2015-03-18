@@ -44,14 +44,13 @@ import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.NoteEngine;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
-
 import java.util.List;
 
 /**
  * Created by koopuluri on 2/22/15.
  */
 public class ArticleFragment extends Fragment implements
-        TextSelectionCallback.OnTextSelectionListener {
+    TextSelectionCallback.OnTextSelectionListener {
     public static final String TAG = "ArticleFragment";
     Spanned mContent;
     ArticleView mArticleView;
@@ -70,6 +69,7 @@ public class ArticleFragment extends Fragment implements
     List<ParseNote> mNotes;
     ProgressBar mLoadingSpinner;
 
+    boolean mIsNoteSelected;
 
     public interface OnArticleLoaded {
         public void onArticleFragmentInitialized();
@@ -170,7 +170,7 @@ public class ArticleFragment extends Fragment implements
                 }
             }
         });
-
+        mIsNoteSelected = false;
         new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         return view;
     }
@@ -310,7 +310,6 @@ public class ArticleFragment extends Fragment implements
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
-
             if (Util.isNetworkAvailable(getActivity()) && (!Util.IS_ANON)) {
                 mNotes = DB.getNotesForArticleFromCloud(mArticleId);
                 Log.d(TAG, "mNotes obtained from cloud.");
@@ -371,12 +370,17 @@ public class ArticleFragment extends Fragment implements
     public void onTextSelectionCreate() {
         int start = mArticleView.getSelectionStart();
         int end = mArticleView.getSelectionEnd();
+        if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
+                end >= mArticleView.getText().length())
+            mArticleView.clearFocus();
+
         mNoteSelectionView.setVisibility(View.VISIBLE);
         if (mNoteEngine.noteExistsWithRange(start, end)) {
             Log.d(TAG, "note exists within range!");
             // display edit, delete options:
             mDeleteNoteButton.setVisibility(View.VISIBLE);
             mNewNoteButton.setVisibility(View.INVISIBLE);
+            mIsNoteSelected = true;
         } else {
             Log.d(TAG, "note doesn't exist within range! new note:");
             mNewNoteButton.setVisibility(View.VISIBLE);
@@ -389,6 +393,7 @@ public class ArticleFragment extends Fragment implements
         mNoteSelectionView.setVisibility(View.GONE);
         mDeleteNoteButton.setVisibility(View.INVISIBLE);
         mNewNoteButton.setVisibility(View.INVISIBLE);
+        mArticleView.clearFocus();
     }
 
 
@@ -429,7 +434,11 @@ public class ArticleFragment extends Fragment implements
 
         @Override
         protected void onSelectionChanged(int selStart, int selEnd) {
-            // TODO: something.
+            if (mIsNoteSelected) {
+                mArticleView.clearFocus();
+                mIsNoteSelected = false;
+                onTextSelectionDestroy();
+            }
         }
     }
 
