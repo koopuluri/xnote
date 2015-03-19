@@ -26,6 +26,24 @@ public class DB {
     public static final String IMAGE = "Image";
 
 
+    public static void sync() throws ParseException {
+        Log.d(TAG, "sync().");
+        clearLocalArticles();
+        clearLocalNotes();
+        Log.d(TAG, "local datastore cleared.");
+
+        // now pulling from the cloud. and saving locally:
+        List<ParseArticle> articles = getArticlesFromCloud();
+        for (ParseArticle article : articles) {
+            saveArticleImmediatelyLocally(article);
+            List<ParseNote> notesForArticle = getNotesForArticleFromCloud(article.getId());
+            for (ParseNote note : notesForArticle) {
+                saveNoteLocally(note);
+            }
+        }
+        Log.d(TAG, "sync complete.");
+    }
+
 
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
@@ -76,7 +94,7 @@ public class DB {
         return null;
     }
 
-    public static List<ParseArticle> getArticlesFromCloud() {
+    public static List<ParseArticle> getArticlesFromCloud() throws ParseException{
         Log.d(TAG, "getArticlesFromCloud().");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(ARTICLE);
         query.orderByDescending(ParseArticle.TIMESTAMP);
@@ -87,7 +105,7 @@ public class DB {
                 return out;
             } catch (ParseException e) {
                 Log.e(TAG, "couldn't getArticlesFromCloud()!");
-                return null;
+                throw e;
             }
         } else {
             return null;
@@ -131,7 +149,8 @@ public class DB {
     }
 
 
-    public static List<ParseNote> getNotesForArticleFromCloud(String articleId) {
+    public static List<ParseNote> getNotesForArticleFromCloud(String articleId)
+            throws ParseException{
         ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
         query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
         if(!Util.IS_ANON) {
@@ -146,7 +165,7 @@ public class DB {
 
             } catch (ParseException e) {
                 Log.e(TAG, "ParseException when getting notesForArticleFromCloud(): " + e);
-                return null;
+                throw e;
             }
         } else {
             return null;

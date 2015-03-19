@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
@@ -150,19 +151,13 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
             //because the check is being made in the refresh method
             //Local database is cleared and is synced with the cloud
             Log.d(TAG, "Clearing local datastore and syncing from cloud");
-            articleList = DB.getArticlesFromCloud();
-            if(articleList != null) {
-                DB.clearLocalArticles();
-                DB.clearLocalNotes();
-                for (ParseArticle a : articleList) {
-                    // saving article locally
-                    DB.saveArticleLocally(a);
-                    List<ParseNote> cloudNotes = DB.getNotesForArticleFromCloud(a.getId());
-                    for (ParseNote cloudNote : cloudNotes) {
-                        DB.saveNoteLocally(cloudNote);
-                    }
-                }
+            try {
+                DB.sync();
+            } catch (ParseException e) {
+                Log.d(TAG, "sync failed.");
+                // TODO: flash message saying that refresh failed.
             }
+            articleList = DB.getArticlesLocally();
         } else {
             articleList = DB.getArticlesLocally();
             Log.d(TAG, "Article List: " + String.valueOf(articleList));

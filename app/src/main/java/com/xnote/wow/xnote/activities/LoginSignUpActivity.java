@@ -14,6 +14,7 @@ import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.XnoteApplication;
 import com.xnote.wow.xnote.fragments.LoginFragment;
+import com.xnote.wow.xnote.fragments.LoginSyncFragment;
 import com.xnote.wow.xnote.fragments.SignUpFragment;
 import com.xnote.wow.xnote.fragments.WelcomeFragment;
 
@@ -23,8 +24,12 @@ import com.xnote.wow.xnote.fragments.WelcomeFragment;
  * It opens up fragments based on whether the user has used the application before
  * and depending on whether the user log in information is stored
  */
-public class LoginSignUpActivity extends Activity {
+public class LoginSignUpActivity extends Activity implements LoginFragment.OnLoginIn{
     public final String TAG = "LoginSignUpActivity";
+
+    Fragment mLoginFrag;
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -84,12 +89,21 @@ public class LoginSignUpActivity extends Activity {
                 } else {
                     // If user is not anonymous then the user must be asked to login
                     settings.edit().putBoolean("chosen_to_signup", false).apply();
-                    LoginFragment fragment = new LoginFragment();
-                    fragmentTransaction.add(R.id.fragment_container, fragment);
+                    mLoginFrag = new LoginFragment();
+                    fragmentTransaction.add(R.id.fragment_container, mLoginFrag);
                     fragmentTransaction.commit();
                     Log.d(TAG, "User has logged out and needs to be asked to login");
                 }
             }
         }
+    }
+
+    @Override
+    public void onLogin() {
+        // need to change fragment to LoginSyncFragment.java:
+        getFragmentManager().beginTransaction()
+                .remove(mLoginFrag)
+                .add(R.id.fragment_container, new LoginSyncFragment())
+                .commit();
     }
 }

@@ -48,6 +48,8 @@ import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.NoteEngine;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
+
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -311,7 +313,12 @@ public class ArticleFragment extends Fragment {
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
             if (Util.isNetworkAvailable(getActivity()) && (!Util.IS_ANON)) {
-                mNotes = DB.getNotesForArticleFromCloud(mArticleId);
+                try {
+                    mNotes = DB.getNotesForArticleFromCloud(mArticleId);
+                } catch (com.parse.ParseException e) {
+                    Log.d(TAG, "couldn't pull from cloud");
+                    mNotes = DB.getNotesForArticleLocally(mArticleId);
+                }
                 Log.d(TAG, "mNotes obtained from cloud.");
             } else {
                 mNotes = DB.getNotesForArticleLocally(mArticleId);
@@ -346,7 +353,6 @@ public class ArticleFragment extends Fragment {
     public void addNote(ParseNote note) {
         mBuffer.addNoteSpan(note);
         mNoteEngine.addNote(note);
-        // TODO:
         Log.d(TAG, "addNote()");
     }
 
@@ -527,7 +533,7 @@ public class ArticleFragment extends Fragment {
             if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
                     end >= mArticleView.getText().length())
                 mArticleView.clearFocus();
-            
+
             if (mNoteEngine.noteExistsWithRange(start, end)) {
                 Log.d(TAG, "note exists within range!");
                 inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
