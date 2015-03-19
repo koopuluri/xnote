@@ -726,7 +726,7 @@ public class DB {
                 }
             } else {
                 ParseImage img = (ParseImage) out.get(0);
-                Log.d(TAG, "image is not null! image: " + img.getUrl() + ", " + img.getArticleId());
+                Log.d(TAG, "image locally: " + img.getUrl() + ", " + img.getArticleId());
                 return img;
             }
         } catch (ParseException e) {
@@ -747,7 +747,7 @@ public class DB {
                 return null;
             } else {
                 ParseImage img = (ParseImage) out.get(0);
-                Log.d(TAG, "image is not null! image: " + img.getUrl() + ", " + img.getArticleId());
+                Log.d(TAG, "image from cloud: " + img.getUrl() + ", " + img.getArticleId());
                 DB.saveImageLocally(img);
                 return img;
             }

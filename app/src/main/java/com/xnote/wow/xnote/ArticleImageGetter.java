@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.xnote.wow.xnote.models.ParseImage;
@@ -38,15 +39,7 @@ public class ArticleImageGetter implements Html.ImageGetter {
         //any content are not returned. Empty parse images could be returned if there is
         //any error while downloading the image - perhaps if the image is too big.
         if((image != null) && (image.getNaturalWidth() != 0)) {
-            byte[] data = image.getData();
-            // Generating bitmap from image byte[] data.
-            Bitmap bmp;
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inMutable = true;  // so that it does not make a copy of the byte[].
-            bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-            // returning a drawable:
-            Drawable drawable = new BitmapDrawable(bmp);  // TODO: don't use a deprecated constructor.
-
+            Log.d(TAG, "Image is not null, going to return drawable");
             //Get screenwidth to zoom in images to fit phone size
             //http://stackoverflow.com/a/9316553/4671651
             DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -56,11 +49,38 @@ public class ArticleImageGetter implements Html.ImageGetter {
             int width = displayMetrics.widthPixels;
             //Subtracting padding on either side so image fits
             width = width - 2 * (Constants.PADDING);
+            byte[] data = image.getData();
+            // Generating bitmap from image byte[] data.
+            Bitmap bmp;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inMutable = true;  // so that it does not make a copy of the byte[].
+            options.inSampleSize = calculateInSampleSize(image, width, Integer.MAX_VALUE );
+            bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+            // returning a drawable:
+            Drawable drawable = new BitmapDrawable(bmp);  // TODO: don't use a deprecated constructor.
             drawable.setBounds(0, 0, width,
                 (image.getNaturalHeight() * width / image.getNaturalWidth()));
             return drawable;
         } else {
+            Log.d(TAG, "Image is null");
             return null;
         }
     }
+
+    //Method to calculate the scaling factor for the images
+    //http://stackoverflow.com/a/20441760/4671651
+    public static int calculateInSampleSize(ParseImage image,
+                                           int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        int height = image.getNaturalHeight();
+        int width = image.getNaturalWidth();
+        int inSampleSize = 1;
+        while (height > reqHeight || width > reqWidth) {
+            inSampleSize *= 2;
+            height /= 2;
+            width /= 2;
+        }
+        return inSampleSize;
+    }
+
 }
