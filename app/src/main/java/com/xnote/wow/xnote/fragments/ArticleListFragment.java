@@ -22,7 +22,6 @@ import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
-import com.xnote.wow.xnote.models.ParseNote;
 
 import java.util.List;
 

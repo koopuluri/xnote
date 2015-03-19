@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -41,14 +40,12 @@ import com.xnote.wow.xnote.HtmlTagHandler;
 import com.xnote.wow.xnote.HtmlTagHandlerWithoutList;
 import com.xnote.wow.xnote.LinkTouchMovementMethod;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.TextSelectionCallback;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.NoteEngine;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**

@@ -59,8 +59,16 @@ public class DiffbotParser {
                 Log.e(TAG, "img is null in images!");
                 continue;
             }
-            if (DB.getImage(img.getUrl()) == null)
-                downloadAndSaveImage(img.getUrl(), mArticle.getId(), img.getHeightAndWidth());
+            if (DB.getImage(img.getUrl()) == null) {
+                int height = img.getHeightAndWidth()[0];
+                int width = img.getHeightAndWidth()[1];
+                if((height <= 2048) && (width <= 2048)) {
+                    Log.d(TAG, "Image saved successfully");
+                    downloadAndSaveImage(img.getUrl(), mArticle.getId(), img.getHeightAndWidth());
+                } else {
+                    Log.d(TAG, "Image is too large");
+                }
+            }
             else Log.d(TAG, "image already exists in db: " + img.getUrl());
         }
         if (mArticle.isParsed()) {

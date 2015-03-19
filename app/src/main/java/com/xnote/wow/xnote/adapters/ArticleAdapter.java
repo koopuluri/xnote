@@ -61,7 +61,8 @@ public class ArticleAdapter  extends BaseListAdapter {
                 Log.d(TAG, "image is null source images are downloaded");
                 String iconURL = article.getIconURL();
                 if ((iconURL == null) || (iconURL.equals(""))) {
-                    iconURL = "http://imgur.com/8yRv9zz.png"; //TODO: Figure out default image
+                    iconURL = "http://imgur.com/8yRv9zz.png";
+                    //TODO: Figure out default image
                 }
                 new DownloadImageTask(mIcon, article).execute(iconURL);
             } else {
@@ -119,7 +120,6 @@ public class ArticleAdapter  extends BaseListAdapter {
                 byte[] imageInByte = stream.toByteArray();
                 image1.setData(imageInByte);
                 article.setSourceImage(image1);
-                DB.saveArticleImmediatelyLocally(article);
             }
             return mIcon11;
         }
