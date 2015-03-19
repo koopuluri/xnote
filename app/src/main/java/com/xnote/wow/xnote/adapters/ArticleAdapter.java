@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.GetCallback;
+import com.parse.ParseObject;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
@@ -19,6 +21,7 @@ import com.xnote.wow.xnote.models.ParseImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.List;
 /**
  * Created by koopuluri on 2/5/15.
@@ -51,6 +54,7 @@ public class ArticleAdapter  extends BaseListAdapter {
             view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
             Log.d(TAG, "article hasn't completed parsing yet, spinner set for article list item");
         } else {
+            Log.d(TAG, "article is parsed, renderring its stuff.");
             TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
             errorText.setVisibility(View.INVISIBLE);
             view.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
@@ -63,17 +67,14 @@ public class ArticleAdapter  extends BaseListAdapter {
                 if ((iconURL == null) || (iconURL.equals(""))) {
                     iconURL = "http://imgur.com/8yRv9zz.png"; //TODO: Figure out default image
                 }
-                new DownloadImageTask(mIcon, article).execute(iconURL);
+                new DownloadImageTask(article, mIcon).execute(iconURL);
             } else {
-                //Setting imageview from the byte array stored in the article
-                //http://stackoverflow.com/a/13854787/4671651
                 try {
-                    Log.d(TAG, "source image exists already. No need to download them");
-                    byte[]  byteArray = image.getData();
-                    Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    mIcon.setImageBitmap(bmp);
+                    Log.d(TAG, "source image exists already. No need to download.");
+                    setImageViewWithIcon(mIcon, article.getSourceImage());
                 } catch(IllegalStateException e) {
-                    Log.e(TAG, "source image does not exist or could not be found" + article.getIconURL());
+                    Log.d(TAG, "SourceImage not with ParseArticle, so findingIfNecessary.");
+                    new FetchArticleImageTask(article, mIcon).execute();
                 }
             }
         }
@@ -81,13 +82,57 @@ public class ArticleAdapter  extends BaseListAdapter {
         mTstampTv.setText(Util.dateFromSeconds(article.getTimestamp()));
         return view;
     }
+
+
+    private void setImageViewWithIcon(ImageView icon, ParseImage sourceImage) {
+        byte[] byteArray = sourceImage.getData();
+        Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        mIcon.setImageBitmap(bmp);
+        notifyDataSetChanged();
+    }
+
+
+    private class FetchArticleImageTask extends AsyncTask<Void, Void, Void> {
+        private final String TAG = "FetchArticleImageTask";
+        ParseArticle article;
+        ParseImage sourceImage;
+        ImageView icon;
+
+        public FetchArticleImageTask(ParseArticle article, ImageView iconContainer) {
+            this.article = article;
+            icon = iconContainer;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                sourceImage = (ParseImage) article.getSourceImage().fetchIfNeeded();
+            } catch (com.parse.ParseException e) {
+                Log.e(TAG, "could not fetchIfNeeded() the sourceImage: " + e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void _) {
+            super.onPostExecute(_);
+            // now notifying datasetChanged and setting this sourceImage;
+            if (sourceImage != null) {
+                setImageViewWithIcon(icon, sourceImage);
+            } else {
+                Log.d(TAG, "fetching sourceImage from local datastore was not successful.");
+            }
+        }
+    }
+
+
     //The Download Image Task is from the below link
     //http://stackoverflow.com/a/9288544/4671651
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         public final String TAG = "DownloadImageTaskArticleAdapter";
         ImageView bmImage;
         ParseArticle article;
-        public DownloadImageTask(ImageView bmImage, ParseArticle article) {
+        public DownloadImageTask(ParseArticle article, ImageView bmImage) {
             this.bmImage = bmImage;
             this.article = article;
         }

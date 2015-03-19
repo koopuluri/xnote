@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xnote.wow.xnote.Constants;
+import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
@@ -20,7 +21,7 @@ import com.xnote.wow.xnote.models.ParseNote;
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleActivity extends Activity implements ArticleFragment.OnArticleLoaded {
+public class ArticleActivity extends Activity {
     public static final String TAG = "ArticleActivity";
 
     ArticleFragment mArticleFrag;
@@ -103,8 +104,17 @@ public class ArticleActivity extends Activity implements ArticleFragment.OnArtic
                             .startActivities();
                     // else just go to the parent activity that this was called from:
                     Log.d(TAG, "ran TaskStackBuilder.create...");
+                } else {
+                    Log.d(TAG, "NavUtils.navigateUpFromSameTask(this)");
+                    Intent intent = NavUtils.getParentActivityIntent(this);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    intent.putExtra(Constants.ARTICLE_ID, getIntent().getStringExtra(
+                            Constants.ARTICLE_ID));
+                    NavUtils.navigateUpTo(this, intent);
                 }
                 return true;
+
 
             case R.id.action_share:
                 Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
@@ -125,15 +135,4 @@ public class ArticleActivity extends Activity implements ArticleFragment.OnArtic
         return TAG;
     }
 
-    @Override
-    public void onArticleFragmentInitialized() {
-//        if (mLoadingFrag != null) {
-//            FragmentManager fm = getFragmentManager();
-//            fm.beginTransaction()
-//                    .remove(mLoadingFrag)
-//                    .commit();
-//        } else {
-//            Log.e(TAG, "mLoadingFrag should not be null!");
-//        }
-    }
 }

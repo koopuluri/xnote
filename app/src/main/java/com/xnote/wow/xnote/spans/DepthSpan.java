@@ -62,13 +62,13 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
                 Log.d(TAG, "spans only one line");
                 rect.left = getPosition(startIndex);
                 rect.right = getPosition(endIndex) ;
-                rect.top = top - 20;
+                rect.top = top; // TODO: removed "-20" and the result is the same !?
                 rect.bottom = baseline;
             } else {  // note spans multiple lines:
                 Log.d(TAG, "spans multiple lines");
                 rect.left = getPosition(startIndex);
                 rect.right = (int) mLayout.getPrimaryHorizontal(end-1);  // test!
-                rect.top = top - 20;
+                rect.top = top;
                 rect.bottom = bottom;
             }
         } else {
@@ -76,7 +76,7 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
                 rect.left = (int) mLayout.getPrimaryHorizontal(start);
                 rect.right = getPosition(endIndex);
                 rect.top = top;
-                rect.bottom = baseline;
+                rect.bottom = baseline + (bottom - baseline) / 2;
             } else {  // a line in the middle of the note, no margins:
                 // draw(mLayout.getLineStart(lnum), mLayout.getLineEnd(lnum), false, false);
                 rect.left = (int) mLayout.getPrimaryHorizontal(start);

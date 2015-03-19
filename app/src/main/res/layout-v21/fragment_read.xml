@@ -25,15 +25,6 @@
         android:indeterminate="true"
         android:layout_gravity="center"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:id="@+id/note_selection_options"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:gravity="right|bottom"
-        android:visibility="gone">
-
         <ImageButton
             android:id="@+id/new_note_button"
             android:layout_width="@dimen/round_button_diameter"
@@ -47,12 +38,4 @@
             android:elevation="@dimen/elevation_low"
             android:tint="@color/primary_palette_dark"
             android:src="@android:drawable/ic_input_add"/>
-
-        <ImageButton
-            android:id="@+id/delete_note_button"
-            android:layout_width="@dimen/round_button_diameter"
-            android:layout_height="@dimen/round_button_diameter"
-            android:src="@android:drawable/ic_delete"
-            android:visibility="gone"/>
-    </LinearLayout>
 </FrameLayout>

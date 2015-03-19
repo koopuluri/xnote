@@ -35,7 +35,6 @@ public class ReceiveActivity extends Activity {
         mIntent = getIntent();
         mNewArticleInitialized = false;
         mThisActivity = this;
-
         mNewArticle = new ParseArticle();
         mNewArticle.setId();
         new HandleSendTextTask().execute();

@@ -29,7 +29,6 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
 
     Fragment mLoginFrag;
 
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -101,9 +100,15 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
     @Override
     public void onLogin() {
         // need to change fragment to LoginSyncFragment.java:
-        getFragmentManager().beginTransaction()
-                .remove(mLoginFrag)
-                .add(R.id.fragment_container, new LoginSyncFragment())
-                .commit();
+        if (mLoginFrag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(mLoginFrag)
+                    .add(R.id.fragment_container, new LoginSyncFragment())
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new LoginSyncFragment())
+                    .commit();
+        }
     }
 }

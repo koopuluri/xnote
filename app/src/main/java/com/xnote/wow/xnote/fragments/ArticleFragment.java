@@ -60,7 +60,6 @@ public class ArticleFragment extends Fragment {
     ArticleView mArticleView;
     ScrollView mScrollView;
     ReadBuffer mBuffer;
-    OnArticleLoaded mListener;
     ParseArticle mArticle;
     String mArticleId;
     boolean mInitialized;
@@ -72,21 +71,6 @@ public class ArticleFragment extends Fragment {
     ProgressBar mLoadingSpinner;
 
     boolean mIsNoteSelected;
-
-    public interface OnArticleLoaded {
-        public void onArticleFragmentInitialized();
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnArticleLoaded) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement ArticleFragmentInterface");
-        }
-    }
 
 
     public static Fragment newInstance(String articleId) {
@@ -133,7 +117,8 @@ public class ArticleFragment extends Fragment {
                 }
             };
             mNewNoteButton.setOutlineProvider(viewOutlineProvider);
-            mNewNoteButton.setClipToOutline(true);
+            mNewNoteButton.setClipToOutline(true);  //TODO: does this need to be replicated for all fabs?
+            mNewNoteButton.setVisibility(View.INVISIBLE);
         }
         mNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,23 +139,6 @@ public class ArticleFragment extends Fragment {
                 }
             }
         });
-
-
-//        mDeleteNoteButton = (ImageButton) view.findViewById(R.id.delete_note_button);
-//        mDeleteNoteButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int start = mArticleView.getSelectionStart();
-//                int end = mArticleView.getSelectionEnd();
-//                if (mNoteEngine.noteExistsWithRange(start, end)) {
-//                    new UpdateBuffersWithNoteTask(mNoteEngine.getNoteId(start, end), -1).execute();
-//                    Log.d(TAG, "updateBuffer with note task launched to remove note: "
-//                            + mNoteEngine.getNoteId(start, end));
-//                } else {
-//                    Log.d(TAG, "Must select existing note to delete it!");
-//                }
-//            }
-//        });
         mIsNoteSelected = false;
         new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         return view;
@@ -288,13 +256,16 @@ public class ArticleFragment extends Fragment {
             } catch (IllegalStateException e) {
                 Log.e(TAG, "article not attached to activity?: " + e);
                 getActivity().finish();
+            } catch (NullPointerException e) {
+                Log.e(TAG, "nullPointer Exception " +
+                        "(probably with the activity.getAssets() with null activity: " + e);
+                getActivity().finish();
             }
         }
     }
 
 
     private class BufferInitializeTask extends AsyncTask<Void, Void, Void> {
-
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
@@ -330,7 +301,6 @@ public class ArticleFragment extends Fragment {
         @Override
         public void onPostExecute(Void _) {
             redraw();  // sets text for ArticleView with mBuffer.getBuffer().
-            mListener.onArticleFragmentInitialized();
             mLoadingSpinner.setVisibility(View.GONE);
         }
     }

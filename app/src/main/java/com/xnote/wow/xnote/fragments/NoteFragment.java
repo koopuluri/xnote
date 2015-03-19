@@ -28,6 +28,8 @@ import com.xnote.wow.xnote.models.ParseNote;
 
 /**
  * Created by koopuluri on 3/2/15.
+ * Nice EditText subtleties:
+ * http://stackoverflow.com/questions/10593195/android-edittext-turns-on-keyboard-automatically-how-to-stop
  */
 public class NoteFragment extends Fragment {
     public static final String TAG = "NoteFragment";
@@ -147,7 +149,6 @@ public class NoteFragment extends Fragment {
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
                 mNote.setId();
-
             }
             // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
             // between Article and Note.
