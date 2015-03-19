@@ -112,7 +112,6 @@ public class DiffbotParser {
             con = (HttpURLConnection) obj.openConnection();
         } catch (IOException e) {
             Log.d(TAG, "IO exception when opening a connection with url: " + e);
-            // TODO: check if there is no connection:
             // if not, then store article url to be parsed later, and let the
             // user know that the article cannot be parsed as there's no internet
             // connection.

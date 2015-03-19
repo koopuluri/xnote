@@ -2,11 +2,9 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+import com.xnote.wow.xnote.LoginSignUpInterface;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
 
@@ -26,10 +25,22 @@ import com.xnote.wow.xnote.TextValidator;
  */
 public class ForgotPasswordFragment extends Fragment {
 
-    public final String TAG = "Forgot Password Fragment";
+    public static final String TAG = "Forgot Password Fragment";
     Button mDoneButton;
     Button mBackButton;
     private EditText emailEditText;
+    private LoginSignUpInterface mListener;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (LoginSignUpInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + e);
+        }
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,12 +74,7 @@ public class ForgotPasswordFragment extends Fragment {
                                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int id) {
-                                            FragmentManager fm = getActivity().getFragmentManager();
-                                            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                                            Fragment fragment = new LoginFragment();
-                                            fragmentTransaction.remove(thisFragment);
-                                            fragmentTransaction.add(R.id.fragment_container, fragment);
-                                            fragmentTransaction.commit();
+                                            mListener.openLogin(thisFragment);
                                         }
                                     });
                                     AlertDialog dialog = builder.create();
@@ -85,12 +91,7 @@ public class ForgotPasswordFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             //Back button takes the user back to the login fragment
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                Fragment fragment = new LoginFragment();
-                fragmentTransaction.remove(thisFragment);
-                fragmentTransaction.add(R.id.fragment_container, fragment);
-                fragmentTransaction.commit();
+                mListener.openLogin(thisFragment);
             }
         });
         return view;

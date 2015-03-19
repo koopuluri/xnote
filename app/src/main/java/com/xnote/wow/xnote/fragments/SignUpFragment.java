@@ -1,5 +1,6 @@
 package com.xnote.wow.xnote.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
+import com.xnote.wow.xnote.LoginSignUpInterface;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
 import com.xnote.wow.xnote.Util;
@@ -26,18 +28,31 @@ import com.xnote.wow.xnote.Util;
  */
 public class SignUpFragment extends Fragment {
 
-    public final String TAG = "Sign Up Fragment";
+    public static final String TAG = "Sign Up Fragment";
     Button mDoneButton;
     private EditText nameEditText;
     private EditText emailEditText;
     private EditText passwordEditText;
+    private TextView mLoginTextView;
 
     //The boolean variables keep track of preliminary validation done without using Parse
     //This allows us to make Parse calls only when necessary and also gives us freedom to define our own
     //constraints for the text field.
-    public Boolean emailIsValid = false;
-    public Boolean passwordIsValid = false;
-    public Boolean nameIsValid = false;
+    public Boolean emailIsValid = true;
+    public Boolean passwordIsValid = true;
+    public Boolean nameIsValid = true;
+    private LoginSignUpInterface mListener;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (LoginSignUpInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + e);
+        }
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,6 +133,15 @@ public class SignUpFragment extends Fragment {
                 }
             }
         });
+
+        mLoginTextView = (TextView)view.findViewById(R.id.login_textview);
+        mLoginTextView.setOnClickListener(new View.OnClickListener() {
+            //Opens up the signup fragment to signup a new user
+            public void onClick(View v) {
+                mListener.openLogin(thisFragment);
+            }
+        });
+
         return view;
     }
 }

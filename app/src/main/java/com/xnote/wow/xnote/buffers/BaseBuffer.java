@@ -47,7 +47,6 @@ public abstract class BaseBuffer {
 //
 //
 //    public void onSelectionDone() {
-//        // TODO:
 //    }
 //
 //    /**

@@ -10,9 +10,11 @@ import android.util.Log;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
+import com.xnote.wow.xnote.LoginSignUpInterface;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.XnoteApplication;
+import com.xnote.wow.xnote.fragments.ForgotPasswordFragment;
 import com.xnote.wow.xnote.fragments.LoginFragment;
 import com.xnote.wow.xnote.fragments.LoginSyncFragment;
 import com.xnote.wow.xnote.fragments.SignUpFragment;
@@ -24,10 +26,8 @@ import com.xnote.wow.xnote.fragments.WelcomeFragment;
  * It opens up fragments based on whether the user has used the application before
  * and depending on whether the user log in information is stored
  */
-public class LoginSignUpActivity extends Activity implements LoginFragment.OnLoginIn{
+public class LoginSignUpActivity extends Activity implements LoginSignUpInterface {
     public final String TAG = "LoginSignUpActivity";
-
-    Fragment mLoginFrag;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,23 +55,18 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
             // record the fact that the app has been started at least once
             // used apply rather than commit so it runs in the background
             // Note my first time is updated in hte fragment
-            Fragment fragment = new WelcomeFragment();
-            fragmentTransaction.add(R.id.fragment_container, fragment);
-            fragmentTransaction.commit();
             settings.edit().putBoolean("chosen_to_signup", false).apply();
             Log.d(TAG, "using the application first time");
+            this.openWelcome(null);
         } else {
             //Check if the user has logged in before and the details are on the cache
             Log.d(TAG, "not first time");
             ParseUser currentUser = ParseUser.getCurrentUser();
-
             if(settings.getBoolean("chosen_to_signup", true)) {
                 //Anonymous user has indicated that he wants to sign up
-                Fragment fragment = new SignUpFragment();
-                fragmentTransaction.add(R.id.fragment_container, fragment);
-                fragmentTransaction.commit();
                 settings.edit().putBoolean("chosen_to_signup", false).apply();
                 Log.d(TAG, "Anonymous user has chosen to signup");
+                this.openSignUp(null);
             } else if ((currentUser != null) && (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()))) {
                 //If login details are in the cache and user is not anonymous
                 Util.IS_ANON = false;
@@ -88,9 +83,7 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
                 } else {
                     // If user is not anonymous then the user must be asked to login
                     settings.edit().putBoolean("chosen_to_signup", false).apply();
-                    mLoginFrag = new LoginFragment();
-                    fragmentTransaction.add(R.id.fragment_container, mLoginFrag);
-                    fragmentTransaction.commit();
+                    this.openLogin(null);
                     Log.d(TAG, "User has logged out and needs to be asked to login");
                 }
             }
@@ -98,11 +91,11 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
     }
 
     @Override
-    public void onLogin() {
+    public void openLoginSync(Fragment frag) {
         // need to change fragment to LoginSyncFragment.java:
-        if (mLoginFrag != null) {
+        if (frag != null) {
             getFragmentManager().beginTransaction()
-                    .remove(mLoginFrag)
+                    .remove(frag)
                     .add(R.id.fragment_container, new LoginSyncFragment())
                     .commit();
         } else {
@@ -111,4 +104,66 @@ public class LoginSignUpActivity extends Activity implements LoginFragment.OnLog
                     .commit();
         }
     }
+
+    @Override
+    public void openSignUp(Fragment frag) {
+        if(frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .add(R.id.fragment_container, new SignUpFragment())
+                    .addToBackStack(SignUpFragment.TAG)
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new SignUpFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public void openForgotPassword(Fragment frag) {
+        if(frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .add(R.id.fragment_container, new ForgotPasswordFragment())
+                    .addToBackStack(ForgotPasswordFragment.TAG)
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new ForgotPasswordFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public void openLogin(Fragment frag) {
+        if(frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .add(R.id.fragment_container, new LoginFragment())
+                    .addToBackStack(LoginFragment.TAG)
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new LoginFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public void openWelcome(Fragment frag) {
+        if(frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .add(R.id.fragment_container, new WelcomeFragment())
+                    .addToBackStack(WelcomeFragment.TAG)
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new WelcomeFragment())
+                    .commit();
+        }
+    }
+
+
 }

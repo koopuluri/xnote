@@ -14,9 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
-import com.parse.ParseUser;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.DB;
@@ -255,7 +253,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             mAdapter.addAll(articles);
             mAdapter.notifyDataSetChanged();
             mSwipeRefreshLayout.setRefreshing(false);
-            if(ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+            if(!Util.IS_ANON) {
                 if(articles.size() > Constants.TRIAL_ARTICLES) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this.activity);
                     builder.setMessage(R.string.trial_expired_message);

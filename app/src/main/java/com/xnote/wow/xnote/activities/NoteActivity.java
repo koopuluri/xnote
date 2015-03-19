@@ -1,10 +1,13 @@
 package com.xnote.wow.xnote.activities;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.graphics.Outline;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
@@ -14,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageButton;
 
 import com.xnote.wow.xnote.Constants;
@@ -84,6 +88,20 @@ public class NoteActivity extends Activity {
             }
         }
         mDoneButton = (ImageButton) findViewById(R.id.done_button);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    // Or read size directly from the view's width/height
+                    int size = getResources().getDimensionPixelSize(R.dimen.round_button_diameter);
+                    outline.setOval(0, 0, size, size);
+                }
+            };
+            mDoneButton.setOutlineProvider(viewOutlineProvider);
+            mDoneButton.setClipToOutline(true);  //TODO: does this need to be replicated for all fabs?
+            mDoneButton.setVisibility(View.VISIBLE);
+        }
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

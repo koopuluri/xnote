@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.GetCallback;
-import com.parse.ParseObject;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
@@ -21,7 +19,6 @@ import com.xnote.wow.xnote.models.ParseImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 /**
  * Created by koopuluri on 2/5/15.

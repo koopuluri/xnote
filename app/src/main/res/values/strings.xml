@@ -54,7 +54,7 @@
 
     <string name="article_share_message">Share Annotated Article</string>
     <string name="note_share_message">Share Note</string>
-
+    <string name="share_disabled_message">Please sign up to share.</string>
     <string-array name="settings_list">
         <item>Logout</item>
     </string-array>

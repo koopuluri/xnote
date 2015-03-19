@@ -1,7 +1,9 @@
 package com.xnote.wow.xnote;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -81,13 +83,32 @@ public class Util {
     }
 
     public static void share(String subjectText, String extraText, String userMessage,
-                             Activity launchActivity) {
+                             final Activity launchActivity) {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         // Add data to the intent, the receiving app will decide what to do with it.
         intent.putExtra(Intent.EXTRA_SUBJECT, subjectText);
         intent.putExtra(Intent.EXTRA_TEXT, extraText);
-        launchActivity.startActivity(Intent.createChooser(intent, userMessage));
+        if(!Util.IS_ANON) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(launchActivity);
+                builder.setMessage(R.string.share_disabled_message);
+                builder.setPositiveButton("Sign Up", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        Controller.launchSignUpFromAnonymousUser(launchActivity);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+        } else {
+            launchActivity.startActivity(Intent.createChooser(intent, userMessage));
+        }
     }
 }
