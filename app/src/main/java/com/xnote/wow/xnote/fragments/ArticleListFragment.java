@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
@@ -35,6 +36,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
     public static final String TAG = "ArticleListFragment";
     boolean mInitialized;
     ArticleListListener mListener;
+    boolean mContentViewSet;
 
     public interface ArticleListListener {
         public void parseArticle(ParseArticle article);
@@ -53,6 +55,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
     public ArticleListFragment() {
         super(ArticleListFragment.TAG);
+        mContentViewSet = false;
     }
 
     public static ArticleListFragment newInstance(String newArticleId) {
@@ -85,6 +88,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
         new ArticleListInitializationTask(getActivity(), false).execute();
         Log.d(TAG, "launched ArticleListInitializationTask!");
+        mContentViewSet = true;
         return getSwipeRefreshLayout();
     }
 
@@ -153,7 +157,9 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 DB.sync();
             } catch (ParseException e) {
                 Log.d(TAG, "sync failed.");
-                // TODO: flash message saying that refresh failed.
+                Toast.makeText(getActivity(), "Refresh failed. Check connection.",
+                        Toast.LENGTH_SHORT)
+                .show();
             }
             articleList = DB.getArticlesLocally();
         } else {
@@ -263,7 +269,8 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                     dialog.show();
                 }
             }
-            if (!mInitialized) {
+            if (!mInitialized && mContentViewSet) {  // because there was a weird bug where swiping between fragments quickly
+                // threw error: java.lang.IllegalStateException: Content view not yet created due to the line below.
                 ListView listView = getListView();
                 listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
                 listView.setMultiChoiceModeListener(getModeListener());  // TODO: why is this here? can't these 3 lines be placed in onCreateView?

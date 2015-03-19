@@ -83,7 +83,6 @@ public class NoteActivity extends Activity {
                 Log.d(TAG, "NoteFragment added to note_container");
             }
         }
-
         mDoneButton = (ImageButton) findViewById(R.id.done_button);
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +142,6 @@ public class NoteActivity extends Activity {
                         // is loaded from DB as it was previously created. (It had to be
                         // previously created otherwise it couldn't show up as a search result).
                     }
-                    return true;
                 }
                 return true;
 
