@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
+import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
 import com.xnote.wow.xnote.Util;
@@ -37,6 +39,22 @@ public class LoginFragment extends Fragment {
     private EditText passwordEditText;
     private TextView mSignUpTextView;
     private TextView mForgotPasswordTextView;
+    OnLoginIn mListener;
+
+
+    public interface OnLoginIn {
+        public void onLogin();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnLoginIn) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + "must implement OnLogIn.");
+        }
+    }
 
 
     //The boolean variables keep track of preliminary validation done without using Parse
@@ -99,7 +117,7 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void done(ParseUser parseUser, ParseException e) {
                             if (parseUser != null) {
-                                new LoginTask(getActivity()).execute();
+                                mListener.onLogin();
                             } else {
                                 usernameEditText.setError("Invalid username or password");
                                 passwordEditText.setError("Invalid username or password");
@@ -141,33 +159,5 @@ public class LoginFragment extends Fragment {
     }
 
 
-    private class LoginTask extends AsyncTask<Void, Void, Void> {
-        private static final String TAG = "LoginFragment.LoginTask";
-        Activity parentActivity;
 
-        public LoginTask(Activity activity) {
-            parentActivity = activity;
-        }
-
-        @Override
-        public void onPreExecute() {
-            // TODO: start spinner.
-        }
-
-        @Override
-        public Void doInBackground(Void... params) {
-            Util.IS_ANON = false;
-            //DB.sync();
-            Log.d(TAG, "doInBackground() DB.synced!");
-            return null;
-        }
-
-        @Override
-        public void onPostExecute(Void _) {
-            super.onPostExecute(_);
-            Controller.launchMainActivity(parentActivity);
-            parentActivity.finish();
-            // TODO: end spinner.
-        }
-    }
 }

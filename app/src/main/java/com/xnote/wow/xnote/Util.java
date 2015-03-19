@@ -57,6 +57,7 @@ public class Util {
     }
 
     /**
+     * @TargetApi
      * @param activity: the activity that contains the textView
      * @param tv: textView to stylize.
      */
@@ -64,6 +65,7 @@ public class Util {
         Typeface normalTypeface = Typeface.createFromAsset(activity.getAssets(),
                 "Dual-300.ttf");
         tv.setTypeface(normalTypeface);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             tv.setElegantTextHeight(true);
             tv.setLetterSpacing(-0.02f);

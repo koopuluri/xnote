@@ -3,9 +3,11 @@ package com.xnote.wow.xnote.spans;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
 
 import com.xnote.wow.xnote.NoteSpan;
+import com.xnote.wow.xnote.buffers.BaseBuffer;
 
 /**
  * This hack shouldn't be required to get the desired functionality.
@@ -13,11 +15,11 @@ import com.xnote.wow.xnote.NoteSpan;
  * Created by koopuluri on 2/16/15.
  */
 public class FirstLineSpan extends ReplacementSpan implements NoteSpan {
-    String mNoteId;
     int mWidth;
+    String mColorString;
 
-    public FirstLineSpan(String noteId) {
-        mNoteId = noteId;
+    public FirstLineSpan(String color) {
+        mColorString = color;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class FirstLineSpan extends ReplacementSpan implements NoteSpan {
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         //draw the frame with custom Paint
         int originalColor = paint.getColor();
-        paint.setColor(Color.parseColor("#6666E0FF"));
+        paint.setColor(Color.parseColor(mColorString));
         canvas.drawRect(x, top + 10, x + mWidth, bottom, paint);
         // drawText(CharSequence text, int start, int end, float x, float y, Paint paint)
 
@@ -43,4 +45,16 @@ public class FirstLineSpan extends ReplacementSpan implements NoteSpan {
         // resetting original color.
         paint.setColor(originalColor);
     }
+
+//    @Override
+//    public void updateDrawState(TextPaint p) {
+//        super.updateDrawState(p);
+//        p.bgColor = Color.parseColor(BaseBuffer.NOTE_COLOR);
+//    }
+//
+//    @Override
+//    public void updateMeasureState(TextPaint p) {
+//        super.updateMeasureState(p);
+//        p.bgColor = Color.parseColor(BaseBuffer.NOTE_COLOR);
+//    }
 }

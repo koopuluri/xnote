@@ -3,6 +3,7 @@ package com.xnote.wow.xnote;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 /**
@@ -26,12 +27,19 @@ public class TextSelectionCallback implements ActionMode.Callback {
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         Log.d(TAG, "onActionItemClicked");
+        switch (item.getItemId()) {
+            case R.id.action_delete_note:
+                // delete note if
+        }
         return true;
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         Log.d(TAG, "onCreateActionMode()");
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
+        menu.removeItem(android.R.id.selectAll);
         mListener.onTextSelectionCreate();
         return true;
     }

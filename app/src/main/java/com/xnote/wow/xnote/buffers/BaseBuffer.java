@@ -24,6 +24,9 @@ import com.xnote.wow.xnote.spans.SingleLineSpan;
 public abstract class BaseBuffer {
     public static final String TAG = "BaseBuffer";
     public static final int NUM_SPANS = 4;  // this is the number of spans in the buffer for one note.
+    // public static final String NOTE_COLOR = "#FFF9C4";
+    public static final String NOTE_COLOR = "#9CCC65";
+    public static final String SELECTION_COLOR = "#FDD835";
 
     Layout mLayout;
     Activity mActivity;
@@ -36,6 +39,54 @@ public abstract class BaseBuffer {
         mActivity = parent;
         mBuffer = new SpannableString(content);
     }
+
+//
+//    public void onTextSelected(int start, int end) {
+//        // setSpanColorInRange(start, end);
+//    }
+//
+//
+//    public void onSelectionDone() {
+//        // TODO:
+//    }
+//
+//    /**
+//     * HACK METHOD: If any SingleLineSpans or FirstLineSpans in range, change their colors
+//     * to accent_dark
+//     * @param start
+//     * @param end
+//     */
+//    private void setSpanColorInRange(int start, int end) {
+//        NoteSpan[] spans = mBuffer.getSpans(start, end, NoteSpan.class);
+//        for (NoteSpan span : spans) {
+//            try {
+//                SingleLineSpan singleLineSpan = (SingleLineSpan) span;
+//                mBuffer.setSpan(new SingleLineSpan(SELECTION_COLOR),
+//                        mBuffer.getSpanStart(singleLineSpan),
+//                        mBuffer.getSpanEnd(singleLineSpan),
+//                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                mBuffer.removeSpan(singleLineSpan);
+//            } catch (ClassCastException e) {
+//                // do nothing.
+//            } try {
+//                FirstLineSpan firstLineSpan = (FirstLineSpan) span;
+//                mBuffer.setSpan(new FirstLineSpan(SELECTION_COLOR),
+//                        mBuffer.getSpanStart(firstLineSpan),
+//                        mBuffer.getSpanEnd(firstLineSpan),
+//                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                mBuffer.removeSpan(firstLineSpan);
+//            } catch (ClassCastException e) {
+//                // do nothing.
+//            }
+//        }
+//    }
+//
+//
+//    private void removeSelectionColoredSpans(int start, int end) {
+//        if (start > mCurrentStart) {
+//
+//        }
+//    }
 
     public void addNoteSpan(ParseNote note) {
         int start = note.getStartIndex();
@@ -51,7 +102,7 @@ public abstract class BaseBuffer {
         if (mLayout.getLineForOffset(start) == mLayout.getLineForOffset(end)) {
             Log.d(TAG, "SAME LINE!");
             // this note spans single line.
-            SingleLineSpan span = new SingleLineSpan(noteId);
+            SingleLineSpan span = new SingleLineSpan(NOTE_COLOR);
             mBuffer.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else {
             Log.d(TAG, "DIFFERENT LINES!");
@@ -59,7 +110,7 @@ public abstract class BaseBuffer {
             if (firstLine != 0) {
                 // KIDS, DON'T TRY THIS AT HOME! If firstLine is first line of the text then don't add FirstLineSpan,
                 // DepthSpan will take care of all the business.
-                FirstLineSpan firstLineSpan = new FirstLineSpan(noteId);
+                FirstLineSpan firstLineSpan = new FirstLineSpan(NOTE_COLOR);
                 mBuffer.setSpan(firstLineSpan, start, firstLineEndOffset-1,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }

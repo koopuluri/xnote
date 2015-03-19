@@ -52,7 +52,6 @@ public class NoteActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-
         // if the parent is ArticleActivity and this note is an old note:
         if (getIntent().getStringExtra(Constants.PARENT_ACTIVITY).equals(ArticleActivity.TAG)
                 && getIntent().getExtras().containsKey(Constants.NOTE_ID)) {
