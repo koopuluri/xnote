@@ -214,6 +214,8 @@ public class ArticleFragment extends Fragment {
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "ArticleInitializeTask.doInBackground()");
+            if (getActivity() == null)
+                this.cancel(true);
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             mArticle = DB.getLocalArticle(mArticleId);
             String content = mArticle.getContent();
@@ -255,11 +257,11 @@ public class ArticleFragment extends Fragment {
                 }
             } catch (IllegalStateException e) {
                 Log.e(TAG, "article not attached to activity?: " + e);
-                getActivity().finish();
+                //getActivity().finish();
             } catch (NullPointerException e) {
                 Log.e(TAG, "nullPointer Exception " +
                         "(probably with the activity.getAssets() with null activity: " + e);
-                getActivity().finish();
+                //getActivity().finish();
             }
         }
     }
@@ -269,6 +271,9 @@ public class ArticleFragment extends Fragment {
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
+            if (getActivity() == null)
+                return null; // TODO: for when fragment not yet attached (when changing orientation).
+
             if (Util.isNetworkAvailable(getActivity()) && (!Util.IS_ANON)) {
                 try {
                     mNotes = DB.getNotesForArticleFromCloud(mArticleId);

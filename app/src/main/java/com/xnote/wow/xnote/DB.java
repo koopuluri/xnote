@@ -13,7 +13,10 @@ import com.xnote.wow.xnote.models.ParseImage;
 import com.xnote.wow.xnote.models.ParseNote;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Integrates Parse.
@@ -27,25 +30,104 @@ public class DB {
 
 
     public static void sync() throws ParseException {
-        Log.d(TAG, "sync().");
-        clearLocalArticles();
-        clearLocalNotes();
-        Log.d(TAG, "local datastore cleared.");
+        List<ParseArticle> localArticles = getArticlesLocally();
+        List<ParseNote> localNotes = getAllNotesLocally();
 
-        // now pulling from the cloud. and saving locally:
-        List<ParseArticle> articles = getArticlesFromCloud();
-        for (ParseArticle article : articles) {
-            saveArticleImmediatelyLocally(article);
-            List<ParseNote> notesForArticle = getNotesForArticleFromCloud(article.getId());
-            for (ParseNote note : notesForArticle) {
-                saveNoteLocally(note);
-            }
-        }
+        List<ParseArticle> cloudArticles = getArticlesFromCloud();
+        List<ParseNote> cloudNotes = getAllNotesFromCloud();
+
+        // List<ParseObject> objs = (List<ParseObject>)(List<?>) cloudArticles;
+
+        syncArticles(localArticles, cloudArticles);
+        syncNotes(localNotes, cloudNotes);
+
         Log.d(TAG, "sync complete.");
     }
 
 
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
+
+    /**
+     * TODO: combine syncArticle and syncNotes (they do the same things, just accept List<ParseObject>
+     *     and figure out a way to cast to that.
+     * @param localObjects
+     * @param cloudObjects
+     * @throws ParseException
+     */
+    private static void syncArticles(List<ParseArticle> localObjects,
+                                     List<ParseArticle> cloudObjects) throws ParseException{
+        Set<String> A = new HashSet<String>();
+        for (ParseArticle a : localObjects) {
+            A.add(a.getId());
+        }
+
+        Set<String> B = new HashSet<String>();
+        for (ParseArticle a : cloudObjects) {
+            B.add(a.getId());
+        }
+        A.retainAll(B);  // 'A' is now the intersection.
+
+        // handling local
+        for (ParseArticle a : localObjects) {
+            if (!A.contains(a.getId())) {
+                a.unpin();
+            }
+        }
+
+        // pinning cloudArticle not already in local:
+        for (ParseArticle a : cloudObjects) {
+            if (!A.contains(a.getId())) {
+                a.pin();
+            }
+        }
+
+        Log.d(TAG, "syncArticles() complete.");
+    }
+
+
+    private static void syncNotes(List<ParseNote> localObjects,
+                                     List<ParseNote> cloudObjects) throws ParseException{
+        Set<String> A = new HashSet<String>();
+        for (ParseNote a : localObjects) {
+            A.add(a.getId());
+        }
+
+        Set<String> B = new HashSet<String>();
+        for (ParseNote a : cloudObjects) {
+            B.add(a.getId());
+        }
+        A.retainAll(B);  // 'A' is now the intersection.
+
+        // handling local
+        for (ParseNote a : localObjects) {
+            if (!A.contains(a.getId())) {
+                a.unpin();
+            }
+        }
+
+        // pinning cloudArticle not already in local:
+        for (ParseNote a : cloudObjects) {
+            if (!A.contains(a.getId())) {
+                a.pin();
+            }
+        }
+
+        Log.d(TAG, "syncNotes() complete.");
+    }
+
+    public static List<ParseNote> getAllNotesLocally() throws ParseException{
+        Log.d(TAG, "getAllNotesLocally().");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
+        query.fromLocalDatastore();
+        return (List<ParseNote>)(List<?>) query.find();
+    }
+
+    public static List<ParseNote> getAllNotesFromCloud() throws ParseException{
+        Log.d(TAG, "getAllNotesFromCloud().");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
+        return (List<ParseNote>)(List<?>) query.find();
+    }
+
 
     public static ParseArticle getLocalArticle(String articleId) {
         if (articleId == null) {

@@ -62,7 +62,6 @@ public class ArticleAdapter  extends BaseListAdapter {
             ParseImage image = article.getSourceImage();
             //If there is no image then we need to download the image
             if(image == null) {
-                Log.d(TAG, "image is null source images are downloaded");
                 String iconURL = article.getIconURL();
                 if ((iconURL == null) || (iconURL.equals(""))) {
                     iconURL = "http://imgur.com/8yRv9zz.png"; //TODO: Figure out default image
@@ -70,14 +69,13 @@ public class ArticleAdapter  extends BaseListAdapter {
                 new DownloadImageTask(article, mIcon).execute(iconURL);
             } else {
                 try {
-                    Log.d(TAG, "source image exists already. No need to download.");
                     setImageViewWithIcon(mIcon, article.getSourceImage());
                 } catch(IllegalStateException e) {
-                    Log.d(TAG, "SourceImage not with ParseArticle, so findingIfNecessary.");
                     new FetchArticleImageTask(article, mIcon).execute();
                 }
             }
         }
+        Log.d(TAG, "article title: " + article.getTitle());
         mArticleTitleTv.setText(article.getTitle());
         mTstampTv.setText(Util.dateFromSeconds(article.getTimestamp()));
         return view;
