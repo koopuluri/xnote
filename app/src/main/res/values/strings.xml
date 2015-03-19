@@ -14,6 +14,8 @@
     <string name="annotate_mode">ANNOTATE</string>
     <string name="receive_open">Open now.</string>
     <string name="receive_later">Open later</string>
+    <string name="parse_error_message">There was an error parsing your article. Check your internet connection and try again later.</string>
+
     <color name="note_color">#FFFF99</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
@@ -26,10 +28,14 @@
     <color name="accent_color_dark">#FDD835</color>
     <color name="accent_color_darker">#FBC02D</color>
 
-    <string-array name="navigation_array">
-        <item>articles</item>
-        <item>search</item>
-        <item>yo mamma</item>
+    <color name="text_color_primary">#000000</color>
+    <color name="text_color_error">#999999</color>
+
+    <string-array name="feedback_nature_array">
+            <item>Bugs</item>
+            <item>Design</item>
+            <item>Performance</item>
+            <item>Other</item>
     </string-array>
 
     <string name="drawer_close">drawer_close</string>
@@ -52,5 +58,6 @@
     <string-array name="settings_list">
         <item>Logout</item>
     </string-array>
+    <string name="title_activity_feedback">FeedbackActivity</string>
 
 </resources>

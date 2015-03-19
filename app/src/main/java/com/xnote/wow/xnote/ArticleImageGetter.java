@@ -34,7 +34,10 @@ public class ArticleImageGetter implements Html.ImageGetter {
      */
     public Drawable getDrawable(String source) {
         ParseImage image = DB.getImage(source);
-        if(image != null) {
+        //Checking for natural width along with null to ensure that parse images without
+        //any content are not returned. Empty parse images could be returned if there is
+        //any error while downloading the image - perhaps if the image is too big.
+        if((image != null) && (image.getNaturalWidth() != 0)) {
             byte[] data = image.getData();
             // Generating bitmap from image byte[] data.
             Bitmap bmp;
@@ -53,15 +56,9 @@ public class ArticleImageGetter implements Html.ImageGetter {
             int width = displayMetrics.widthPixels;
             //Subtracting padding on either side so image fits
             width = width - 2 * (Constants.PADDING);
-            if(image.getNaturalWidth() != 0) {
-                drawable.setBounds(0, 0, width,
-                        (image.getNaturalHeight() * width / image.getNaturalWidth()));
-                return drawable;
-            } else {
-                return null;
-                //TODO: Need to figure out what exactly you want to return here should be fine
-                //TODO: Have to make sure if this causes blue box or no image at all
-            }
+            drawable.setBounds(0, 0, width,
+                (image.getNaturalHeight() * width / image.getNaturalWidth()));
+            return drawable;
         } else {
             return null;
         }

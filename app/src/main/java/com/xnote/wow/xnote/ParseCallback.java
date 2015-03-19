@@ -11,4 +11,8 @@ public class ParseCallback {
     public void run(ParseArticle updatedArticle) {
 
     }
+
+    public void runFailed() {
+
+    }
 }

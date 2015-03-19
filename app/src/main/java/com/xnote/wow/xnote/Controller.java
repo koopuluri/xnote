@@ -7,6 +7,7 @@ import android.text.SpannableString;
 import android.util.Log;
 
 import com.xnote.wow.xnote.activities.ArticleActivity;
+import com.xnote.wow.xnote.activities.FeedbackActivity;
 import com.xnote.wow.xnote.activities.LoginSignUpActivity;
 import com.xnote.wow.xnote.activities.MainActivity;
 import com.xnote.wow.xnote.activities.NoteActivity;
@@ -99,13 +100,6 @@ public class Controller {
         activity.startActivity(intent);
     }
 
-    public static void launchMainActivity(Activity activity, String newArticleId) {
-        Intent intent = new Intent(activity, MainActivity.class);
-        intent.putExtra(Constants.NEW_ARTICLE_ID, newArticleId);
-        Log.d(TAG, "starting MainActivity from: " + activity.toString());
-        activity.startActivity(intent);
-    }
-
 
     public static void launchLoginSignUpActivity(Activity activity){
         Intent intent = new Intent(activity, LoginSignUpActivity.class);
@@ -124,6 +118,12 @@ public class Controller {
     public static void launchMainActivityWithoutClearingBackStack(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         Log.d(TAG, "starting MainActivity without clearing back stack from: " + activity.toString());
+        activity.startActivity(intent);
+    }
+
+    public static void launchFeedbackActivity(Activity activity) {
+        Intent intent = new Intent(activity, FeedbackActivity.class);
+        Log.d(TAG, "starting FeedbackActivity from" + activity.toString());
         activity.startActivity(intent);
     }
 }

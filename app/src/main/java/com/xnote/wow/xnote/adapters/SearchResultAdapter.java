@@ -2,15 +2,13 @@ package com.xnote.wow.xnote.adapters;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.SpannableString;
-import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.SearchResult;
 
 import java.util.List;
@@ -31,18 +29,15 @@ public class SearchResultAdapter extends BaseListAdapter {
         View view = super.getView(position, convertView, parent);
         SearchResult result = (SearchResult) getItem(position);
         TextView titleTextview = (TextView) view.findViewById(R.id.title_text_view);
-        TextView hitsTextView = (TextView) view.findViewById(R.id.hits_text_view);
         TextView tstampTextView = (TextView) view.findViewById(R.id.tstamp_text_view);
-        TextView blankTextView = (TextView) view.findViewById(R.id.blank);
+        TextView noteOrArticleTextView =(TextView) view.findViewById(R.id.note_or_article_text_view);
         SpannableString titleString = new SpannableString(result.title);
         // making it bold and bigger:
-        titleString.setSpan(new StyleSpan(Typeface.BOLD | Typeface.ITALIC), 0, result.title.length(), 0);
         titleTextview.setText(titleString);
         titleTextview.append("");
-        hitsTextView.setText("hits: " + result.numHits);
         tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
+        noteOrArticleTextView.setText(result.type);
         // adding the blank:
-        blankTextView.setText("");
         return view;
     }
 }

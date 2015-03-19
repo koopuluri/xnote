@@ -15,6 +15,7 @@ public class ParseArticleRunnable implements Runnable {
     String mArticleId;
     ParseArticleTask mTask;
     public static final int PARSE_COMPLETED = 234;
+    public static final int PARSE_NOT_COMPLETED = 789;
 
     public ParseArticleRunnable(ParseArticleTask parseTask) {
         mArticleId = parseTask.getArticleId();
@@ -30,13 +31,22 @@ public class ParseArticleRunnable implements Runnable {
         if (Thread.interrupted())  // checking if this thread has been interrupted before executing.
             return;
         ParseArticle updatedArticle = parser.parse();
-        Log.d(TAG, "updateArticle: " + String.valueOf(updatedArticle));
         // setting task state to 'completed':
-        if(updatedArticle != null) {
-            DB.saveArticleImmediately(updatedArticle);
-            mTask.setUpdatedArticle(updatedArticle);
+        if(updatedArticle != null ) {
+            if(!updatedArticle.getCouldNotBeParsed()) {
+                Log.d(TAG, "updateArticle: " + String.valueOf(updatedArticle));
+                DB.saveArticleImmediately(updatedArticle);
+                mTask.setUpdatedArticle(updatedArticle);
+                mTask.handleParseState(PARSE_COMPLETED);
+            } else {
+                Log.d(TAG, "Error could not parse");
+                DB.saveArticleImmediatelyLocally(updatedArticle);
+                mTask.handleParseState(PARSE_NOT_COMPLETED);
+            }
+        } else {
+            Log.d(TAG, "Article already parsed");
+            mTask.handleParseState(PARSE_COMPLETED);
         }
-        mTask.handleParseState(PARSE_COMPLETED);
     }
 
     public Thread getThread() {

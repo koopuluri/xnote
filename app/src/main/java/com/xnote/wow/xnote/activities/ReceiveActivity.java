@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
@@ -26,8 +25,6 @@ public class ReceiveActivity extends Activity {
     Intent mIntent;
     boolean mNewArticleInitialized;
     boolean isPaused;
-    Button mOpenButton;
-    Button mLaterButton;
     ParseArticle mNewArticle;
     Activity mThisActivity;
 
@@ -41,35 +38,7 @@ public class ReceiveActivity extends Activity {
 
         mNewArticle = new ParseArticle();
         mNewArticle.setId();
-        mOpenButton = (Button) findViewById(R.id.receive_open_button);
-//        mOpenButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Controller.launchMainActivity(thisActivity, mNewArticle.getId());
-//                if (mNewArticleInitialized)
-//                    finish();  // finish this activity is HandleSendText is completed.
-//            }
-//        });
-        mLaterButton = (Button) findViewById(R.id.receive_later_button);
-//        mLaterButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mNewArticleInitialized) finish();
-//                else isPaused = true;
-//            }
-//        });
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
-                new HandleSendTextTask().execute();
-                Log.d(TAG, "HandleSendTextTask launched: " + getIntent()
-                        .getStringExtra(Intent.EXTRA_TEXT));
-            } else {
-                Log.d(TAG, "can't handle this type of data: " + type);
-            }
-        }
+        new HandleSendTextTask().execute();
     }
 
 
@@ -100,7 +69,8 @@ public class ReceiveActivity extends Activity {
             mNewArticleInitialized = true;
             if (mNewArticle.getArticleUrl() != null) {
                 if(ParseUser.getCurrentUser() != null) {
-                    Controller.launchMainActivity(mThisActivity, mNewArticle.getId());
+                    Log.d(TAG, "launching main activity");
+                    Controller.launchMainActivity(mThisActivity);
                     finish();
                 } else {
                     Controller.launchLoginSignUpActivity(mThisActivity);

@@ -1,11 +1,14 @@
 package com.xnote.wow.xnote;
 import android.util.Log;
+
 import com.xnote.wow.xnote.models.DiffbotImageInfo;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseImage;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,7 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 /**
  * Created by vignesh on 2/9/15.
@@ -47,7 +49,8 @@ public class DiffbotParser {
         List<DiffbotImageInfo> images = parseArticle(mArticle.getArticleUrl());  // article's content has been set after this call!
         if (images == null) {
             Log.e(TAG, "could not parse article! parseArticle(...) returned null ==> images=null");
-            return null;
+            mArticle.setCouldNotBeParsed(true);
+            return mArticle;
         }
         Log.d(TAG, "length of images: " + images.size());
         // downloading and saving images in db.
@@ -65,6 +68,7 @@ public class DiffbotParser {
             return null;
         }
         mArticle.setIsparsed(true);
+        mArticle.setCouldNotBeParsed(false);
         return mArticle;
     }
     /**
@@ -170,11 +174,6 @@ public class DiffbotParser {
         try {
             String content = tags.getString("html");
             Log.d(TAG, "tags.getString('html'): " + content);
-            Iterator<?> keys = tags.keys();
-            while( keys.hasNext() ) {
-                String key = (String)keys.next();
-                Log.d(TAG, "Key :" + key);
-            }
             String title = tags.getString("title");
             String iconURL;
             try {

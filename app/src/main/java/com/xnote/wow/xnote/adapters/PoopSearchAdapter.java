@@ -35,9 +35,7 @@ public class PoopSearchAdapter extends ArrayAdapter {
         SearchResult result = (SearchResult) getItem(position);
 
         TextView titleTextview = (TextView) convertView.findViewById(R.id.title_text_view);
-        TextView hitsTextView = (TextView) convertView.findViewById(R.id.hits_text_view);
         TextView tstampTextView = (TextView) convertView.findViewById(R.id.tstamp_text_view);
-        TextView blankTextView = (TextView) convertView.findViewById(R.id.blank);
 
         SpannableString titleString = new SpannableString(result.title);
 
@@ -45,12 +43,9 @@ public class PoopSearchAdapter extends ArrayAdapter {
         titleString.setSpan(new StyleSpan(Typeface.BOLD | Typeface.ITALIC), 0, result.title.length(), 0);
         titleTextview.setText(titleString);
         titleTextview.append("");
-
-        hitsTextView.setText("hits: " + result.numHits);
         tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
 
         // adding the blank:
-        blankTextView.setText("");
         return convertView;
     }
 }

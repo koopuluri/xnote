@@ -1,4 +1,5 @@
 package com.xnote.wow.xnote.adapters;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseImage;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -36,36 +39,46 @@ public class ArticleAdapter  extends BaseListAdapter {
         mArticleTitleTv = (TextView) view.findViewById(R.id.article_title_text_view);
         mTstampTv = (TextView) view.findViewById(R.id.tstamp_text_view);
         mIcon = (ImageView) view.findViewById(R.id.icon_image_view);
-        if (!article.isParsed()) {
+        if(article.getCouldNotBeParsed()) {
+            view.findViewById(R.id.could_not_be_parsed).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.article_list_loading_spinner).setVisibility(View.INVISIBLE);
+            Log.d(TAG, "error text being displayed");
+        } else if (!article.isParsed()) {
             view.findViewById(R.id.article_list_loading_spinner).setVisibility(View.VISIBLE);
+            TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
+            errorText.setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
             Log.d(TAG, "article hasn't completed parsing yet, spinner set for article list item");
         } else {
+            TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
+            errorText.setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
             view.findViewById(R.id.article_list_loading_spinner).setVisibility(View.GONE);
+            ParseImage image = article.getSourceImage();
+            //If there is no image then we need to download the image
+            if(image == null) {
+                Log.d(TAG, "image is null source images are downloaded");
+                String iconURL = article.getIconURL();
+                if ((iconURL == null) || (iconURL.equals(""))) {
+                    iconURL = "http://imgur.com/8yRv9zz.png"; //TODO: Figure out default image
+                }
+                new DownloadImageTask(mIcon, article).execute(iconURL);
+            } else {
+                //Setting imageview from the byte array stored in the article
+                //http://stackoverflow.com/a/13854787/4671651
+                try {
+                    Log.d(TAG, "source image exists already. No need to download them");
+                    byte[]  byteArray = image.getData();
+                    Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    mIcon.setImageBitmap(bmp);
+                } catch(IllegalStateException e) {
+                    Log.e(TAG, "source image does not exist or could not be found" + article.getIconURL());
+                }
+            }
         }
-        // setting:
         mArticleTitleTv.setText(article.getTitle());
         mTstampTv.setText(Util.dateFromSeconds(article.getTimestamp()));
-        ParseImage image = article.getSourceImage();
-        //If there is no image then we need to download the image
-        if(image == null) {
-            Log.d(TAG, "image is null images are downloaded");
-            String iconURL = article.getIconURL();
-            if ((iconURL == null) || (iconURL.equals(""))) {
-                iconURL = "http://imgur.com/8yRv9zz"; //TODO: Figure out default image
-            }
-            new DownloadImageTask(mIcon, article).execute(iconURL);
-        } else {
-            //Setting imageview from the byte array stored in the article
-            //http://stackoverflow.com/a/13854787/4671651
-            try {
-                Log.d(TAG, "Image exists already. No need to download them");
-                byte[]  byteArray = image.getData();
-                Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                mIcon.setImageBitmap(bmp);
-            } catch(IllegalStateException e) {
-                Log.e(TAG, "Image does not exist or could not be found" + article.getIconURL());
-            }
-        }
         return view;
     }
     //The Download Image Task is from the below link
@@ -78,6 +91,8 @@ public class ArticleAdapter  extends BaseListAdapter {
             this.bmImage = bmImage;
             this.article = article;
         }
+
+        @Override
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
             Bitmap mIcon11 = null;
@@ -88,19 +103,15 @@ public class ArticleAdapter  extends BaseListAdapter {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return mIcon11;
-        }
-        protected void onPostExecute(Bitmap result) {
             //Getting image from imageView so we can store it in parse image
             //The parse image is in turn stored in the article so it can be
             //accessed easily
             //http://stackoverflow.com/questions/9042932/getting-image-from-imageview
             //The check is here in case the image could not be downloaded and was set to null
-            if(result != null) {
-                bmImage.setImageBitmap(result);
+            if(mIcon11 != null) {
                 ParseImage image1 = new ParseImage();
                 DB.saveImage(image1);
-                Bitmap bitmap = result;
+                Bitmap bitmap = mIcon11;
                 Log.d(TAG, String.valueOf(bitmap));
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 Log.d(TAG, String.valueOf(stream));
@@ -110,6 +121,11 @@ public class ArticleAdapter  extends BaseListAdapter {
                 article.setSourceImage(image1);
                 DB.saveArticleImmediatelyLocally(article);
             }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap mIcon11) {
+            bmImage.setImageBitmap(mIcon11);
         }
     }
 }

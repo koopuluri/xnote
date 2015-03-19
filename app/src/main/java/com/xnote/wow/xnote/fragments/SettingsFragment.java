@@ -14,7 +14,6 @@ import android.widget.ListView;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
-import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 
 import java.util.ArrayList;
@@ -25,6 +24,10 @@ import java.util.ArrayList;
 public class SettingsFragment extends ListFragment {
 
     public static final String TAG = "Settings Fragment";
+    public static final String LOGOUT = "Logout";
+    public static final String FEEDBACK = "Feedback";
+    public static final String SIGN_UP = "Sign Up";
+
     ArrayList<String> mOptionsList;
 
 
@@ -37,10 +40,11 @@ public class SettingsFragment extends ListFragment {
         //Currently only logout or login
         mOptionsList = new ArrayList<String>();
         if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
-            mOptionsList.add("Sign Up");
+            mOptionsList.add(SIGN_UP);
         } else {
-            mOptionsList.add("Logout");
+            mOptionsList.add(LOGOUT);
         }
+        mOptionsList.add(FEEDBACK);
         final ArrayAdapter mAdapter = new ArrayAdapter(this.getActivity(),
                 android.R.layout.simple_list_item_1, mOptionsList);
         setListAdapter(mAdapter);
@@ -50,7 +54,7 @@ public class SettingsFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // when an option is selected from the Article List:
         String ch = (String) getListAdapter().getItem(position);
-        if (ch.equalsIgnoreCase("Logout")) {
+        if (ch.equalsIgnoreCase(LOGOUT)) {
             //User is logged out if they choose logout
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.are_you_sure_logout);
@@ -68,8 +72,10 @@ public class SettingsFragment extends ListFragment {
             });
             AlertDialog dialog = builder.create();
             dialog.show();
-        } else if (ch.equalsIgnoreCase("Sign Up")) {
+        } else if (ch.equalsIgnoreCase(SIGN_UP)) {
             Controller.launchSignUpFromAnonymousUser(this.getActivity());
+        } else if (ch.equalsIgnoreCase(FEEDBACK)) {
+            Controller.launchFeedbackActivity(this.getActivity());
         }
     }
 

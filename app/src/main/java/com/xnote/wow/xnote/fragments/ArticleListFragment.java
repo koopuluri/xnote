@@ -18,7 +18,6 @@ import com.parse.ParseUser;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.DB;
-import com.xnote.wow.xnote.ParseArticleAndDownloadImagesTask;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
@@ -32,11 +31,9 @@ import java.util.List;
  *
  * Created by koopuluri on 1/23/15.
  */
-public class ArticleListFragment extends BaseSelectableListFragment implements
-        ParseArticleAndDownloadImagesTask.OnParseArticleTaskCompleted {
+public class ArticleListFragment extends BaseSelectableListFragment  {
     public static final String TAG = "ArticleListFragment";
     boolean mInitialized;
-    String newArticleId;
     ArticleListListener mListener;
 
     public interface ArticleListListener {
@@ -69,7 +66,6 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        newArticleId = getArguments().getString(Constants.NEW_ARTICLE_ID);
     }
 
 
@@ -99,12 +95,15 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
             ParseArticle a = (ParseArticle) obj;
             if (!a.isParsed()) {
                 Log.d(TAG, "there's an article that's not parsed, so not refreshing.");
+                mSwipeRefreshLayout.setRefreshing(false);
                 return;
             }
         }
         new ArticleListInitializationTask(getActivity(), true).execute();
     }
 
+
+    //TODO: Check if this is doing anything
     @Override
     public void onConfigurationChanged(Configuration config) {
         List<Object> itemList = getItemList();
@@ -168,6 +167,7 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
             Log.d(TAG, "Article List: " + String.valueOf(articleList));
             for (ParseArticle a : articleList) {
                 if (!a.isParsed()) {
+                    a.setCouldNotBeParsed(false);
                     mListener.parseArticle(a);
                     Log.d(TAG, "article is not parsed, telling parent Activity to parse article "
                             + a.toString());
@@ -178,8 +178,6 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
         return articleList;
     }
 
-
-    @Override
     public void onParseArticleCompleted(ParseArticle updatedArticle) {
         List<Object> itemList = getItemList();
         for (int i = 0; i < itemList.size(); i++) {
@@ -194,6 +192,10 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
         }
         Log.e(TAG, "article wasn't in the list!");
         // new ArticleListInitializationTask(false);
+    }
+
+    public void onParseArticleFailed() {
+        mAdapter.notifyDataSetChanged();
     }
 
 
@@ -241,7 +243,7 @@ public class ArticleListFragment extends BaseSelectableListFragment implements
         protected Void doInBackground(Void... params) {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             articles = initializeAdapterList(fromCloud);
-            Log.d(TAG, "number of articles in ArticleINitTAsk.doInBackground(): " + String.valueOf(articles));
+            Log.d(TAG, "number of articles in ArticleInitTAsk.doInBackground(): " + String.valueOf(articles));
             return null;
         }
 

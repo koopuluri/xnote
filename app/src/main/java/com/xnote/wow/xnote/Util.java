@@ -3,15 +3,14 @@ package com.xnote.wow.xnote;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.xnote.wow.xnote.fragments.NoteFragment;
 import com.xnote.wow.xnote.models.ParseArticle;
 
 import java.text.SimpleDateFormat;
@@ -65,14 +64,16 @@ public class Util {
         Typeface normalTypeface = Typeface.createFromAsset(activity.getAssets(),
                 "Dual-300.ttf");
         tv.setTypeface(normalTypeface);
-        tv.setElegantTextHeight(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tv.setElegantTextHeight(true);
+            tv.setLetterSpacing(-0.02f);
+        }
         tv.setIncludeFontPadding(true);
         tv.setLineSpacing(0.0f, 1.2f);
-        tv.setLetterSpacing(-0.02f);
         tv.setPadding(30, 0, 30, 0);
         tv.setTextSize(16);
         tv.setVisibility(View.VISIBLE);
-        tv.setTextColor(Color.parseColor("#000000"));
+        tv.setTextColor(activity.getResources().getColor(R.color.text_color_primary));
         tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
         Log.d(TAG, "xnoteTypeFaceSet.");
     }

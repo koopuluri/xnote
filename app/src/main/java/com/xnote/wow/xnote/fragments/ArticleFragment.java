@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -261,20 +260,7 @@ public class ArticleFragment extends Fragment implements
             try {
                 mArticleView.setText(mContent);
                 mArticleView.setTextIsSelectable(true);
-                Typeface normalTypeface = Typeface.createFromAsset(parent.getActivity().getAssets(),
-                        "Dual-300.ttf");
-                mArticleView.setTypeface(normalTypeface);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mArticleView.setElegantTextHeight(true);
-                    mArticleView.setLetterSpacing(-0.02f);
-                }
-                mArticleView.setIncludeFontPadding(true);
-                mArticleView.setLineSpacing(0.0f, 1.2f);
-                mArticleView.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
-                mArticleView.setTextSize(16);
-                mArticleView.setVisibility(View.VISIBLE);
-                mArticleView.setTextColor(Color.parseColor("#000000"));
-                mArticleView.setBackgroundColor(getResources().getColor(android.R.color.white));
+                Util.setXnoteTypeFace(getActivity(), mArticleView);
                 mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
                 mArticleView.setCustomSelectionActionModeCallback(
                         new TextSelectionCallback(parent));

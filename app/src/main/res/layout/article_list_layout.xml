@@ -1,48 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/adapter_item">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dp">
+        android:layout_height="wrap_content">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/article_title_text_view"
-                android:textColor="@color/black"
-                android:gravity="left"
-                android:layout_width="323dp"
-                android:layout_height="wrap_content"
-                android:textSize="34dp"/>
 
             <ImageView
                 android:id="@+id/icon_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="2dp"
-                android:layout_gravity="right" />
-        </FrameLayout>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_gravity="right|center_vertical" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tstamp_text_view"
-                android:textColor="@color/black"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"/>
+                android:layout_gravity="left|center_vertical"
+                android:orientation="vertical"
+                android:layout_marginLeft="2dp">
+
+                <TextView
+                    android:id="@+id/article_title_text_view"
+                    android:textColor="@color/text_color_primary"
+                    android:gravity="left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"/>
+
+                <TextView
+                    android:id="@+id/tstamp_text_view"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
 
         </FrameLayout>
+
     </LinearLayout>
 
     <ProgressBar
@@ -50,5 +54,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center|center_vertical"/>
+
+    <TextView
+        android:id="@+id/could_not_be_parsed"
+        android:textColor="@color/text_color_error"
+        android:gravity="left"
+        android:text="@string/parse_error_message"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:layout_marginLeft="2dp"
+        android:textStyle="italic"/>
+
 </FrameLayout>

@@ -26,4 +26,5 @@ public class Constants {
     public static final String NOT_DONE = "NOT_DONE";
     public static final String WEB_URL = "http://xnote.io/article/";
     public static final String NAME="Name";
+    public static final String FEEDBACK = "Feedback";
 }

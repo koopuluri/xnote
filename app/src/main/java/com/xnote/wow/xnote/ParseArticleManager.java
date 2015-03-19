@@ -8,7 +8,6 @@ import android.util.Log;
 import com.xnote.wow.xnote.runnables.ParseArticleRunnable;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -83,11 +82,14 @@ public class ParseArticleManager {
             @Override
             public void handleMessage(Message inputMessage) {
                 ParseArticleTask parseTask = (ParseArticleTask) inputMessage.obj;
-
+                Log.d(TAG, "Input message.what: " + inputMessage.what);
                 switch (inputMessage.what) {
                     case TASK_COMPLETED:
                         Log.d(TAG, "handleMessage(): task completed.");
                         parseTask.onArticleParsed();
+                    case TASK_NOT_COMPLETED:
+                        Log.d(TAG, "handleMessage(): task not completed.");
+                        parseTask.onArticleFailed();
                     default:
                         super.handleMessage(inputMessage);
                 }
@@ -108,16 +110,21 @@ public class ParseArticleManager {
     }
 
     public void handleState(ParseArticleTask parseArticleTask, int state) {
-        Log.d(TAG, "handleState(ParseArticleTask, String).");
+        Log.d(TAG, "handleState(ParseArticleTask, state).");
         switch (state) {
             case TASK_COMPLETED:
                 /**
                  * Create message for Handler with the state and the task object:
                  */
+                Log.d(TAG, "handleState() task completed");
                 Message completeMessage =
                         mHandler.obtainMessage(state, parseArticleTask);
                 completeMessage.sendToTarget();  // I wonder what this does!
                 break;
+            case TASK_NOT_COMPLETED:
+                Log.d(TAG, "handleState() task not completed");
+                Message incompleteMessage = mHandler.obtainMessage(state, parseArticleTask);
+                incompleteMessage.sendToTarget(); //I wonder what this does too!
         }
     }
 }

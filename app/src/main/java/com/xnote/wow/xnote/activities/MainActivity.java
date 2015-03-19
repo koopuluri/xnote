@@ -8,9 +8,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.content.Intent;
 
-import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.ParseArticleManager;
 import com.xnote.wow.xnote.ParseCallback;
 import com.xnote.wow.xnote.R;
@@ -45,9 +43,6 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        newArticleId = getIntent().getStringExtra(Constants.NEW_ARTICLE_ID);
-        Log.d(TAG, "value of intent.ExtraText: " + String.valueOf(getIntent()
-                .getStringExtra(Intent.EXTRA_TEXT)));
         mPagerAdapter = new PagerAdapter(
                 getFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
@@ -101,8 +96,6 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "resumed()!!: " + getIntent().getStringExtra(Intent.EXTRA_TEXT));
-        Log.d(TAG, "resumed()!!: intent action: " + getIntent().getAction());
     }
 
 
@@ -164,7 +157,15 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         ParseArticleManager.startParsing(articleId, new ParseCallback() {
             @Override
             public void run(ParseArticle updatedArticle) {
+                Log.d(TAG, "ParseArticleCallBack ArticleListFragment : " +
+                        String.valueOf(mArticleListFrag));
                 mArticleListFrag.onParseArticleCompleted(updatedArticle);
+            }
+
+            public void runFailed() {
+                Log.d(TAG, "ParseArticleCallBack ArticleListFragment : " +
+                        String.valueOf(mArticleListFrag));
+                mArticleListFrag.onParseArticleFailed();
             }
         });
     }
