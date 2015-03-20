@@ -160,8 +160,14 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 .show();
             }
             articleList = DB.getArticlesLocally();
+            if(articleList.size() == 0) {
+                hideAdapterAndDisplayText();
+            }
         } else {
             articleList = DB.getArticlesLocally();
+            if(articleList.size() == 0) {
+                hideAdapterAndDisplayText();
+            }
             Log.d(TAG, "Article List: " + String.valueOf(articleList));
             for (ParseArticle a : articleList) {
                 if (!a.isParsed()) {
@@ -253,7 +259,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             mAdapter.addAll(articles);
             mAdapter.notifyDataSetChanged();
             mSwipeRefreshLayout.setRefreshing(false);
-            if(!Util.IS_ANON) {
+            if(Util.IS_ANON) {
                 if(articles.size() > Constants.TRIAL_ARTICLES) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this.activity);
                     builder.setMessage(R.string.trial_expired_message);
@@ -275,5 +281,9 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 mInitialized = true;
             }
         }
+    }
+
+    public static void hideAdapterAndDisplayText() {
+        //TODO:Need to ask Uppu how to do this.
     }
 }

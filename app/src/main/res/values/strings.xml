@@ -59,5 +59,9 @@
         <item>Logout</item>
     </string-array>
     <string name="title_activity_feedback">FeedbackActivity</string>
+    <string name="no_articles_message">
+        You don\'t seem to have any articles. You can save one by going to any content provider such
+        as Google Chrome or Hacker News and share to xnote.
+    </string>
 
 </resources>

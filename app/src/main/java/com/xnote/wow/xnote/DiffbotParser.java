@@ -63,8 +63,8 @@ public class DiffbotParser {
                 int height = img.getHeightAndWidth()[0];
                 int width = img.getHeightAndWidth()[1];
                 if((height <= 2048) && (width <= 2048)) {
-                    Log.d(TAG, "Image saved successfully");
                     downloadAndSaveImage(img.getUrl(), mArticle.getId(), img.getHeightAndWidth());
+                    Log.d(TAG, "Image saved successfully I hope");
                 } else {
                     Log.d(TAG, "Image is too large");
                 }

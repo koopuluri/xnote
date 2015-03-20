@@ -2,7 +2,6 @@ package com.xnote.wow.xnote.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,11 +11,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import com.parse.ParseUser;
-import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.Controller;
+import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
+import com.xnote.wow.xnote.models.ParseFeedback;
 
 public class FeedbackActivity extends Activity {
 
@@ -60,18 +59,10 @@ public class FeedbackActivity extends Activity {
             public void onClick(View v) {
                 //Done button logs in the user if the details are correct
 
-                ParseUser user = ParseUser.getCurrentUser();
-                String comments;
-                try {
-                    String feedback = user.get(Constants.FEEDBACK).toString();
-                    comments = feedback + "\n\n" +
-                            spin + ":" + mCommentsEditText.getText();
-                    Log.d(TAG, "Comments : " + comments);
-                } catch(NullPointerException e) {
-                    comments = spin + ":" + mCommentsEditText.getText();
-                    Log.d(TAG, "Comments : " + comments);
-                }
-                user.put(Constants.FEEDBACK, comments);
+                ParseFeedback feedback = new ParseFeedback();
+                feedback.setFeedbackType(spin);
+                feedback.setComments(mCommentsEditText.getText().toString());
+                DB.saveFeedbackInBackground(feedback);
                 Controller.launchMainActivity(activity);
             }
         });

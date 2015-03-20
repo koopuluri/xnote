@@ -9,13 +9,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.xnote.wow.xnote.models.ParseArticle;
+import com.xnote.wow.xnote.models.ParseFeedback;
 import com.xnote.wow.xnote.models.ParseImage;
 import com.xnote.wow.xnote.models.ParseNote;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,6 +27,7 @@ public class DB {
     public static final String ARTICLE = "Article";
     public static final String NOTE = "Note";
     public static final String IMAGE = "Image";
+    public static final String FEEDBACK = "Feedback";
 
 
     public static void sync() throws ParseException {
@@ -755,6 +756,12 @@ public class DB {
             Log.e(TAG, "getImage(): " + e);
             return null;
         }
+    }
+
+    //---------------------------FEEDBACK STUFF---------------------------
+    public static void saveFeedbackInBackground(ParseFeedback feedback) {
+        Log.d(TAG, "saveFeedback()");
+        feedback.saveEventually();
     }
 }
 
