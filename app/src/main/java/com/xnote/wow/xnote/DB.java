@@ -720,7 +720,7 @@ public class DB {
             if (out.size() == 0) {
                 Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
                         imageUrlString);
-                if(!Util.IS_ANON) {
+                if((!Util.IS_ANON)) {
                     return getImageFromCloud(imageUrlString);
                 } else {
                     return null;

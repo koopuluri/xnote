@@ -137,6 +137,7 @@ public class NoteFragment extends Fragment {
                 Log.d(TAG, "done(): OLD_NOTE!");
                 mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
+                clippedBuffer = Html.fromHtml(mNote.getSelectedText());
             } else {
                 Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));
@@ -146,29 +147,28 @@ public class NoteFragment extends Fragment {
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
                 mNote.setId();
+                // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
+                // between Article and Note.
+                Log.d(TAG, "Article ID: " + String.valueOf(mArticle));
+                String articleContent = ArticleFragment.htmlEscapedContent(
+                        mArticle,
+                        getActivity()).toString();
+
+                selectedText = articleContent.substring(
+                        mNote.getStartIndex(),
+                        mNote.getEndIndex());
+                clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
+                // getting the underlying html selected text:
+                Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
+                        mArticle,
+                        getActivity());
+                Spanned selectedBuffer = (Spanned)
+                        articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
+                String selectedHtml = Html.toHtml(selectedBuffer);
+                Log.d(TAG, "selected html: " + selectedHtml);
+                mNote.setSelectedText(selectedHtml);
             }
-            // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
-            // between Article and Note.
-            Log.d(TAG, "Article ID: " + String.valueOf(mArticle));
-            String articleContent = ArticleFragment.htmlEscapedContent(
-                    mArticle,
-                    getActivity()).toString();
 
-            selectedText = articleContent.substring(
-                    mNote.getStartIndex(),
-                    mNote.getEndIndex());
-            clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
-
-
-            // getting the underlying html selected text:
-            Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
-                    mArticle,
-                    getActivity());
-            Spanned selectedBuffer = (Spanned)
-                    articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
-            String selectedHtml = Html.toHtml(selectedBuffer);
-            Log.d(TAG, "selected html: " + selectedHtml);
-            mNote.setSelectedText(selectedHtml);
             return null;
         }
 

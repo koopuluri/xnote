@@ -51,7 +51,6 @@ public class ArticleAdapter  extends BaseListAdapter {
             view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
             Log.d(TAG, "article hasn't completed parsing yet, spinner set for article list item");
         } else {
-            Log.d(TAG, "article is parsed, renderring its stuff.");
             TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
             errorText.setVisibility(View.INVISIBLE);
             view.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
@@ -60,11 +59,13 @@ public class ArticleAdapter  extends BaseListAdapter {
             //If there is no image then we need to download the image
             if(image == null) {
                 String iconURL = article.getIconURL();
-                if ((iconURL == null) || (iconURL.equals(""))) {
-                    iconURL = "http://imgur.com/8yRv9zz.png";
-                    //TODO: Figure out default image
+                if(iconURL != null) {
+                    if ((iconURL.equals(""))) {
+                        mIcon.setImageResource(R.drawable.icon_for_adapter);
+                    } else {
+                        new DownloadImageTask(article, mIcon).execute(iconURL);
+                    }
                 }
-                new DownloadImageTask(article, mIcon).execute(iconURL);
             } else {
                 try {
                     setImageViewWithIcon(mIcon, article.getSourceImage());
@@ -156,7 +157,7 @@ public class ArticleAdapter  extends BaseListAdapter {
                 Log.d(TAG, String.valueOf(bitmap));
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 Log.d(TAG, String.valueOf(stream));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
                 image1.setData(imageInByte);
                 article.setSourceImage(image1);

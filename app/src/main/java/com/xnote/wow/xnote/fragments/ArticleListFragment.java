@@ -161,12 +161,12 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             }
             articleList = DB.getArticlesLocally();
             if(articleList.size() == 0) {
-                hideAdapterAndDisplayText();
+                hideListAndDisplayText();
             }
         } else {
             articleList = DB.getArticlesLocally();
             if(articleList.size() == 0) {
-                hideAdapterAndDisplayText();
+                hideListAndDisplayText();
             }
             Log.d(TAG, "Article List: " + String.valueOf(articleList));
             for (ParseArticle a : articleList) {
@@ -283,7 +283,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         }
     }
 
-    public static void hideAdapterAndDisplayText() {
-        //TODO:Need to ask Uppu how to do this.
+    public static void hideListAndDisplayText() {
+        //TODO: Need to ask Uppu how to do this.
     }
 }

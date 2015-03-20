@@ -36,8 +36,8 @@ public class DiffbotParser {
     private void downloadAndSaveImage(String imageUrlString, String articleId, int[] heightAndWidth) {
         byte[] data = DiffbotParser.downloadImage(imageUrlString);
         DiffbotParser.saveImageFromData(imageUrlString, data, articleId, heightAndWidth);
-        Log.d(TAG, String.format("image downloaded and saved! with imageUrlString: %s," +
-                        " and articleId: %s",
+        Log.d(TAG, String.format("attempted to download and save imageUrlString: %s," +
+                " and articleId: %s",
                 imageUrlString,
                 articleId));
     }
@@ -89,6 +89,14 @@ public class DiffbotParser {
         String token = "9fa0294020c516932daf9ad7d45cd36b"; //TODO: Put this somewhere and get it
         String query;
         String query2;
+        //Removing the .m from the URL so desktop version of the site is used when parsing
+        if(articleURL.contains("http://m.")) {
+            int position = articleURL.indexOf("http://m.");
+            String newArticleURL = articleURL.substring(0, position + 7);
+            newArticleURL += articleURL.substring(position + 9, articleURL.length());
+            Log.d(TAG, "newArticleURL : " + newArticleURL);
+            articleURL = newArticleURL;
+        }
         try {
             query2 = URLEncoder.encode(articleURL, "UTF-8");
             query = URLEncoder.encode(token, "UTF-8");
@@ -238,15 +246,17 @@ public class DiffbotParser {
      */
     public static void saveImageFromData(String imgUrlString, byte[] imgData, String articleId,
                                          int[] heightAndWidth) {
-        ParseImage image = new ParseImage();
-        image.setArticleId(articleId);
-        image.setData(imgData);
-        image.setUrl(imgUrlString);
-        image.setNaturalHeight(heightAndWidth[0]);
-        image.setNaturalWidth(heightAndWidth[1]);
-        // saving image:
-        DB.saveImage(image);
-        Log.d(TAG, "saveImageFromData() ParseImage created and saved for imgUrlString: " +
-                imgUrlString);
+        if(imgData != null) {
+            ParseImage image = new ParseImage();
+            image.setArticleId(articleId);
+            image.setData(imgData);
+            image.setUrl(imgUrlString);
+            image.setNaturalHeight(heightAndWidth[0]);
+            image.setNaturalWidth(heightAndWidth[1]);
+            // saving image:
+            DB.saveImage(image);
+            Log.d(TAG, "saveImageFromData() ParseImage created and saved for imgUrlString: " +
+                    imgUrlString);
+        }
     }
 }
