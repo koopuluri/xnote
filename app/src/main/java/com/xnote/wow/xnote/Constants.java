@@ -18,13 +18,14 @@ public class Constants {
     public static final String NOTE_STATE = "NOTE_STATE";
     public static final String NOTE_CONTENT = "NOTE_CONTENT";
     public static final String NOTE_TIMESTAMP = "NOTE_TIMESTAMP";
+    public static final String NOTE_SELECTED_TEXT = "NOTE_SELECTED_TEXT";
     // ArticleListActivity:
     public static final String LOADING_ARTICLE_ID = "LOADING_ARTICLE_ID";
     public static final String ARTICLE_CONTENT = "ARTICLE_CONTENT";
     public static final String NEW_ARTICLE_ID = "NEW_ARTICLE_ID";
     // for threads:
     public static final String NOT_DONE = "NOT_DONE";
-    public static final String WEB_URL = "http://xnote.io/article/";
+    public static final String WEB_URL = "www.xnote.io/article/";
     public static final String NAME="Name";
     public static final String FEEDBACK = "Feedback";
 

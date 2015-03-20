@@ -59,6 +59,7 @@ public class ArticleActivity extends Activity {
                 note.setStartIndex(data.getIntExtra(Constants.START_INDEX, 0));
                 note.setEndIndex(data.getIntExtra(Constants.END_INDEX, 0));
                 note.setArticleId(data.getStringExtra(Constants.ARTICLE_ID));
+                note.setSelectedText(data.getStringExtra(Constants.NOTE_SELECTED_TEXT));
                 // Log.d(TAG, "onActivityResult() with noteId: " + noteId);
                 int noteState = data.getIntExtra(Constants.NOTE_STATE, 0);
                 // ---------------------------------- PUT IN BACKGROUND!!--------------------------
