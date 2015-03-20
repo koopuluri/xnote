@@ -36,7 +36,7 @@
             android:inputType="textPassword"
             android:id="@+id/password"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="10dp"
             android:hint="Password"
             android:password="true" />
 
@@ -44,15 +44,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/done_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Done"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"/>
 
+            <TextView
+                android:id="@+id/login_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already a user? Click here to login"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
     </LinearLayout>

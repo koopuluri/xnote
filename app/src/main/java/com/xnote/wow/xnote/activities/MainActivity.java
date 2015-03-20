@@ -77,10 +77,11 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         };
         // add 3 tabs specifying tab's next and tabListener??
         for (String tabName : TABS) {
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(tabName)
-                            .setTabListener(tabListener));
+            ActionBar.Tab tab = actionBar.newTab();
+            //tab.setText(tabName);
+            tab.setTabListener(tabListener);
+            tab.setIcon(getTabIconImage(tabName));
+            actionBar.addTab(tab);
         }
         Log.d(TAG, "end of onCreate()");
     }
@@ -173,5 +174,17 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     @Override
     public void onBackPressed() {
         // do nothing.
+    }
+
+    private int getTabIconImage(String tabName) {
+        switch(tabName) {
+            case(SEARCH_TAB):
+                return R.drawable.search;
+            case(ARTICLES_TAB):
+                return R.drawable.article;
+            case(SETTINGS_TAB):
+                return R.drawable.settings;
+        }
+        return R.drawable.ic_launcher;
     }
 }

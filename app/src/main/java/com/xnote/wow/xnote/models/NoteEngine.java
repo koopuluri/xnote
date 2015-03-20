@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by koopuluri on 2/24/15.
@@ -58,7 +57,6 @@ public class NoteEngine {
     }
 
     public String getNoteIdAtPos(int position) {
-        // TODO: always returns the first note in the keySet.
         Log.d(TAG, "getNoteIdAtPos(): " + position);
         List<Integer> keys = new ArrayList<>();
         keys.addAll(mMap.keySet());
@@ -103,7 +101,6 @@ public class NoteEngine {
      * @return
      */
     public boolean notesPresentWithinRange(int start, int end) {
-        // TODO: ensure that inclusivity is correct.
         for (int noteStart : mMap.keySet()) {
             if (noteStart >= start && noteStart <= end) {
                 Log.d(TAG, "note start in range. noteId: " + mMap.get(noteStart).b);

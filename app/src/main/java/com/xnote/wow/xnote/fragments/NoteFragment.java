@@ -2,13 +2,10 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.QuoteSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,6 +149,7 @@ public class NoteFragment extends Fragment {
             }
             // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
             // between Article and Note.
+            Log.d(TAG, "Article ID: " + String.valueOf(mArticle));
             String articleContent = ArticleFragment.htmlEscapedContent(
                     mArticle,
                     getActivity()).toString();

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xnote.wow.xnote.R;
@@ -30,14 +31,15 @@ public class SearchResultAdapter extends BaseListAdapter {
         SearchResult result = (SearchResult) getItem(position);
         TextView titleTextview = (TextView) view.findViewById(R.id.title_text_view);
         TextView tstampTextView = (TextView) view.findViewById(R.id.tstamp_text_view);
-        TextView noteOrArticleTextView =(TextView) view.findViewById(R.id.note_or_article_text_view);
+        ImageView noteOrArticleImageView =(ImageView) view.findViewById(R.id.note_or_article_image_view);
         SpannableString titleString = new SpannableString(result.title);
-        // making it bold and bigger:
         titleTextview.setText(titleString);
-        titleTextview.append("");
         tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
-        noteOrArticleTextView.setText(result.type);
-        // adding the blank:
+        if(result.type.equalsIgnoreCase("Note")) {
+            noteOrArticleImageView.setImageResource(R.drawable.note_icon_search);
+        } else {
+            noteOrArticleImageView.setImageResource(R.drawable.article_icon_search);
+        }
         return view;
     }
 }

@@ -97,7 +97,6 @@ public class SettingsFragment extends ListFragment {
         @Override
         public Void doInBackground(Void... params) {
             ParseUser.logOut();
-            // DB.clearLocalDatabase(); TODO: holy fuck this call does not do what you expect it to do!
             Log.d(TAG, "ParseUser.logged out and cleared local datastore.");
             return null;
         }

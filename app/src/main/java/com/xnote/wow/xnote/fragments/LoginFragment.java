@@ -2,24 +2,18 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.xnote.wow.xnote.Controller;
-import com.xnote.wow.xnote.DB;
+import com.xnote.wow.xnote.LoginSignUpInterface;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
 import com.xnote.wow.xnote.Util;
@@ -33,26 +27,21 @@ import com.xnote.wow.xnote.Util;
  */
 public class LoginFragment extends Fragment {
 
-    public final String TAG = "Login Fragment";
+    public static final String TAG = "Login Fragment";
     Button mDoneButton;
     private EditText usernameEditText;
     private EditText passwordEditText;
     private TextView mSignUpTextView;
     private TextView mForgotPasswordTextView;
-    OnLoginIn mListener;
-
-
-    public interface OnLoginIn {
-        public void onLogin();
-    }
+    private LoginSignUpInterface mListener;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnLoginIn) activity;
+            mListener = (LoginSignUpInterface) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement OnLogIn.");
+            throw new ClassCastException(activity.toString() + e);
         }
     }
 
@@ -60,8 +49,8 @@ public class LoginFragment extends Fragment {
     //The boolean variables keep track of preliminary validation done without using Parse
     //This allows us to make Parse calls only when necessary and also gives us freedom to define our own
     //constraints for the text field.
-    public Boolean usernameIsValid = false;
-    public Boolean passwordIsValid = false;
+    public Boolean usernameIsValid = true;
+    public Boolean passwordIsValid = true;
 
     //The invalid details flag is used so that the errors can be removed from both fields when there is an
     //edit made on any one field after an invalid credentials error is thrown by Parse. This allows us to
@@ -117,7 +106,8 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void done(ParseUser parseUser, ParseException e) {
                             if (parseUser != null) {
-                                mListener.onLogin();
+                                Util.IS_ANON = false;
+                                mListener.openLoginSync(thisFragment);
                             } else {
                                 usernameEditText.setError("Invalid username or password");
                                 passwordEditText.setError("Invalid username or password");
@@ -133,31 +123,17 @@ public class LoginFragment extends Fragment {
         mSignUpTextView.setOnClickListener(new View.OnClickListener() {
             //Opens up the signup fragment to signup a new user
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                Fragment fragment = new SignUpFragment();
-                fragmentTransaction.remove(thisFragment);
-                fragmentTransaction.add(R.id.fragment_container, fragment);
-                fragmentTransaction.commit();
-
+               mListener.openSignUp(thisFragment);
             }
         });
 
         mForgotPasswordTextView = (TextView)view.findViewById(R.id.forgot_password);
         mForgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
-            //Opens up the signup fragment to signup a new user
+            //Opens up the forgot password fragment
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                Fragment fragment = new ForgotPasswordFragment();
-                fragmentTransaction.remove(thisFragment);
-                fragmentTransaction.add(R.id.fragment_container, fragment);
-                fragmentTransaction.commit();
+                mListener.openForgotPassword(thisFragment);
             }
         });
         return view;
     }
-
-
-
 }

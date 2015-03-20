@@ -9,7 +9,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight=".70">
+        android:layout_weight=".70"
+        android:paddingLeft="2dp">
 
         <TextView
             android:id="@+id/title_text_view"
@@ -30,12 +31,12 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_color_primary"/>
 
-            <TextView
-                android:id="@+id/note_or_article_text_view"
+            <ImageView
+                android:paddingRight="2dp"
+                android:id="@+id/note_or_article_image_view"
                 android:layout_gravity="center_vertical|right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color_primary"/>
+                android:layout_width="20dp"
+                android:layout_height="20dp"></ImageView>
         </FrameLayout>
 
     </LinearLayout>

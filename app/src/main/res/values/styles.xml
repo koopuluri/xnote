@@ -12,6 +12,7 @@
     <style name="ActionBarTabStyle.Action_bar_tab" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_action_bar_tab</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:itemBackground">@android:color/transparent</item>
         <item name="android:actionBarStyle">@color/primary_palette_medium</item>
     </style>
 

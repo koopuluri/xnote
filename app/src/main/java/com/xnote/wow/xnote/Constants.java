@@ -28,6 +28,4 @@ public class Constants {
     public static final String WEB_URL = "www.xnote.io/article/";
     public static final String NAME="Name";
     public static final String FEEDBACK = "Feedback";
-
-    public static final long MAX_PIXEL_SIZE = 800 * 600;
 }
