@@ -1,5 +1,7 @@
 package com.xnote.wow.xnote.models;
 
+import android.util.Log;
+
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.xnote.wow.xnote.DB;
@@ -27,7 +29,13 @@ public class ParseImage extends ParseObject {
     public int getNaturalHeight() { return getInt(NATURAL_HEIGHT); }
 
     public void setUrl(String url) { put(URL, url); }
-    public void setData(byte[] imgData) { put(DATA, imgData); }
+    public void setData(byte[] imgData) {
+        try {
+            put(DATA, imgData);
+        } catch (IllegalArgumentException e) {
+            Log.d("ParseImage", "caught.");
+        }
+    }
     public void setArticleId(String articleId) { put(ARTICLE_ID, articleId); }
     public void setNaturalWidth(int width) { put(NATURAL_WIDTH, width); }
     public void setNaturalHeight(int height) { put(NATURAL_HEIGHT, height); }

@@ -153,12 +153,22 @@ public class NoteFragment extends Fragment {
             String articleContent = ArticleFragment.htmlEscapedContent(
                     mArticle,
                     getActivity()).toString();
+
             selectedText = articleContent.substring(
                     mNote.getStartIndex(),
                     mNote.getEndIndex());
-            mNote.setSelectedText(selectedText);
             clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
 
+
+            // getting the underlying html selected text:
+            Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
+                    mArticle,
+                    getActivity());
+            Spanned selectedBuffer = (Spanned)
+                    articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
+            String selectedHtml = Html.toHtml(selectedBuffer);
+            Log.d(TAG, "selected html: " + selectedHtml);
+            mNote.setSelectedText(selectedHtml);
             return null;
         }
 
@@ -199,6 +209,7 @@ public class NoteFragment extends Fragment {
         intent.putExtra(Constants.NOTE_CONTENT, mNote.getContent());
         intent.putExtra(Constants.NOTE_TIMESTAMP, mNote.getTimestamp());
         intent.putExtra(Constants.ARTICLE_ID, mNote.getArticleId());
+        intent.putExtra(Constants.NOTE_SELECTED_TEXT, mNote.getSelectedText());
         // note state determines whether this note previously existed and was modified, or it is new, or it was deleted.
         intent.putExtra(Constants.NOTE_STATE, noteState);
         // performing harakiri for the betterment of the other notes. :(
