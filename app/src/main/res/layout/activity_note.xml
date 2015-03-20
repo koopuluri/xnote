@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/note_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/note_container">
+    android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/note_view_pager"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/note_container">
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/note_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
 
     <ImageButton
-        android:id="@+id/done_button"
-        android:layout_width="@dimen/round_button_diameter"
-        android:layout_height="@dimen/round_button_diameter"
-        android:layout_gravity="right|bottom"
-        android:gravity="right|bottom"
-        android:layout_marginBottom="@dimen/add_button_margin"
-        android:layout_marginEnd="@dimen/add_button_margin"
-        android:layout_marginRight="@dimen/add_button_margin"
-        android:background="@drawable/round_button"
-        android:tint="@color/primary_palette_dark"
-        android:src="@android:drawable/ic_menu_save"/>
+            android:id="@+id/done_button"
+            android:layout_width="@dimen/round_button_diameter"
+            android:layout_height="@dimen/round_button_diameter"
+            android:layout_gravity="right|bottom"
+            android:gravity="right|bottom"
+            android:layout_marginBottom="@dimen/add_button_margin"
+            android:layout_marginRight="@dimen/add_button_margin"
+            android:background="@drawable/round_button"
+            android:tint="@color/primary_palette_dark"
+            android:src="@android:drawable/ic_menu_save"/>
+
 
 </FrameLayout>

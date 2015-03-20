@@ -99,9 +99,9 @@ public class NoteActivity extends Activity {
                 }
             };
             mDoneButton.setOutlineProvider(viewOutlineProvider);
-            mDoneButton.setClipToOutline(true);  //TODO: does this need to be replicated for all fabs?
-            mDoneButton.setVisibility(View.VISIBLE);
+            mDoneButton.setClipToOutline(true);
         }
+        mDoneButton.setVisibility(View.VISIBLE);
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

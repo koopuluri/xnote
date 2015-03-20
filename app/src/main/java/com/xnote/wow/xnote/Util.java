@@ -90,7 +90,7 @@ public class Util {
         // Add data to the intent, the receiving app will decide what to do with it.
         intent.putExtra(Intent.EXTRA_SUBJECT, subjectText);
         intent.putExtra(Intent.EXTRA_TEXT, extraText);
-        if(!Util.IS_ANON) {
+        if(Util.IS_ANON) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(launchActivity);
                 builder.setMessage(R.string.share_disabled_message);
                 builder.setPositiveButton("Sign Up", new DialogInterface.OnClickListener() {

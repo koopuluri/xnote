@@ -16,6 +16,7 @@ import com.parse.ParseUser;
 import com.xnote.wow.xnote.LoginSignUpInterface;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.TextValidator;
+import com.xnote.wow.xnote.Util;
 
 
 /**
@@ -105,6 +106,7 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void done(ParseUser parseUser, ParseException e) {
                             if (parseUser != null) {
+                                Util.IS_ANON = false;
                                 mListener.openLoginSync(thisFragment);
                             } else {
                                 usernameEditText.setError("Invalid username or password");
