@@ -2,15 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="2dp">
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/list_selector">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/adapter_item"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight=".70"
-        android:paddingLeft="2dp">
+        android:layout_marginLeft="@dimen/list_margin_left"
+        android:layout_marginTop="@dimen/list_margin_top"
+        android:layout_marginBottom="@dimen/list_margin_bottom">
 
         <TextView
             android:id="@+id/title_text_view"
@@ -18,27 +24,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color_primary"
-            android:textSize="20dp"/>
+            android:textSize="15dp"
+            android:layout_marginBottom="5dp"/>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tstamp_text_view"
-                android:layout_gravity="center_vertical|left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color_primary"/>
-
-            <ImageView
-                android:paddingRight="2dp"
-                android:id="@+id/note_or_article_image_view"
-                android:layout_gravity="center_vertical|right"
-                android:layout_width="20dp"
-                android:layout_height="20dp"></ImageView>
-        </FrameLayout>
+        <TextView
+            android:id="@+id/tstamp_text_view"
+            android:layout_gravity="center_vertical|left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textColor="@color/text_color_primary"/>
 
     </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

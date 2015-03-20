@@ -20,13 +20,11 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
-    <color name="primary_palette_light">#C5E1A5</color>
-    <color name="primary_palette_medium">#9CCC65</color>
-    <color name="primary_palette_dark">#33691E</color>
+    <color name="primary_palette_medium">#FFFFFF</color>
 
     <color name="accent_color_light">#FFF9C4</color>
-    <color name="accent_color_dark">#FDD835</color>
-    <color name="accent_color_darker">#FBC02D</color>
+    <color name="accent_color_dark">#FFEB3B</color>
+    <color name="accent_color_darker">#F57F17</color>
 
     <color name="text_color_primary">#000000</color>
     <color name="text_color_error">#999999</color>

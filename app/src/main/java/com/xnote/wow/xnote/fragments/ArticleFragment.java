@@ -349,7 +349,7 @@ public class ArticleFragment extends Fragment {
             paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.parseColor("#000000"));
-            setHighlightColor(Color.parseColor("#9CCC65"));
+            setHighlightColor(getResources().getColor(R.color.accent_color_light));
         }
 
         public ArticleView(Context context) {

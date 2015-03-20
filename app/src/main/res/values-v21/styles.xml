@@ -4,13 +4,9 @@
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/primary_palette_medium</item>
-        <!--   darker variant for the status bar and contextual app bars -->
-        <item name="android:colorPrimaryDark">@color/primary_palette_dark</item>
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="android:colorAccent">@color/accent_color_dark</item>
-        <item name="android:listDivider">@drawable/list_divider</item>
-        <item name="android:dividerHeight">5px</item>
-        <item name="android:textColorLink">@color/accent_color_darker</item>
+        <item name="android:dividerHeight">3px</item>
     </style>
 
 </resources>
