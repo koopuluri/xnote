@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.adapters.ArticleAdapter;
@@ -36,6 +37,7 @@ public abstract class BaseSelectableListFragment extends ListFragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
     String mChildName;
     View mContainer;
+    TextView mNoArticlesMessage;
 
     public BaseSelectableListFragment(String childName) {
         super();
@@ -61,7 +63,10 @@ public abstract class BaseSelectableListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view  = super.onCreateView(inflater, container, savedInstanceState);
+        // View view  = super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_article_list, container, false);
+        mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message);
+        mNoArticlesMessage.setVisibility(View.GONE);
         // wrapping fragment's contentView with SwipeRefreshLayout:
         mSwipeRefreshLayout = new ListFragmentSwipeRefreshLayout(container.getContext());
         // adding list fragment's content view to SwipeRefreshLayout, making sure it fills it up:
@@ -90,6 +95,10 @@ public abstract class BaseSelectableListFragment extends ListFragment {
 
     protected SwipeRefreshLayout getSwipeRefreshLayout() {
         return mSwipeRefreshLayout;
+    }
+
+    protected TextView getNoMessageView() {
+        return mNoArticlesMessage;
     }
 
 

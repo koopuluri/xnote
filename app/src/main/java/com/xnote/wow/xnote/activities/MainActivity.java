@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         // action bar shii:
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
-        
+
         mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -64,7 +64,12 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
                         actionBar.setSelectedNavigationItem(position);
                         currentPosition = position;
                         if (currentPosition != 1) {
-                            Util.hideKeyboard(me);
+                            try {
+                                Util.hideKeyboard(me);
+                            } catch (NullPointerException e) {
+                                Log.e(TAG, "getWindowToken() on the activity's getWindow() returns null" +
+                                        "so not hiding the keyboard: " + e);
+                            }
                         }
                     }
                 });
@@ -112,6 +117,12 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         super.onStop();
         ParseArticleManager.cancelAll();
         Log.d(TAG, "onStop().");
+    }
+
+
+    public void noArticles() {
+        // remove articleListFrag, and show NoArticlesFragment():
+
     }
 
 
