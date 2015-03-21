@@ -16,7 +16,7 @@ public class ParseNote extends ParseObject {
     public static final String CONTENT = "content";
     public static final String START_INDEX = "startIndex";
     public static final String END_INDEX = "endIndex";
-    public static final String TIMESTAMP = "timestamp";
+    public static final String TIMESTAMP = "Timestamp";
     public static final String ID = "id";
     public static final String SELECTED_TEXT = "selectedText";
 

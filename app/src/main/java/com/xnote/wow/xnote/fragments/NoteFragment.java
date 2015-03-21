@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -147,6 +146,7 @@ public class NoteFragment extends Fragment {
                 mNote.setEndIndex(getArguments().getInt(Constants.END_INDEX));
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
+                Log.d(TAG, "Timestamp for note : " + Util.dateFromSeconds(mNote.getTimestamp()));
                 mNote.setId();
                 // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
                 // between Article and Note.
@@ -206,6 +206,7 @@ public class NoteFragment extends Fragment {
             return;
         mNote.setContent(mNoteEdit.getText().toString());
         Log.d(TAG, "done(): noteId: " + mNote.getId());
+        Log.d(TAG, "done(): tstamp: " + Util.dateFromSeconds(mNote.getTimestamp()));
         Intent intent = new Intent();
         intent.putExtra(Constants.NOTE_ID, mNote.getId());
         intent.putExtra(Constants.START_INDEX, mNote.getStartIndex());

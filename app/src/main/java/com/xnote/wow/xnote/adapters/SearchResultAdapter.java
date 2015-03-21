@@ -2,9 +2,9 @@ package com.xnote.wow.xnote.adapters;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.text.SpannableString;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xnote.wow.xnote.DB;
@@ -31,13 +31,19 @@ public class SearchResultAdapter extends BaseListAdapter {
         SearchResult result = (SearchResult) getItem(position);
         TextView titleTextview = (TextView) view.findViewById(R.id.title_text_view);
         TextView tstampTextView = (TextView) view.findViewById(R.id.tstamp_text_view);
-        SpannableString titleString = new SpannableString(result.title);
+        LinearLayout noteLayout = (LinearLayout) view.findViewById(R.id.note_text_layout);
+        String titleString = result.title;
+        if(titleString.length() > 90) {
+            titleString = titleString.substring(0, 85 ) + "...";
+        }
         titleTextview.setText(titleString);
-        tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
         if(result.type.equalsIgnoreCase(DB.NOTE)) {
-            view.findViewById(R.id.adapter_item).setPadding(30, 0, 0, 0);
+            noteLayout.setVisibility(View.VISIBLE);
+            view.findViewById(R.id.adapter_item).setPadding(60, 0, 0, 0);
         } else {
             view.findViewById(R.id.adapter_item).setPadding(0, 0, 0, 0);
+            tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
+            noteLayout.setVisibility(View.INVISIBLE);
         }
         return view;
     }

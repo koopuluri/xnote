@@ -138,8 +138,7 @@ public class SearchResultsFragment extends ListFragment {
             Log.d(TAG, "begun.");
             resultList = new ArrayList<SearchResult>();
 
-            resultList.addAll(Search.searchArticleText(mQuery));
-            resultList.addAll(Search.searchNoteText(mQuery));
+            resultList.addAll(Search.search(mQuery));
             return null;
         }
 
