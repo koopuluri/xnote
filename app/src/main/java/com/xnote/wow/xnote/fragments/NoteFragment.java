@@ -123,9 +123,7 @@ public class NoteFragment extends Fragment {
 
 
     private class NoteInitializeTask extends AsyncTask<Void, Void, Void> {
-        String selectedText;
-        Spanned clippedBuffer;
-
+        Spanned clipBuffer;
         @Override
         public void onPreExecute() {
             mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -138,7 +136,9 @@ public class NoteFragment extends Fragment {
                 Log.d(TAG, "done(): OLD_NOTE!");
                 mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
-                clippedBuffer = Html.fromHtml("<br><i>\"" + mNote.getSelectedText() + "\"</i><br>");
+                String selectedText = mNote.getSelectedText();
+                clipBuffer = Html.fromHtml("<br><i>\"" + Html.fromHtml(selectedText).toString()
+                        + "\"</i><br>");
             } else {
                 Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));
@@ -148,28 +148,18 @@ public class NoteFragment extends Fragment {
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
                 mNote.setId();
-                // Using ArticleFrag.htmlEscapedContent to keep articleContent consistent
-                // between Article and Note.
-                Log.d(TAG, "Article ID: " + String.valueOf(mArticle));
-                String articleContent = ArticleFragment.htmlEscapedContent(
-                        mArticle,
-                        getActivity()).toString();
 
-                selectedText = articleContent.substring(
-                        mNote.getStartIndex(),
-                        mNote.getEndIndex());
-                clippedBuffer = Html.fromHtml("<br><i>\"" + selectedText + "\"</i><br>");
-                // getting the underlying html selected text:
                 Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
                         mArticle,
                         getActivity());
                 Spanned selectedBuffer = (Spanned)
                         articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
+
+                clipBuffer = Html.fromHtml("<br><i>\"" + selectedBuffer.toString() + "\"</i><br>");
                 String selectedHtml = Html.toHtml(selectedBuffer);
-                Log.d(TAG, "selected html: " + selectedHtml);
+                Log.d(TAG, "selectedHtml: " + selectedHtml);
                 mNote.setSelectedText(selectedHtml);
             }
-
             return null;
         }
 
@@ -178,7 +168,7 @@ public class NoteFragment extends Fragment {
         public void onPostExecute(Void _) {
             super.onPostExecute(_);
             mLoadingSpinner.setVisibility(View.GONE);
-            mClippedText.setText(clippedBuffer);
+            mClippedText.setText(clipBuffer);
             if (mIsOld) {
                 mNoteEdit.setText(mNote.getContent());
                 mNoteEdit.setSelection(mNoteEdit.getText().length());

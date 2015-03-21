@@ -2,6 +2,7 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.parse.ParseException;
 import com.xnote.wow.xnote.Constants;
@@ -38,6 +40,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
     public interface ArticleListListener {
         public void parseArticle(ParseArticle article);
+        public void noArticles();
     }
 
     @Override
@@ -142,7 +145,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
     }
 
 
-    // TODO: make more efficient (LATERRRR!).
+
     private List<ParseArticle> initializeAdapterList(Boolean fromCloud) {
         Log.d(TAG, "initializeAdapter");
         List<ParseArticle> articleList;
@@ -160,14 +163,8 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 .show();
             }
             articleList = DB.getArticlesLocally();
-            if(articleList.size() == 0) {
-                hideListAndDisplayText();
-            }
         } else {
             articleList = DB.getArticlesLocally();
-            if(articleList.size() == 0) {
-                hideListAndDisplayText();
-            }
             Log.d(TAG, "Article List: " + String.valueOf(articleList));
             for (ParseArticle a : articleList) {
                 if (!a.isParsed()) {
@@ -220,9 +217,13 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                         String.valueOf(selectedItemPositions)));
             }
         }
-        // now resetting the adapter:
         mAdapter.removeItemsAtIndices(selectedItemPositions);
-        mAdapter.notifyDataSetChanged();
+        // now either resetting the adapter or displaying the no_articles_message.
+        if (getItemList().size() == 0) {
+            showNoArticleMessage();
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -255,6 +256,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         @Override
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
+
             mAdapter.clear();
             mAdapter.addAll(articles);
             mAdapter.notifyDataSetChanged();
@@ -273,6 +275,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                     dialog.show();
                 }
             }
+
             if (!mInitialized && mContentViewSet) {  // because there was a weird bug where swiping between fragments quickly
                 // threw error: java.lang.IllegalStateException: Content view not yet created due to the line below.
                 ListView listView = getListView();
@@ -280,10 +283,26 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 listView.setMultiChoiceModeListener(getModeListener());  // TODO: why is this here? can't these 3 lines be placed in onCreateView?
                 mInitialized = true;
             }
+            if (articles.size() == 0) {
+                if (mInitialized) {
+                    // need to make listView invisible and display the message.
+                    showNoArticleMessage();
+                }
+            } else {
+                if (getListView().getVisibility() == View.GONE) {
+                    showArticleList();
+                }
+            }
         }
     }
 
-    public static void hideListAndDisplayText() {
-        //TODO: Need to ask Uppu how to do this.
+    public void showArticleList() {
+        getListView().setVisibility(View.VISIBLE);
+        getNoMessageView().setVisibility(View.GONE);
+    }
+
+    public void showNoArticleMessage() {
+        getListView().setVisibility(View.GONE);
+        getNoMessageView().setVisibility(View.VISIBLE);
     }
 }
