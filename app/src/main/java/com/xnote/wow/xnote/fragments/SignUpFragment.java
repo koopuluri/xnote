@@ -121,6 +121,7 @@ public class SignUpFragment extends Fragment {
                             if (e == null) {
                                 Util.IS_ANON = false;
                                 Controller.launchMainActivity(getActivity());
+                                getActivity().finish();
                             } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
                                 emailEditText.setError("Email is already associated with an account");
                             } else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {

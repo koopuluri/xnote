@@ -74,6 +74,7 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                 Controller.launchMainActivity(activity);
                 finish();
                 Log.d(TAG, "A user is logged in and cached");
+                finish();
             } else {
                 //Check if the user has indicated anonymous user preference before
                 if ((currentUser != null) && (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()))) {
@@ -83,6 +84,7 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                     Controller.launchMainActivity(activity);
                     finish();
                     Log.d(TAG, "User has chosen to be anonymous user");
+                    finish();
                 } else {
                     // If user is not anonymous then the user must be asked to login
                     settings.edit().putBoolean("chosen_to_signup", false).apply();

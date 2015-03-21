@@ -114,7 +114,7 @@ public class ArticleFragment extends Fragment {
                 }
             };
             mNewNoteButton.setOutlineProvider(viewOutlineProvider);
-            mNewNoteButton.setClipToOutline(true);  //TODO: does this need to be replicated for all fabs?
+            mNewNoteButton.setClipToOutline(true);
         }
         mNewNoteButton.setVisibility(View.INVISIBLE);
         mNewNoteButton.setOnClickListener(new View.OnClickListener() {

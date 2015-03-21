@@ -109,7 +109,7 @@ public class NoteFragment extends Fragment {
     public String getNoteShareMessage() {
         String out = "";
         out += (mClippedText.getText() + "\n");
-        out += ("Note by " + ParseUser.getCurrentUser().getUsername() + ": \n");
+        out += ("Note by " + ParseUser.getCurrentUser().get(Constants.NAME) + ": \n");
         out += ("\"" + mNoteEdit.getText() + "\"\n\n");
         out += ("original article url: \n" + mArticle.getArticleUrl() + "\n\n");
         out += "sent from Xnote-Android";

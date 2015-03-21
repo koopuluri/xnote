@@ -27,7 +27,7 @@ public class Util {
 
     public static String dateFromSeconds(long seconds) {
         // http://stackoverflow.com/a/9754625/2713471:
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return sdf.format(new java.util.Date(seconds));
     }
 
@@ -85,7 +85,11 @@ public class Util {
 
     public static void share(String subjectText, String extraText, String userMessage,
                              final Activity launchActivity) {
-        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        Log.d(TAG, "Subject text: " + subjectText);
+        Log.d(TAG, "extraText: " + extraText);
+        Log.d(TAG, "user message: " + userMessage);
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         // Add data to the intent, the receiving app will decide what to do with it.

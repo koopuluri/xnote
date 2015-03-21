@@ -74,7 +74,6 @@ public class ArticleAdapter  extends BaseListAdapter {
                 }
             }
         }
-        Log.d(TAG, "article title: " + article.getTitle());
         mArticleTitleTv.setText(article.getTitle());
         mTstampTv.setText(Util.dateFromSeconds(article.getTimestamp()));
         return view;
@@ -159,6 +158,7 @@ public class ArticleAdapter  extends BaseListAdapter {
                 Log.d(TAG, String.valueOf(stream));
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
+                Log.d(TAG, "IS THIS TOO BIG? : " + imageInByte.length);
                 image1.setData(imageInByte);
                 article.setSourceImage(image1);
             }

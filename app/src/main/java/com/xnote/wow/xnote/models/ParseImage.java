@@ -17,6 +17,7 @@ public class ParseImage extends ParseObject {
     public static final String ARTICLE_ID = "ParseImageArticleId";
     public static final String NATURAL_WIDTH = "ParseImageNaturalWidth";
     public static final String NATURAL_HEIGHT = "ParseImageNaturalHeight";
+    public static final String ERROR = "Error";
 
     public ParseImage() {
         super();
@@ -27,6 +28,7 @@ public class ParseImage extends ParseObject {
     public String getArticleId() { return getString(ARTICLE_ID); }
     public int getNaturalWidth() { return getInt(NATURAL_WIDTH); }
     public int getNaturalHeight() { return getInt(NATURAL_HEIGHT); }
+    public boolean getError() { return getBoolean(ERROR); }
 
     public void setUrl(String url) { put(URL, url); }
     public void setData(byte[] imgData) {
@@ -39,4 +41,5 @@ public class ParseImage extends ParseObject {
     public void setArticleId(String articleId) { put(ARTICLE_ID, articleId); }
     public void setNaturalWidth(int width) { put(NATURAL_WIDTH, width); }
     public void setNaturalHeight(int height) { put(NATURAL_HEIGHT, height); }
+    public void setError(boolean bool) { put(ERROR, bool); }
 }
