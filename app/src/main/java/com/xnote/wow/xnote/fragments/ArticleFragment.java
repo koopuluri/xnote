@@ -217,7 +217,8 @@ public class ArticleFragment extends Fragment {
             mArticle = DB.getLocalArticle(mArticleId);
             String content = mArticle.getContent();
             String title = "<h2>" + mArticle.getTitle() + "</h2>";
-            String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
+            String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString()
+                    + "</p>";
             content = title + timestamp + content;
             mContent = htmlEscapedContent(mArticle, parent.getActivity());
             return null;

@@ -2,7 +2,10 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.ListFragment;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,6 +77,36 @@ public class SearchResultsFragment extends ListFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // now retain the results:
+        setRetainedResults(getCurrentSearchResultList());
+    }
+
+    private void setRetainedResults(List<SearchResult> results) {
+        FragmentManager fm = getFragmentManager();
+        SearchRetainedFragment searchRetainedFragment =
+                (SearchRetainedFragment) fm.findFragmentByTag(SearchRetainedFragment.TAG);
+        if (searchRetainedFragment != null) { // TODO: make sure this is always true! (it must be...)
+            searchRetainedFragment.setResults(results);
+            Log.d(TAG, "search results set.");
+        }
+    }
+
+    private List<SearchResult> getRetainedResults() {
+        FragmentManager fm = getFragmentManager();
+        SearchRetainedFragment searchRetainedFragment =
+                (SearchRetainedFragment) fm.findFragmentByTag(SearchRetainedFragment.TAG);
+        if (searchRetainedFragment != null) { // TODO: make sure this is always true! (it must be...)
+            return searchRetainedFragment.getSearchResults();
+        } else {
+            Log.d(TAG, "getRetainedResults returns null, should never be the case!");
+            return null;
+        }
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume()");
@@ -88,7 +121,16 @@ public class SearchResultsFragment extends ListFragment {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
         lp.topMargin = searchView.getHeight();
         container.setLayoutParams(lp);
+
+
         mAdapter = new SearchResultAdapter(getActivity(), new ArrayList<Object>(), this);  // initializing with an empty list.
+        List<SearchResult> retainedResults = getRetainedResults();
+        Log.d(TAG, "retainedResults: " + String.valueOf(retainedResults));
+        if (retainedResults != null) {
+            mAdapter.addAll(retainedResults);
+            setListAdapter(mAdapter);
+            return view;
+        }
         setListAdapter(mAdapter);
         mInitialized = false;
         new UpdateSearchResultsTask().execute();
@@ -135,11 +177,11 @@ public class SearchResultsFragment extends ListFragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d(TAG, "begun.");
             resultList = new ArrayList<SearchResult>();
-
-            resultList.addAll(Search.searchArticleText(mQuery));
-            resultList.addAll(Search.searchNoteText(mQuery));
+            if (!mQuery.equals("")) {
+                resultList.addAll(Search.searchArticleText(mQuery));
+                resultList.addAll(Search.searchNoteText(mQuery));
+            }
             return null;
         }
 
@@ -153,26 +195,32 @@ public class SearchResultsFragment extends ListFragment {
                 ListView listView = getListView();
                 listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
                 listView.setMultiChoiceModeListener(new ModeListener());
-                Log.d(TAG, "list view ModeListener set.");
                 mInitialized = true;
             }
-            Log.d(TAG, "completed.");
         }
     }
+
 
     private class DeleteSelectedItemsTask extends AsyncTask<Void, Void, Void> {
         private final String TAG = "DeleteSelectedItemsTask";
         List<Integer> selectedPositions;
-
+        List<SearchResult> copiedItemList;
         @Override
         protected void onPreExecute() {
             selectedPositions = mAdapter.getSelectedPositions();
+            copiedItemList = new ArrayList<SearchResult>();
+            List<SearchResult> list = mAdapter.getSearchResultList();
+            for (SearchResult r : list) {
+                copiedItemList.add(r.clone());
+            }
+            mAdapter.removeItemsAtIndices(selectedPositions);
+            mAdapter.notifyDataSetChanged();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             for (int pos : selectedPositions) {
-                SearchResult result = (SearchResult) mAdapter.getItem(pos);
+                SearchResult result = copiedItemList.get(pos);
                 if (result.type.equals(DB.ARTICLE)) {
                     DB.deleteArticle(result.id);
                     Log.d(TAG, "deleteSelectedItems(), article deleted with id: " + result.id);
@@ -189,10 +237,14 @@ public class SearchResultsFragment extends ListFragment {
         @Override
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
-            mAdapter.removeItemsAtIndices(selectedPositions);
-            mAdapter.notifyDataSetChanged();
+            Log.d(TAG, "poopOnPostExecute().");
             mListener.onItemDeleted();
         }
+    }
+
+
+    public List<SearchResult> getCurrentSearchResultList() {
+        return mAdapter.getSearchResultList();
     }
 
 

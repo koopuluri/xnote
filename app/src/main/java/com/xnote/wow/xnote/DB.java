@@ -29,18 +29,19 @@ public class DB {
     public static final String IMAGE = "Image";
     public static final String FEEDBACK = "Feedback";
 
-
     public static void sync() throws ParseException {
-        List<ParseArticle> localArticles = getArticlesLocally();
-        List<ParseNote> localNotes = getAllNotesLocally();
+        List<ParseObject> cloudArticleObjects = (List<ParseObject>)(List<?>) getArticlesFromCloud();
+        List<ParseObject> localArticleObjects = (List<ParseObject>)(List<?>) getArticlesLocally();
 
-        List<ParseArticle> cloudArticles = getArticlesFromCloud();
-        List<ParseNote> cloudNotes = getAllNotesFromCloud();
+        List<ParseObject> cloudNoteObjects = (List<ParseObject>)(List<?>) getAllNotesFromCloud();
+        List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
 
-        // List<ParseObject> objs = (List<ParseObject>)(List<?>) cloudArticles;
+        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
+        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
-        syncArticles(localArticles, cloudArticles);
-        syncNotes(localNotes, cloudNotes);
+        syncObjects(localArticleObjects, cloudArticleObjects);
+        syncObjects(localNoteObjects, cloudNoteObjects);
+        syncObjects(localImageObjects, cloudImageObjects);
 
         Log.d(TAG, "sync complete.");
     }
@@ -48,82 +49,59 @@ public class DB {
 
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
-    /**
-     * TODO: combine syncArticle and syncNotes (they do the same things, just accept List<ParseObject>
-     *     and figure out a way to cast to that.
-     * @param localObjects
-     * @param cloudObjects
-     * @throws ParseException
-     */
-    private static void syncArticles(List<ParseArticle> localObjects,
-                                     List<ParseArticle> cloudObjects) throws ParseException{
+    private static void syncObjects(List<ParseObject> localObjects,
+                                    List<ParseObject> cloudObjects) throws ParseException{
         Set<String> A = new HashSet<String>();
-        for (ParseArticle a : localObjects) {
-            A.add(a.getId());
+        for (ParseObject o : localObjects) {
+            A.add(o.getObjectId());
         }
 
         Set<String> B = new HashSet<String>();
-        for (ParseArticle a : cloudObjects) {
-            B.add(a.getId());
+        for (ParseObject o : cloudObjects) {
+            B.add(o.getObjectId());
         }
         A.retainAll(B);  // 'A' is now the intersection.
 
         // handling local
-        for (ParseArticle a : localObjects) {
-            if (!A.contains(a.getId())) {
-                a.unpin();
+        for (ParseObject o : localObjects) {
+            if (!A.contains(o.getObjectId())) {
+                o.unpin();
             }
         }
 
         // pinning cloudArticle not already in local:
-        for (ParseArticle a : cloudObjects) {
-            if (!A.contains(a.getId())) {
-                a.pin();
+        for (ParseObject o : cloudObjects) {
+            if (!A.contains(o.getObjectId())) {
+                o.pin();
             }
         }
 
-        Log.d(TAG, "syncArticles() complete.");
+        Log.d(TAG, "syncObjects() complete.");
     }
 
 
-    private static void syncNotes(List<ParseNote> localObjects,
-                                     List<ParseNote> cloudObjects) throws ParseException{
-        Set<String> A = new HashSet<String>();
-        for (ParseNote a : localObjects) {
-            A.add(a.getId());
-        }
-
-        Set<String> B = new HashSet<String>();
-        for (ParseNote a : cloudObjects) {
-            B.add(a.getId());
-        }
-        A.retainAll(B);  // 'A' is now the intersection.
-
-        // handling local
-        for (ParseNote a : localObjects) {
-            if (!A.contains(a.getId())) {
-                a.unpin();
-            }
-        }
-
-        // pinning cloudArticle not already in local:
-        for (ParseNote a : cloudObjects) {
-            if (!A.contains(a.getId())) {
-                a.pin();
-            }
-        }
-
-        Log.d(TAG, "syncNotes() complete.");
+    public static List<ParseImage> getAllImagesLocally() throws ParseException {
+        Log.d(TAG, "getAllImagesLocally().");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(IMAGE);
+        query.fromLocalDatastore();
+        return (List<ParseImage>)(List<?>) query.find();
     }
 
-    public static List<ParseNote> getAllNotesLocally() throws ParseException{
+    public static List<ParseImage> getAllImagesFromCloud() throws ParseException {
+        Log.d(TAG, "getAllImagesFromCloud().");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(IMAGE);
+        return (List<ParseImage>)(List<?>) query.find();
+    }
+
+
+    public static List<ParseNote> getAllNotesLocally() throws ParseException {
         Log.d(TAG, "getAllNotesLocally().");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
         query.fromLocalDatastore();
         return (List<ParseNote>)(List<?>) query.find();
     }
 
-    public static List<ParseNote> getAllNotesFromCloud() throws ParseException{
+    public static List<ParseNote> getAllNotesFromCloud() throws ParseException {
         Log.d(TAG, "getAllNotesFromCloud().");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(NOTE);
         return (List<ParseNote>)(List<?>) query.find();
@@ -432,7 +410,6 @@ public class DB {
     }
 
 
-
     private static void deleteLocalNotesForArticleInBackground(final String articleId) {
         final String tag = TAG + ".deleteLocalNotesForArticleInBackground(): ";
         Log.d(tag, "");
@@ -454,7 +431,7 @@ public class DB {
     private static void deleteCloudNotesForArticleInBackground(final String articleId) {
         final String tag = TAG + ".deleteCloudNotesForArticleInBackground(): ";
         ParseQuery query = ParseQuery.getQuery(NOTE);
-        query.whereEqualTo(ParseNote.ID, articleId);
+        query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -472,7 +449,7 @@ public class DB {
         Log.d(tag, "");
         ParseQuery query = ParseQuery.getQuery(NOTE);
         query.fromLocalDatastore();
-        query.whereEqualTo(ParseNote.ID, articleId);
+        query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
         List<ParseObject> list = null;
         try {
             list = query.find();
@@ -524,8 +501,10 @@ public class DB {
     public static void deleteArticle(final ParseArticle article) {
         Log.d(TAG, "deleteArticle(ParseArticle): " + article.getId());
         deleteArticleLocally(article);
+        deleteLocalNotesForArticle(article.getId());
         if (!Util.IS_ANON) {
             deleteArticleInCloud(article);
+            deleteCloudNotesForArticle(article.getId());
         }
     }
 
@@ -562,10 +541,12 @@ public class DB {
     public static void deleteArticle(final String articleId) {
         Log.d(TAG, "deleteArticle(article_id): " + articleId);
         deleteArticleLocally(articleId);
+        deleteLocalNotesForArticle(articleId);
 
         if (!Util.IS_ANON) {
             Log.d(TAG, "deleteArticle(article_id): user is not anon, so deleting from cloud as well.");
             deleteArticleInCloud(articleId);
+            deleteCloudNotesForArticle(articleId);
         }
     }
 

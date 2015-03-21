@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -16,6 +18,7 @@ import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 import com.xnote.wow.xnote.fragments.SearchResultsFragment;
+import com.xnote.wow.xnote.fragments.SearchRetainedFragment;
 import com.xnote.wow.xnote.fragments.SettingsFragment;
 import com.xnote.wow.xnote.models.ParseArticle;
 
@@ -35,10 +38,12 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     PagerAdapter mPagerAdapter;
     ViewPager mViewPager;
     ArticleListFragment mArticleListFrag;
+    SettingsFragment mSettingsFrag;
     SearchFragment mSearchFrag;
     int currentPosition;
     String newArticleId;
     ParseArticleManager mArticleManager;
+    SearchRetainedFragment mSearchRetained;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,6 +101,17 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
             actionBar.addTab(tab);
         }
         Log.d(TAG, "end of onCreate()");
+
+        // getting / setting the SearchRetainedFrag:
+        FragmentManager fm = getFragmentManager();
+        mSearchRetained = (SearchRetainedFragment) fm
+                .findFragmentByTag(SearchRetainedFragment.TAG);
+        if (mSearchRetained == null) {
+            mSearchRetained = new SearchRetainedFragment();
+            fm.beginTransaction()
+                    .add(mSearchRetained, SearchRetainedFragment.TAG)
+                    .commit();
+        }
     }
 
 
@@ -103,6 +119,20 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(CURRENT_POSITION, currentPosition);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // setting the searchResults in searchRetained:
+//        FragmentManager fm = getFragmentManager();
+//        SearchResultsFragment searchResultsFrag =
+//                (SearchResultsFragment) fm.findFragmentByTag(SearchResultsFragment.TAG);
+//        if (searchResultsFrag != null) {
+//            // TODO: this way or through the SearchResultInterface?
+//            mSearchRetained.setResults(searchResultsFrag.getCurrentSearchResultList());
+//            Log.d(TAG, "set SearchResults in SearchRetained.");
+//        }
     }
 
 
@@ -120,12 +150,6 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     }
 
 
-    public void noArticles() {
-        // remove articleListFrag, and show NoArticlesFragment():
-
-    }
-
-
     private class PagerAdapter extends android.support.v13.app.FragmentPagerAdapter {
         Activity mParent;
 
@@ -138,17 +162,23 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         public Fragment getItem(int i) {
             Log.d(TAG, "getItem() in PageAdapter");
             if (i == 0) {
-                mArticleListFrag = ArticleListFragment.newInstance(newArticleId);
                 Log.d(TAG, "ArticleListFragment selected.");
+                if (mArticleListFrag == null) {
+                    mArticleListFrag = ArticleListFragment.newInstance(newArticleId);
+                }
                 return mArticleListFrag;
             } else if (i == 1) {
-                mSearchFrag = new SearchFragment();
+                if (mSearchFrag == null) {
+                    mSearchFrag = new SearchFragment();
+                }
                 Log.d(TAG, "SearchFragment selected.");
                 return mSearchFrag;
             } else if (i == 2) {
-                Fragment frag = new SettingsFragment();
+                if (mSettingsFrag == null) {
+                    mSettingsFrag = new SettingsFragment();
+                }
                 Log.d(TAG, "SettingsFragment selected.");
-                return frag;
+                return mSettingsFrag;
             } else {
                 Log.e(TAG, "no fragment chosen, this state should not be possible!");
                 return null;
@@ -170,7 +200,7 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     public void onItemDeleted() {
         // need to refresh ArticleListFragment:
         Log.d(TAG, "Refresh the article list fragment");
-        mArticleListFrag.refresh();
+        mArticleListFrag.localRefresh();
     }
 
     @Override
@@ -192,10 +222,6 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        // do nothing.
-    }
 
     private int getTabIconImage(String tabName) {
         switch(tabName) {

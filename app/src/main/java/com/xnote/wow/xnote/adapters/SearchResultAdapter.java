@@ -12,6 +12,7 @@ import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.SearchResult;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,8 +21,11 @@ import java.util.List;
 public class SearchResultAdapter extends BaseListAdapter {
     public static String TAG = "SearchResultAdapter";
 
+    List<SearchResult> resultList;
+
     public SearchResultAdapter(Context context, List<Object> results, Fragment parent) {
         super(context, results, parent, R.layout.search_result_layout);
+        resultList = (List<SearchResult>) (List<?>) results;
     }
 
 
@@ -40,5 +44,27 @@ public class SearchResultAdapter extends BaseListAdapter {
             view.findViewById(R.id.adapter_item).setPadding(0, 0, 0, 0);
         }
         return view;
+    }
+
+    @Override
+    public void addAll(Object... items) {
+        super.addAll(items);
+        resultList.addAll((List<SearchResult>) (List<?>) Arrays.asList(items));
+    }
+
+    @Override
+    public void add(Object item) {
+        super.add(item);
+        resultList.add((SearchResult) item);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        resultList.clear();
+    }
+
+    public List<SearchResult> getSearchResultList() {
+        return resultList;
     }
 }

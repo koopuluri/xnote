@@ -2,7 +2,10 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +53,21 @@ public class SearchFragment extends Fragment {
         });
         return view;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate().");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop().");
+    }
+
+
+
 
     public void addSearchResultsFragment(String query) {
         FragmentManager fm = getFragmentManager();
