@@ -38,7 +38,7 @@ public class ArticleImageGetter implements Html.ImageGetter {
         //Checking for natural width along with null to ensure that parse images without
         //any content are not returned. Empty parse images could be returned if there is
         //any error while downloading the image - perhaps if the image is too big.
-        if((image != null) && (image.getNaturalWidth() != 0)) {
+        if((image != null) && (image.getNaturalWidth() != 0) && (!image.getError())) {
             Log.d(TAG, "Image is not null, going to return drawable");
             //Get screenwidth to zoom in images to fit phone size
             //http://stackoverflow.com/a/9316553/4671651

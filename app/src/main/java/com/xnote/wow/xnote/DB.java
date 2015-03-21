@@ -280,12 +280,12 @@ public class DB {
         try {
             article.save();
         } catch (ParseException e) {
+            article.setContent("<br> <h2> The article could not be saved to the cloud. It will " +
+                    " not show up if you refresh or login from another device. We are working hard" +
+                    " to fix this problem. </h2>");
             Log.e(TAG, "could not save article immediately!" + e);
         }
     }
-
-
-
 
     public static void saveArticle(final ParseArticle article) {
         Log.d(TAG, "saveArticle() with id: " + article.getId());
@@ -720,7 +720,7 @@ public class DB {
             if (out.size() == 0) {
                 Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
                         imageUrlString);
-                if((!Util.IS_ANON)) {
+                if(!Util.IS_ANON) {
                     return getImageFromCloud(imageUrlString);
                 } else {
                     return null;
@@ -728,7 +728,12 @@ public class DB {
             } else {
                 ParseImage img = (ParseImage) out.get(0);
                 Log.d(TAG, "image locally: " + img.getUrl() + ", " + img.getArticleId());
-                return img;
+                //Check to see if the image has an error before returning.
+                if(!img.getError()) {
+                    return img;
+                } else {
+                    return null;
+                }
             }
         } catch (ParseException e) {
             Log.e(TAG, "getImage(): " + e);
@@ -750,7 +755,12 @@ public class DB {
                 ParseImage img = (ParseImage) out.get(0);
                 Log.d(TAG, "image from cloud: " + img.getUrl() + ", " + img.getArticleId());
                 DB.saveImageLocally(img);
-                return img;
+                //Check to see if the image has an error before returning.
+                if(!img.getError()) {
+                    return img;
+                } else {
+                    return null;
+                }
             }
         } catch (ParseException e) {
             Log.e(TAG, "getImage(): " + e);

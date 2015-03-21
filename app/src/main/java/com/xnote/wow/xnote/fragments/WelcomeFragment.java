@@ -75,6 +75,7 @@ public class WelcomeFragment extends Fragment {
                 ParseUser.enableAutomaticUser();
                 ParseUser.getCurrentUser().saveInBackground();
                 Controller.launchMainActivityWithoutClearingBackStack(getActivity());
+                getActivity().finish();
             }
         });
 

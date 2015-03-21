@@ -35,6 +35,7 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
         if(!XnoteApplication.LOG_IN) {
             ParseUser.logInInBackground("vig9295@gmail.com", "greatbro123");
             Controller.launchMainActivity(this);
+            finish();
         }
 
         setContentView(R.layout.activity_loginsignup);
@@ -72,6 +73,7 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                 Util.IS_ANON = false;
                 Controller.launchMainActivity(activity);
                 Log.d(TAG, "A user is logged in and cached");
+                finish();
             } else {
                 //Check if the user has indicated anonymous user preference before
                 if ((currentUser != null) && (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()))) {
@@ -80,6 +82,7 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                     ParseUser.getCurrentUser().saveInBackground();
                     Controller.launchMainActivity(activity);
                     Log.d(TAG, "User has chosen to be anonymous user");
+                    finish();
                 } else {
                     // If user is not anonymous then the user must be asked to login
                     settings.edit().putBoolean("chosen_to_signup", false).apply();

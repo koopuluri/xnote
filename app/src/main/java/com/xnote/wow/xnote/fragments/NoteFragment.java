@@ -108,7 +108,7 @@ public class NoteFragment extends Fragment {
     public String getNoteShareMessage() {
         String out = "";
         out += (mClippedText.getText() + "\n");
-        out += ("Note by " + ParseUser.getCurrentUser().getUsername() + ": \n");
+        out += ("Note by " + ParseUser.getCurrentUser().get(Constants.NAME) + ": \n");
         out += ("\"" + mNoteEdit.getText() + "\"\n\n");
         out += ("original article url: \n" + mArticle.getArticleUrl() + "\n\n");
         out += "sent from Xnote-Android";
@@ -137,7 +137,16 @@ public class NoteFragment extends Fragment {
                 Log.d(TAG, "done(): OLD_NOTE!");
                 mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
-                clippedBuffer = Html.fromHtml(mNote.getSelectedText());
+                clippedBuffer =  Html.fromHtml("<br><i>\"" + mNote.getSelectedText()
+                        + "\"</i><br>");
+                Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
+                        mArticle,
+                        getActivity());
+                Spanned selectedBuffer = (Spanned)
+                        articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
+                String selectedHtml = Html.toHtml(selectedBuffer);
+                Log.d(TAG, "selected html: " + selectedHtml);
+                mNote.setSelectedText(selectedHtml);
             } else {
                 Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));

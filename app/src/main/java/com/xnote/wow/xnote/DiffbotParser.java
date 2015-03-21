@@ -64,7 +64,7 @@ public class DiffbotParser {
                 int width = img.getHeightAndWidth()[1];
                 if((height <= 2048) && (width <= 2048)) {
                     downloadAndSaveImage(img.getUrl(), mArticle.getId(), img.getHeightAndWidth());
-                    Log.d(TAG, "Image saved successfully I hope");
+                    Log.d(TAG, "Image saved, may contain an error");
                 } else {
                     Log.d(TAG, "Image is too large");
                 }
@@ -189,6 +189,7 @@ public class DiffbotParser {
         try {
             String content = tags.getString("html");
             Log.d(TAG, "tags.getString('html'): " + content);
+            Log.d(TAG, "html content length :" + content.length());
             String title = tags.getString("title");
             String iconURL;
             try {
@@ -257,6 +258,13 @@ public class DiffbotParser {
             DB.saveImage(image);
             Log.d(TAG, "saveImageFromData() ParseImage created and saved for imgUrlString: " +
                     imgUrlString);
+        } else {
+            ParseImage image = new ParseImage();
+            image.setArticleId(articleId);
+            image.setUrl(imgUrlString);
+            image.setError(true);
+            DB.saveImage(image);
+            Log.d(TAG, "image saved with an error set" + imgUrlString);
         }
     }
 }

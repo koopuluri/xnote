@@ -181,9 +181,8 @@ public class NoteActivity extends Activity {
                 // Add data to the intent, the receiving app will decide what to do with it.
                 NoteFragment noteFrag = getCurrentNoteFragment();
                 Util.share(noteFrag.getArticleTitle(), noteFrag.getNoteShareMessage(),
-                            getResources().getString(R.string.note_share_message), this);
-                Log.d(TAG, "note shared for article: " + mNoteFrag.getArticleTitle());
-        }
+                    getResources().getString(R.string.note_share_message), this);
+            }
         return super.onOptionsItemSelected(item);
     }
 
