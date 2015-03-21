@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xnote.wow.xnote.Constants;
-import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleFragment;

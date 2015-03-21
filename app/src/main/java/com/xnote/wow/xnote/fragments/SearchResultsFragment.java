@@ -179,9 +179,9 @@ public class SearchResultsFragment extends ListFragment {
         protected Void doInBackground(Void... params) {
             resultList = new ArrayList<SearchResult>();
             if (!mQuery.equals("")) {
-                resultList.addAll(Search.searchArticleText(mQuery));
-                resultList.addAll(Search.searchNoteText(mQuery));
+                resultList.addAll(Search.search(mQuery));
             }
+            resultList.addAll(Search.search(mQuery));
             return null;
         }
 

@@ -293,6 +293,7 @@ public class ArticleFragment extends Fragment {
             mBuffer = new ReadBuffer(mArticleView.getLayout(), mArticleId, getActivity(), mContent);
             for (ParseNote note : mNotes) {
                 Log.d(TAG, "InitializationTask: note added with noteId: " + note.getId());
+                Log.d(TAG, "InitializationTask: note added with tstamp: " + note.getTimestamp());
                 mBuffer.addNoteSpan(note);  // since initializing, all notes are new!
             }
 
@@ -422,6 +423,7 @@ public class ArticleFragment extends Fragment {
             // get note from db:
             // note = DB.getNote(noteId);
             if (note == null) {
+                Log.d(TAG, "note is null, getting a new note");
                 note = DB.getLocalNote(noteId);
             }
             Log.d(TAG, "UpdateBufferTask: noteState: " + noteState);

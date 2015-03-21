@@ -10,7 +10,9 @@ import com.xnote.wow.xnote.models.ParseNote;
 import com.xnote.wow.xnote.models.SearchResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Does all the search stuffs.
@@ -25,7 +27,8 @@ public class Search {
         query.whereContains(ParseArticle.CONTENT, textToSearch);
         query.fromLocalDatastore();
         query.orderByDescending(ParseArticle.TIMESTAMP);
-        final List<SearchResult> out = new ArrayList<>();
+        //Returns a list of articles in order of timestamp
+        List<SearchResult> articles = new ArrayList<>();
         try {
             List<ParseObject> results = query.find();
             for (ParseObject obj : results) {
@@ -36,24 +39,25 @@ public class Search {
                 result.id = a.getId();
                 result.type = DB.ARTICLE;
                 result.numHits = 3;  //TODO: actually calculate the number of hits of 'textToSearch' in this article!
-                out.add(result);
-                Log.d(TAG, "searchArticleText(): result added to outList: " + result.title + ", " + result.id);
+                articles.add(result);
+                Log.d(TAG, "searchArticleText(): result added to list: " + result.title + ", " + result.id);
             }
         } catch (ParseException e) {
             Log.e(TAG, "searchArticleText(): unable to get results: " + e);
         }
 
-        return out;
+        return articles;
     }
 
 
-    public static List<SearchResult> searchNoteText(final String textToSearch) {
+    public static Map<String, List<SearchResult>> searchNoteText(final String textToSearch) {
         // full text search through articles:
         ParseQuery<ParseObject> query = ParseQuery.getQuery(DB.NOTE);
         query.whereContains(ParseNote.CONTENT, textToSearch);
         query.fromLocalDatastore();
         query.orderByDescending(ParseNote.TIMESTAMP);
-        final List<SearchResult> out = new ArrayList<>();
+        //Stores the list of notes that have a hit for a given article
+        final Map<String, List<SearchResult>> out = new HashMap();
         try {
             List<ParseObject> results = query.find();
             for (ParseObject obj : results) {
@@ -65,12 +69,54 @@ public class Search {
                 result.id = n.getId();
                 result.type = DB.NOTE;
                 result.numHits = 3;  //TODO: actually calculate the number of hits of 'textToSearch' in this article!
-                out.add(result);
-                Log.d(TAG, "searchNoteText(): result added to outList: " + result.title + ", " + result.id);
+                List<SearchResult> notesForGivenArticle;
+                if(out.containsKey(n.getArticleId())) {
+                    notesForGivenArticle = (List<SearchResult>) out.get(n.getArticleId());
+                } else {
+                    notesForGivenArticle = new ArrayList<>();
+                }
+                notesForGivenArticle.add(result);
+                out.put(n.getArticleId(), notesForGivenArticle);
+                Log.d(TAG, "searchNoteText(): result added to hashmap: " + result.title + ", " + result.id);
+                Log.d(TAG, "timestamp for note: " + Util.dateFromSeconds(result.tstamp) + " " +
+                        Util.dateFromSeconds(n.getTimestamp()));
             }
         } catch (ParseException e) {
             Log.e(TAG, "searchNoteText(): unable to get results: " + e);
         }
         return out;
+    }
+
+    public static List<SearchResult> search(final String textToSearch) {
+        Map<String, List<SearchResult>> notesOut = searchNoteText(textToSearch);
+        List<SearchResult> articlesOut = searchArticleText(textToSearch);
+        List<SearchResult> results = new ArrayList<>();
+
+        //Add the article and the notes that have a hit for that article
+        for(SearchResult article : articlesOut) {
+            results.add(article);
+            if(notesOut.containsKey(article.id)) {
+                results.addAll(notesOut.get(article.id));
+                notesOut.remove(article.id);
+            }
+        }
+
+        //If any notes are remaining the article is got from the database.
+        for (Map.Entry<String, List<SearchResult>> entry : notesOut.entrySet()) {
+            String articleId = entry.getKey();
+            List<SearchResult> notesForGivenArticle = entry.getValue();
+            ParseArticle a = DB.getLocalArticle(articleId);
+            if(a != null) {
+                SearchResult result = new SearchResult();
+                result.title = a.toString();
+                result.tstamp = a.getTimestamp();
+                result.id = a.getId();
+                result.type = DB.ARTICLE;
+                result.numHits = 3;
+                results.add(result);
+                results.addAll(notesForGivenArticle);
+            }
+        }
+        return results;
     }
 }

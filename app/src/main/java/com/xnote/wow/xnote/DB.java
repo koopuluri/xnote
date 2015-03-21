@@ -412,16 +412,15 @@ public class DB {
 
     private static void deleteLocalNotesForArticleInBackground(final String articleId) {
         final String tag = TAG + ".deleteLocalNotesForArticleInBackground(): ";
-        Log.d(tag, "");
         ParseQuery query = ParseQuery.getQuery(NOTE);
         query.fromLocalDatastore();
-        query.whereEqualTo(ParseNote.ID, articleId);
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
+        query.findInBackground(new FindCallback<ParseNote>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                for (ParseObject obj : list) {
-                    // unpin in backgroudn:
-                    Log.d(tag, "note for article unpin inbackground() about to be launched.");
+            public void done(List<ParseNote> list, ParseException e) {
+                for (ParseNote obj : list) {
+                    // unpin in background:
+                    Log.d(tag, "note with note id deleted locally: " + obj.getId());
                     obj.unpinInBackground();
                 }
             }
@@ -432,12 +431,12 @@ public class DB {
         final String tag = TAG + ".deleteCloudNotesForArticleInBackground(): ";
         ParseQuery query = ParseQuery.getQuery(NOTE);
         query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.findInBackground(new FindCallback<ParseNote>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                for (ParseObject obj : list) {
+            public void done(List<ParseNote> list, ParseException e) {
+                for (ParseNote obj : list) {
                     // delete in background:
-                    Log.d(tag, "note for article deleteinbackground() about to launched.");
+                    Log.d(tag, "note with note id deleted in cloud: " + obj.getId());
                     obj.deleteEventually();
                 }
             }
@@ -475,7 +474,7 @@ public class DB {
         final String tag = TAG + ".deleteCloudNotesForArticle(): ";
         Log.d(tag, "");
         ParseQuery query = ParseQuery.getQuery(NOTE);
-        query.whereEqualTo(ParseNote.ID, articleId);
+        query.whereEqualTo(ParseNote.ARTICLE_ID, articleId);
         List<ParseObject> list = null;
         try {
             list = query.find();
@@ -516,7 +515,7 @@ public class DB {
         } catch (ParseException e) {
             Log.e(TAG, "article could not be deleted locally: " + article.getId());
         }
-        deleteLocalNotesForArticleInBackground(article.getId());
+        deleteLocalNotesForArticle(article.getId());
     }
 
     private static void deleteArticleInCloud(final ParseArticle article) {
@@ -525,15 +524,17 @@ public class DB {
         } catch (ParseException e) {
             Log.e(TAG, "could not delete article from cloud: " + e);
         }
-        deleteCloudNotesForArticleInBackground(article.getId());
+        deleteCloudNotesForArticle(article.getId());
     }
 
 
     public static void deleteArticleInBackground(final ParseArticle article) {
         Log.d(TAG, "deleteArticleInBackground(ParseArticle): " + article.getId());
         article.unpinInBackground();
+        deleteLocalNotesForArticleInBackground(article.getId());
         if (!Util.IS_ANON) {
             article.deleteInBackground();
+            deleteCloudNotesForArticleInBackground(article.getId());
         }
     }
 
@@ -596,6 +597,8 @@ public class DB {
         }
     }
 
+    //-----------------------------------DELETE NOTES-----------------------------------------------
+
     public static void deleteNote(final ParseNote note) {
         Log.d(TAG, "deletNote(note):" + note);
         deleteNoteLocallyInBackground(note);
@@ -604,8 +607,6 @@ public class DB {
             deleteNoteInCloudInBackground(note);
         }
     }
-
-    //-----------------------------------DELETE NOTES-----------------------------------------------
 
     private static void deleteNoteLocallyInBackground(final ParseNote note) {
         note.unpinInBackground();
