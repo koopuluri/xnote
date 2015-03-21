@@ -36,7 +36,8 @@
             android:parentActivityName=".activities.ArticleActivity" >
         </activity>
 =
-        <activity android:name=".activities.ReceiveActivity" >
+        <activity android:name=".activities.ReceiveActivity"
+            android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAUlT" />

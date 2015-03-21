@@ -35,9 +35,9 @@ public class NoteFragment extends Fragment {
     EditText mNoteEdit;
     ParseNote mNote;
     ParseArticle mArticle;
-    ImageButton mDoneButton;
     boolean mIsOld;
     ProgressBar mLoadingSpinner;
+    boolean mInitialized;
 
 
     public static NoteFragment newInstance(String noteId) {
@@ -65,6 +65,7 @@ public class NoteFragment extends Fragment {
             mIsOld = true;
         else
             mIsOld = false;
+        mInitialized = false;
     }
 
 
@@ -137,7 +138,7 @@ public class NoteFragment extends Fragment {
                 Log.d(TAG, "done(): OLD_NOTE!");
                 mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
-                clippedBuffer = Html.fromHtml(mNote.getSelectedText());
+                clippedBuffer = Html.fromHtml("<br><i>\"" + mNote.getSelectedText() + "\"</i><br>");
             } else {
                 Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));
@@ -183,6 +184,7 @@ public class NoteFragment extends Fragment {
                 mNoteEdit.setSelection(mNoteEdit.getText().length());
             }
             else mNoteEdit.setHint(R.string.note_hint);
+            mInitialized = true;
         }
     }
 
@@ -200,6 +202,8 @@ public class NoteFragment extends Fragment {
     }
 
     private void done(int noteState) {
+        if (!mInitialized)
+            return;
         mNote.setContent(mNoteEdit.getText().toString());
         Log.d(TAG, "done(): noteId: " + mNote.getId());
         Intent intent = new Intent();

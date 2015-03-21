@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 
 import java.net.MalformedURLException;
@@ -27,6 +29,7 @@ public class ReceiveActivity extends Activity {
     boolean isPaused;
     ParseArticle mNewArticle;
     Activity mThisActivity;
+    //TextView mSaveMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,11 @@ public class ReceiveActivity extends Activity {
         mThisActivity = this;
         mNewArticle = new ParseArticle();
         mNewArticle.setId();
+
+//        mSaveMessage = (TextView) findViewById(R.id.save_message);
+//        mSaveMessage.setText("saving to xnote...");
+//        Util.setXnoteTypeFace(this, mSaveMessage);
+
         new HandleSendTextTask().execute();
     }
 
@@ -73,6 +81,7 @@ public class ReceiveActivity extends Activity {
                     finish();
                 } else {
                     Controller.launchLoginSignUpActivity(mThisActivity);
+                    finish();
                 }
             } else {
                 Log.e(TAG, "stringUrl is null after handleText().");

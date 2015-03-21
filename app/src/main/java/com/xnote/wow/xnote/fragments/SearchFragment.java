@@ -56,10 +56,17 @@ public class SearchFragment extends Fragment {
         SearchResultsFragment searchResultsFrag =
                 (SearchResultsFragment) SearchResultsFragment.newInstance(query);
 
+        if (mSearchResultsFrag != null) {
+            // no need to add, but just update:
+            mSearchResultsFrag.updateResults(query);
+            return;
+        }
+
         fm.beginTransaction()
                 .add(R.id.search_results_container, searchResultsFrag, SearchResultsFragment.TAG)
                 .addToBackStack(SearchResultsFragment.TAG)
                 .commit();
         mSearchResultsFrag = searchResultsFrag;
+
     }
 }

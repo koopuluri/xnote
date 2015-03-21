@@ -12,6 +12,7 @@ import android.util.Log;
 import com.xnote.wow.xnote.ParseArticleManager;
 import com.xnote.wow.xnote.ParseCallback;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 import com.xnote.wow.xnote.fragments.SearchResultsFragment;
@@ -43,22 +44,28 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mPagerAdapter = new PagerAdapter(
-                getFragmentManager());
+        mPagerAdapter = new PagerAdapter(this);
         mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
         mViewPager.setAdapter(mPagerAdapter);
+
+        final Activity me = this;
+
         mArticleManager = ParseArticleManager.getInstance();
         if (savedInstanceState != null)
             currentPosition = savedInstanceState.getInt(CURRENT_POSITION);  // so the fragment that was last viewed can be given focus.
         // action bar shii:
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
+        
         mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
                         actionBar.setSelectedNavigationItem(position);
                         currentPosition = position;
+                        if (currentPosition != 1) {
+                            Util.hideKeyboard(me);
+                        }
                     }
                 });
         // specifying that tabs should be displayed in actionbar:
@@ -109,8 +116,11 @@ public class MainActivity extends Activity implements SearchResultsFragment.OnIt
 
 
     private class PagerAdapter extends android.support.v13.app.FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fm) {
-            super(fm);
+        Activity mParent;
+
+        public PagerAdapter(Activity parent) {
+            super(parent.getFragmentManager());
+            mParent = parent;
         }
 
         @Override
