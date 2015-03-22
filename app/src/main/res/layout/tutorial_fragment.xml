@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/note_taking_tutorial"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#33FFFF00">
@@ -9,8 +10,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
         <ImageView
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
@@ -18,7 +17,6 @@
             android:layout_height="712px"
             android:layout_gravity="center"
             android:src="@drawable/tutorial_screenshot"/>
-
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,7 +26,6 @@
             android:id="@+id/tutorial_message"
             android:textAlignment="center"
             android:text="To take notes highlight text and add as shown in the image above"/>
-
     </LinearLayout>
 
     <ImageButton

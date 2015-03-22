@@ -11,6 +11,7 @@ import com.xnote.wow.xnote.models.ParseConstant;
 import com.xnote.wow.xnote.models.ParseFeedback;
 import com.xnote.wow.xnote.models.ParseImage;
 import com.xnote.wow.xnote.models.ParseNote;
+import com.xnote.wow.xnote.models.ParseUserInfo;
 
 /**
  * Created by koopuluri on 2/11/15.
@@ -28,6 +29,7 @@ public class XnoteApplication extends Application {
         ParseObject.registerSubclass(ParseImage.class);
         ParseObject.registerSubclass(ParseFeedback.class);
         ParseObject.registerSubclass(ParseConstant.class);
+        ParseObject.registerSubclass(ParseUserInfo.class);
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "vkam91pQ14fnKfWjMqrPGqsweUzTGD1j5ZqS5hvA",
                 "BckIbDZpvzDMBnM5P1wP3w2UzF8uwcP5JZEN5rX5");

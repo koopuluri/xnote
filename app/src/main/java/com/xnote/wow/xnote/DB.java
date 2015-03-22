@@ -13,6 +13,7 @@ import com.xnote.wow.xnote.models.ParseConstant;
 import com.xnote.wow.xnote.models.ParseFeedback;
 import com.xnote.wow.xnote.models.ParseImage;
 import com.xnote.wow.xnote.models.ParseNote;
+import com.xnote.wow.xnote.models.ParseUserInfo;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ public class DB {
     public static final String IMAGE = "Image";
     public static final String FEEDBACK = "Feedback";
     public static final String CONSTANT = "Constant";
+    public static final String PARSE_USER_INFO = "ParseUserInfo";
 
     public static void sync() throws ParseException {
         List<ParseObject> cloudArticleObjects = (List<ParseObject>)(List<?>) getArticlesFromCloud();
@@ -41,6 +43,12 @@ public class DB {
         List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
         List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
+        if (cloudNoteObjects.size() == 0) {
+            setIsNew(true);
+        } else {
+
+        }
+
         syncObjects(localArticleObjects, cloudArticleObjects);
         syncObjects(localNoteObjects, cloudNoteObjects);
         syncObjects(localImageObjects, cloudImageObjects);
@@ -50,6 +58,50 @@ public class DB {
 
 
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
+
+    public static void setIsNew(boolean isNew) {
+        ParseQuery query = ParseQuery.getQuery(PARSE_USER_INFO);
+        query.fromLocalDatastore();
+        try {
+            ParseUserInfo info = (ParseUserInfo) query.getFirst();
+            if (info == null) {
+                info = new ParseUserInfo();
+                info.setIsNew(isNew);
+                info.pin();
+            } else {
+                if (!info.getIsNew()) {
+                    info.setIsNew(isNew);
+                    info.pin();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "setIsNew Error: " + e);
+            ParseUserInfo info = new ParseUserInfo();
+            info = new ParseUserInfo();
+            info.setIsNew(isNew);
+            try {
+                info.pin();
+            } catch (ParseException e2) {
+                Log.e(TAG, "couldn't pin: " + e2);
+            }
+        }
+    }
+
+
+    public static boolean isNew() {
+        ParseQuery query = ParseQuery.getQuery(PARSE_USER_INFO);
+        query.fromLocalDatastore();
+        try {
+            ParseUserInfo info = (ParseUserInfo) query.getFirst();
+            if (info != null) {
+                return info.getIsNew();
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "isNew() error: " + e);
+        }
+        return true;
+    }
+
 
     private static void syncObjects(List<ParseObject> localObjects,
                                     List<ParseObject> cloudObjects) throws ParseException{
@@ -336,6 +388,10 @@ public class DB {
         if (!Util.IS_ANON) {
             Log.d(TAG, "not an anon user, so also saving note eventually.");
             saveNoteToCloud(note);
+        }
+        // toggling is user new:
+        if (isNew()) {
+            setIsNew(false);
         }
     }
 
@@ -757,7 +813,6 @@ public class DB {
         Log.d(TAG, "saveFeedback()");
         feedback.saveEventually();
     }
-
     //---------------------------DIFFBOT CONSTANT STUFF-------------------
 
     public static String getConstantCloud() {

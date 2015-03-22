@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -66,6 +69,7 @@ public class ArticleFragment extends Fragment {
     NoteEngine mNoteEngine;
     List<ParseNote> mNotes;
     ProgressBar mLoadingSpinner;
+    FrameLayout mTutorialLayout;
 
     boolean mIsNoteSelected;
     ArticleFragmentInterface mListener;
@@ -116,6 +120,18 @@ public class ArticleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_read, container, false);
         mScrollView = (ScrollView) view.findViewById(R.id.read_scroll_view);
         mArticleView = new ArticleView(getActivity());
+        mTutorialLayout = (FrameLayout) view.findViewById(R.id.note_taking_tutorial);
+        ImageButton tutorialButton = (ImageButton)
+                mTutorialLayout.findViewById(R.id.tutorial_done_button);
+        tutorialButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // if visible, hide the tutorial:
+                mTutorialLayout.setVisibility(View.GONE);
+            }
+        });
+
+        mTutorialLayout.setVisibility(View.GONE);
         // setting spinner:
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.fragment_article_loading_spinner);
         mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -159,9 +175,7 @@ public class ArticleFragment extends Fragment {
             }
         });
         mIsNoteSelected = false;
-
         // deleting exisitng articleView if it exists:
-
         if (mBuffer != null && mArticle != null && mNotes != null) {
             initializeFromRetained();
         } else {
@@ -336,6 +350,8 @@ public class ArticleFragment extends Fragment {
 
 
     private class BufferInitializeTask extends AsyncTask<Void, Void, Void> {
+        boolean isUserNew;
+
         @Override
         public Void doInBackground(Void... params) {
             Log.d(TAG, "InitializeTask: doInBackground()");
@@ -359,6 +375,8 @@ public class ArticleFragment extends Fragment {
             Log.d(TAG, "InitializeTask.doInBackground() complete");
             setRetainedInformation();
             Log.d(TAG, "setRetainedInformation()");
+
+            isUserNew = DB.isNew();
             return null;
         }
 
@@ -367,6 +385,9 @@ public class ArticleFragment extends Fragment {
         public void onPostExecute(Void _) {
             redraw();  // sets text for ArticleView with mBuffer.getBuffer().
             mLoadingSpinner.setVisibility(View.GONE);
+            if (isUserNew) {
+                mTutorialLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 

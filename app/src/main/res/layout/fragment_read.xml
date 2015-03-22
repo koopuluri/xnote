@@ -36,6 +36,53 @@
             android:layout_marginEnd="@dimen/add_button_margin"
             android:layout_marginRight="@dimen/add_button_margin"
             android:background="@drawable/round_button"
-            android:backgroundTint="@color/accent_color_dark"
             android:src="@drawable/add_icon"/>
+
+
+    <FrameLayout
+        android:id="@+id/note_taking_tutorial"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66FFFF00">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="400px"
+                android:layout_height="712px"
+                android:layout_gravity="center"
+                android:src="@drawable/tutorial_screenshot"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/tutorial_message"
+                android:textAlignment="center"
+                android:text="To take notes highlight text and add as shown in the image above"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/tutorial_done_button"
+            android:layout_width="@dimen/round_button_diameter"
+            android:layout_height="@dimen/round_button_diameter"
+            android:layout_gravity="right|bottom"
+            android:gravity="right|bottom"
+            android:stateListAnimator="@anim/button_elevation"
+            android:layout_marginBottom="@dimen/add_button_margin"
+            android:layout_marginEnd="@dimen/add_button_margin"
+            android:background="@drawable/round_button"
+            android:src="@drawable/done_icon"/>
+
+    </FrameLayout>
 </FrameLayout>
