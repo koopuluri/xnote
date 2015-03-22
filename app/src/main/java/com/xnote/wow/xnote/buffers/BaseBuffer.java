@@ -1,11 +1,9 @@
 package com.xnote.wow.xnote.buffers;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 
 import com.xnote.wow.xnote.NoteSpan;
@@ -27,7 +25,7 @@ public abstract class BaseBuffer {
     public static final String TAG = "BaseBuffer";
     public static final int NUM_SPANS = 4;  // this is the number of spans in the buffer for one note.
     // public static final String NOTE_COLOR = "#FFF9C4";
-    public static final String NOTE_COLOR = "#FFEB3B";
+    public static final String NOTE_COLOR = "#FFF9C4";
     public static final String SELECTION_COLOR = "#FDD835";
 
     public static final String SEARCH_SELECTION_COLOR = "#FDD835";

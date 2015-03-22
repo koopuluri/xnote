@@ -257,6 +257,7 @@ public class DiffbotParser {
             image.setUrl(imgUrlString);
             image.setNaturalHeight(heightAndWidth[0]);
             image.setNaturalWidth(heightAndWidth[1]);
+            image.setError(false);
             // saving image:
             DB.saveImage(image);
             Log.d(TAG, "saveImageFromData() ParseImage created and saved for imgUrlString: " +

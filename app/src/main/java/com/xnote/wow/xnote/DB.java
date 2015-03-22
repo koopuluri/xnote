@@ -758,7 +758,7 @@ public class DB {
         try {
             out = query.find();
             if (out.size() == 0) {
-                Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
+                Log.d(TAG, "getImageLocally(), no image found for given imageUrlString: " +
                         imageUrlString);
                 if(!Util.IS_ANON) {
                     return getImageFromCloud(imageUrlString);
@@ -784,11 +784,12 @@ public class DB {
     public static ParseImage getImageFromCloud(String imageUrlString) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(IMAGE);
         query.whereEqualTo(ParseImage.URL, imageUrlString);
+        Log.d(TAG, "called get image from cloud");
         List<ParseObject> out;
         try {
             out = query.find();
             if (out.size() == 0) {
-                Log.d(TAG, "getImage(), no image found for given imageUrlString: " +
+                Log.d(TAG, "getImageFromCloud(), no image found for given imageUrlString: " +
                         imageUrlString);
                 return null;
             } else {

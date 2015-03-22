@@ -12,6 +12,7 @@ import com.xnote.wow.xnote.DB;
 public class ParseFeedback extends ParseObject {
     public static final String FEEDBACK_TYPE = "FeedbackType";
     public static final String COMMENTS = "Comments";
+    public static final String USER = "User";
 
     //-----------------GETTERS---------------------------
     public String getFeedbackType() {
@@ -22,6 +23,8 @@ public class ParseFeedback extends ParseObject {
         return getString(COMMENTS);
     }
 
+    public String getUser() { return getString(USER); }
+
     //-----------------SETTERS---------------------------
     public void setFeedbackType(String feedbackType) {
         put(FEEDBACK_TYPE, feedbackType);
@@ -30,4 +33,6 @@ public class ParseFeedback extends ParseObject {
     public void setComments(String comments) {
         put(COMMENTS, comments);
     }
+
+    public void setUser(String username) { put(USER, username); }
 }

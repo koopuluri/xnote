@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
+import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
@@ -62,6 +63,9 @@ public class FeedbackActivity extends Activity {
                 ParseFeedback feedback = new ParseFeedback();
                 feedback.setFeedbackType(spin);
                 feedback.setComments(mCommentsEditText.getText().toString());
+                if(!Util.IS_ANON) {
+                    feedback.setUser(ParseUser.getCurrentUser().getUsername());
+                }
                 DB.saveFeedbackInBackground(feedback);
                 Controller.launchMainActivity(activity);
             }
