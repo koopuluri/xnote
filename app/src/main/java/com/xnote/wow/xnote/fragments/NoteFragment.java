@@ -74,6 +74,7 @@ public class NoteFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_note, container, false);
         mClippedText = (TextView) view.findViewById(R.id.note_clipped_text);
         mNoteEdit = (EditText) view.findViewById(R.id.note_edit_text);
+        mNoteEdit.requestFocus();
 
         Util.setXnoteTypeFace(getActivity(), mClippedText);
         Util.setXnoteTypeFace(getActivity(), mNoteEdit);

@@ -9,6 +9,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.xnote.wow.xnote.models.ParseArticle;
+import com.xnote.wow.xnote.models.ParseConstant;
 import com.xnote.wow.xnote.models.ParseFeedback;
 import com.xnote.wow.xnote.models.ParseImage;
 import com.xnote.wow.xnote.models.ParseNote;
@@ -28,6 +29,7 @@ public class DB {
     public static final String NOTE = "Note";
     public static final String IMAGE = "Image";
     public static final String FEEDBACK = "Feedback";
+    public static final String CONSTANT = "Constant";
 
 
     public static void sync() throws ParseException {
@@ -774,5 +776,65 @@ public class DB {
         Log.d(TAG, "saveFeedback()");
         feedback.saveEventually();
     }
+
+    //---------------------------DIFFBOT CONSTANT STUFF-------------------
+
+    public static String getConstantCloud() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(DB.CONSTANT);
+        try {
+            List<ParseConstant> constants = (List<ParseConstant>) (List<?>) query.find();
+            if(constants.size() > 0) {
+                return constants.get(0).getDiffbotToken();
+            } else {
+                return null;
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "getConstantCloud query error :" + e);
+            return null;
+        }
+    }
+
+
+
+    public static String getConstantLocally() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(DB.CONSTANT);
+        query.fromLocalDatastore();
+        try {
+            List<ParseConstant> constants = (List<ParseConstant>) (List<?>) query.find();
+            if(constants.size() > 0) {
+                return constants.get(0).getDiffbotToken();
+            } else {
+                return null;
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "getConstantLocally query error :" + e);
+            return null;
+        }
+    }
+
+    public static void clearLocalConstants() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(DB.CONSTANT);
+        query.fromLocalDatastore();
+        try {
+            List<ParseConstant> constants = (List<ParseConstant>) (List<?>) query.find();
+            for(ParseConstant constant : constants) {
+                constant.unpin();
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "clearConstantLocally error :" + e);
+        }
+    }
+
+    public static void saveConstantLocally(String token) {
+        ParseConstant constant = new ParseConstant();
+        constant.setDiffbotToken(token);
+        try {
+            constant.pin();
+        } catch(ParseException e) {
+            Log.e(TAG, "Could not save token locally: " + e);
+        }
+    }
+
 }
+
 

@@ -1,7 +1,9 @@
 package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ public class WelcomeFragment extends Fragment {
 
     public static final String TAG = "WelcomeFragment";
     Button mSignUpButton;
+    TextView mCaptionTextView;
     TextView mContinueTextView;
     TextView mContinueToLogin;
     private LoginSignUpInterface mListener;
@@ -54,6 +57,12 @@ public class WelcomeFragment extends Fragment {
         final SharedPreferences settings = this.getActivity().getSharedPreferences(PREFS_NAME, 0);
 
         final Fragment thisFragment = this;
+
+        mCaptionTextView = (TextView)view.findViewById(R.id.caption_text_view);
+        mCaptionTextView.setText(getActivity().getResources().getString(R.string.caption));
+        Util.setXnoteTypeFace(getActivity(), mCaptionTextView);
+        mCaptionTextView.setTextSize(20.0f);
+
         mSignUpButton = (Button)view.findViewById(R.id.signup_button);
         mSignUpButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -70,12 +79,27 @@ public class WelcomeFragment extends Fragment {
                 //They are taken directly to the first screen of the application
                 //Enable automatic user in Parse so that their data can be stored
                 Util.IS_ANON = true;
-                settings.edit().putBoolean("chosen_to_signup", false).apply();
-                settings.edit().putBoolean("my_first_time", false).apply();
-                ParseUser.enableAutomaticUser();
-                ParseUser.getCurrentUser().saveInBackground();
-                Controller.launchMainActivityWithoutClearingBackStack(getActivity());
-                getActivity().finish();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.anonymous_user_confirmation);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        settings.edit().putBoolean("chosen_to_signup", false).apply();
+                        settings.edit().putBoolean("my_first_time", false).apply();
+                        ParseUser.enableAutomaticUser();
+                        ParseUser.getCurrentUser().saveInBackground();
+                        Controller.launchMainActivityWithoutClearingBackStack(getActivity());
+                        getActivity().finish();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 

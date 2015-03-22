@@ -45,7 +45,6 @@ public class Search {
         } catch (ParseException e) {
             Log.e(TAG, "searchArticleText(): unable to get results: " + e);
         }
-
         return articles;
     }
 

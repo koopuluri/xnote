@@ -31,6 +31,7 @@ public class SearchResultAdapter extends BaseListAdapter {
         SearchResult result = (SearchResult) getItem(position);
         TextView titleTextview = (TextView) view.findViewById(R.id.title_text_view);
         TextView tstampTextView = (TextView) view.findViewById(R.id.tstamp_text_view);
+        tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
         LinearLayout noteLayout = (LinearLayout) view.findViewById(R.id.note_text_layout);
         String titleString = result.title;
         if(titleString.length() > 90) {
@@ -38,11 +39,12 @@ public class SearchResultAdapter extends BaseListAdapter {
         }
         titleTextview.setText(titleString);
         if(result.type.equalsIgnoreCase(DB.NOTE)) {
+            tstampTextView.setVisibility(View.INVISIBLE);
             noteLayout.setVisibility(View.VISIBLE);
             view.findViewById(R.id.adapter_item).setPadding(60, 0, 0, 0);
         } else {
             view.findViewById(R.id.adapter_item).setPadding(0, 0, 0, 0);
-            tstampTextView.setText(Util.dateFromSeconds(result.tstamp));
+            tstampTextView.setVisibility(View.VISIBLE);
             noteLayout.setVisibility(View.INVISIBLE);
         }
         return view;

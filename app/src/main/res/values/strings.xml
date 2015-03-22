@@ -5,8 +5,12 @@
     <string name="action_share">share</string>
     <string name="action_refresh">refresh</string>
     <string name="action_delete">delete</string>
-
     <string name="app_name">Xnote</string>
+    <string name="caption">Post it notes for the internet</string>
+    <string name="anonymous_user_confirmation">
+        You have chosen to continue as an anonymous user. Your content will not be stored online and
+        will not be accessible from other devices. Are you sure you want to continue?
+    </string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="note_hint">Enter Note.</string>
@@ -33,6 +37,7 @@
             <item>Bugs</item>
             <item>Design</item>
             <item>Performance</item>
+            <item>Additional Features</item>
             <item>Other</item>
     </string-array>
 

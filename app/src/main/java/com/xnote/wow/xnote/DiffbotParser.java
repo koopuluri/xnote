@@ -86,7 +86,10 @@ public class DiffbotParser {
      */
     private List<DiffbotImageInfo> parseArticle(String articleURL) {
         String url = "http://api.diffbot.com/v3/article";
-        String token = "9fa0294020c516932daf9ad7d45cd36b"; //TODO: Put this somewhere and get it
+        String token = Constants.DIFFBOT_TOKEN;
+        if(Constants.DIFFBOT_TOKEN == null) {
+            token = "9fa0294020c516932daf9ad7d45cd36b";
+        }
         String query;
         String query2;
         //Removing the .m from the URL so desktop version of the site is used when parsing

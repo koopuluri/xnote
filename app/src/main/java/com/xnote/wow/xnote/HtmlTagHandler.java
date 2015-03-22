@@ -47,6 +47,16 @@ public class HtmlTagHandler implements Html.TagHandler {
             if(opening) {
                 output.append("br");
             }
+        } else if(tag.equalsIgnoreCase("span")) {
+            if(opening) {
+                try {
+                    String aClass = xmlReader.getProperty("class").toString();
+                    Log.d(TAG, "class of the span tag: " + aClass);
+                } catch(Exception e) {
+                    //TODO: Make this exception more specific
+                    Log.e(TAG, "Exception found when trying to read class attribute");
+                }
+            }
         }
         //TODO: Handle Pre tags
     }
