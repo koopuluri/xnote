@@ -11,8 +11,10 @@ import com.xnote.wow.xnote.models.SearchResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Does all the search stuffs.
@@ -29,18 +31,23 @@ public class Search {
         query.orderByDescending(ParseArticle.TIMESTAMP);
         //Returns a list of articles in order of timestamp
         List<SearchResult> articles = new ArrayList<>();
+        Set<String> idSet = new HashSet<String>();
         try {
             List<ParseObject> results = query.find();
             for (ParseObject obj : results) {
                 ParseArticle a = (ParseArticle) obj;
+                if (!a.isParsed())
+                    continue;
                 SearchResult result = new SearchResult();
                 result.title = a.toString();
                 result.tstamp = a.getTimestamp();
                 result.id = a.getId();
                 result.type = DB.ARTICLE;
                 result.numHits = 3;  //TODO: actually calculate the number of hits of 'textToSearch' in this article!
-                articles.add(result);
-                Log.d(TAG, "searchArticleText(): result added to list: " + result.title + ", " + result.id);
+                if (!idSet.contains(a.getId())) {
+                    articles.add(result);
+                    idSet.add(a.getId());
+                }
             }
         } catch (ParseException e) {
             Log.e(TAG, "searchArticleText(): unable to get results: " + e);

@@ -51,7 +51,7 @@ public abstract class BaseSelectableListFragment extends ListFragment {
         mList = new ArrayList<>();
         if (mChildName.equals(ArticleListFragment.TAG)) {
             mAdapter = new ArticleAdapter(getActivity(), mList, this);
-        } else if (mChildName.equals(SearchResultsFragment.TAG)) {
+        } else if (mChildName.equals(SearchFragment.TAG)) {  //TODO: this class isn't yet being used for SearchFragment! Only ArticleListFragment.
             mAdapter = new SearchResultAdapter(getActivity(), mList, this);
         } else {
             Log.e(TAG, "unkown child fragment.");
@@ -65,8 +65,10 @@ public abstract class BaseSelectableListFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // View view  = super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_article_list, container, false);
-        mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message);
+        mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message); // TODO: take this out of this base class
         mNoArticlesMessage.setVisibility(View.GONE);
+
+
         // wrapping fragment's contentView with SwipeRefreshLayout:
         mSwipeRefreshLayout = new ListFragmentSwipeRefreshLayout(container.getContext());
         // adding list fragment's content view to SwipeRefreshLayout, making sure it fills it up:

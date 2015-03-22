@@ -40,7 +40,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
     public interface ArticleListListener {
         public void parseArticle(ParseArticle article);
-        public void noArticles();
     }
 
     @Override
@@ -83,6 +82,15 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         getSwipeRefreshLayout().setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                List<Object> itemList = getItemList();
+                for (Object obj : itemList) {
+                    ParseArticle a = (ParseArticle) obj;
+                    if (!a.isParsed()) {
+                        // do nothing:
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+                }
                 refresh();
             }
         });
@@ -105,6 +113,11 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             }
         }
         new ArticleListInitializationTask(getActivity(), true).execute();
+    }
+
+
+    public void localRefresh() {
+        new ArticleListInitializationTask(getActivity(), false).execute();
     }
 
 
