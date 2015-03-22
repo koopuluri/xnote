@@ -51,7 +51,7 @@ public abstract class BaseSelectableListFragment extends ListFragment {
         mList = new ArrayList<>();
         if (mChildName.equals(ArticleListFragment.TAG)) {
             mAdapter = new ArticleAdapter(getActivity(), mList, this);
-        } else if (mChildName.equals(SearchResultsFragment.TAG)) {
+        } else if (mChildName.equals(SearchFragment.TAG)) {  //TODO: this class isn't yet being used for SearchFragment! Only ArticleListFragment.
             mAdapter = new SearchResultAdapter(getActivity(), mList, this);
         } else {
             Log.e(TAG, "unkown child fragment.");

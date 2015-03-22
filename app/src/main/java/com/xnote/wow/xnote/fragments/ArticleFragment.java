@@ -68,6 +68,27 @@ public class ArticleFragment extends Fragment {
     ProgressBar mLoadingSpinner;
 
     boolean mIsNoteSelected;
+    ArticleFragmentInterface mListener;
+
+    public interface ArticleFragmentInterface {
+        public ReadBuffer getRetainedBuffer();
+        public void setRetainedBuffer(ReadBuffer buffer);
+        public ParseArticle getRetainedArticle();
+        public void setRetainedArticle(ParseArticle article);
+        public List<ParseNote> getRetainedNotes();
+        public void setRetainedNotes(List<ParseNote> notes);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (ArticleFragmentInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() +
+                    "must implement ArticleFragmentInterface.");
+        }
+    }
 
 
     public static Fragment newInstance(String articleId) {
@@ -84,6 +105,9 @@ public class ArticleFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mArticleId = getArguments().getString(Constants.ARTICLE_ID);
         mInitialized = false;
+        mBuffer = mListener.getRetainedBuffer();
+        mArticle = mListener.getRetainedArticle();
+        mNotes = mListener.getRetainedNotes();
     }
 
     @Override
@@ -92,7 +116,6 @@ public class ArticleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_read, container, false);
         mScrollView = (ScrollView) view.findViewById(R.id.read_scroll_view);
         mArticleView = new ArticleView(getActivity());
-
         // setting spinner:
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.fragment_article_loading_spinner);
         mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -100,7 +123,6 @@ public class ArticleFragment extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mArticleView.setLayoutParams(lp);
-
         // BUTTONS:
         mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -137,9 +159,59 @@ public class ArticleFragment extends Fragment {
             }
         });
         mIsNoteSelected = false;
-        new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
+
+        // deleting exisitng articleView if it exists:
+
+        if (mBuffer != null && mArticle != null && mNotes != null) {
+            initializeFromRetained();
+        } else {
+            Log.d(TAG, "NOT FROM RETAINED! LAUNCHING ARTICLEINITIALIZATIONTASK!");
+            new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
+        }
+
         return view;
     }
+
+    /**
+     * If information is retained, then this method resets all the necessary stuff. No need to call
+     * Article and Buffer Initialization tasks.
+     * If this is called, then mBuffer and mArticle are already set.
+     */
+    public void initializeFromRetained() {
+        //mArticleView.setText(mBuffer.getBuffer());
+        mArticleView.setTextIsSelectable(true);
+        Util.setXnoteTypeFace(getActivity(), mArticleView);
+        mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
+        mArticleView.setCustomSelectionActionModeCallback(
+                new TextSelectionCallback());
+
+
+        // TODO: set the text for the artilce veiw!
+        ViewTreeObserver vto = mArticleView.getViewTreeObserver();
+//        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (!mInitialized) {
+//                    mArticleView.setText(mBuffer.getBuffer());
+//                    mInitialized = true;
+//                    Log.d(TAG, "onGlobalLayout(), not initialized, so InitializeTask executed!");
+//                }
+//            }
+//        });
+        mArticleView.setText(mBuffer.getBuffer());
+        mNoteEngine = NoteEngine.getInstance();
+        mNoteEngine.initializeNotes(mNotes); // TODO: makes sure this clears before adding!
+        mInitialized = true;
+        mLoadingSpinner.setVisibility(View.GONE);
+    }
+
+    public void setRetainedInformation() {
+        // setting all of the retained values:
+        mListener.setRetainedBuffer(mBuffer);
+        mListener.setRetainedNotes(mNotes);
+        mListener.setRetainedArticle(mArticle);
+    }
+
 
     public void redraw() {
         if (mBuffer != null) {
@@ -217,8 +289,7 @@ public class ArticleFragment extends Fragment {
             mArticle = DB.getLocalArticle(mArticleId);
             String content = mArticle.getContent();
             String title = "<h2>" + mArticle.getTitle() + "</h2>";
-            String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString()
-                    + "</p>";
+            String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
             content = title + timestamp + content;
             mContent = htmlEscapedContent(mArticle, parent.getActivity());
             return null;
@@ -235,7 +306,7 @@ public class ArticleFragment extends Fragment {
                 mArticleView.setCustomSelectionActionModeCallback(
                         new TextSelectionCallback());
                 if (!isRefresh) {
-                    mScrollView.addView(mArticleView);
+                    mScrollView.addView(mArticleView); // TODO: check!
                     ViewTreeObserver vto = mArticleView.getViewTreeObserver();
                     vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -259,7 +330,6 @@ public class ArticleFragment extends Fragment {
             } catch (NullPointerException e) {
                 Log.e(TAG, "nullPointer Exception " +
                         "(probably with the activity.getAssets() with null activity: " + e);
-                //getActivity().finish();
             }
         }
     }
@@ -272,18 +342,8 @@ public class ArticleFragment extends Fragment {
             if (getActivity() == null)
                 return null; // TODO: for when fragment not yet attached (when changing orientation).
 
-            if (Util.isNetworkAvailable(getActivity()) && (!Util.IS_ANON)) {
-                try {
-                    mNotes = DB.getNotesForArticleFromCloud(mArticleId);
-                } catch (com.parse.ParseException e) {
-                    Log.d(TAG, "couldn't pull from cloud");
-                    mNotes = DB.getNotesForArticleLocally(mArticleId);
-                }
-                Log.d(TAG, "mNotes obtained from cloud.");
-            } else {
-                mNotes = DB.getNotesForArticleLocally(mArticleId);
-                Log.d(TAG, "mNotes obtained from local datastore.");
-            }
+            mNotes = DB.getNotesForArticleLocally(mArticleId);
+            Log.d(TAG, "mNotes obtained from local datastore.");
 
             mNoteEngine = NoteEngine.getInstance();
             mNoteEngine.initializeNotes(mNotes);
@@ -296,8 +356,9 @@ public class ArticleFragment extends Fragment {
                 Log.d(TAG, "InitializationTask: note added with tstamp: " + note.getTimestamp());
                 mBuffer.addNoteSpan(note);  // since initializing, all notes are new!
             }
-
             Log.d(TAG, "InitializeTask.doInBackground() complete");
+            setRetainedInformation();
+            Log.d(TAG, "setRetainedInformation()");
             return null;
         }
 
@@ -318,7 +379,7 @@ public class ArticleFragment extends Fragment {
 
 
     public void removeNote(ParseNote note) {
-       //  mBuffer.removeNoteSpan(note);
+        //  mBuffer.removeNoteSpan(note);
         mBuffer.removeNoteSpan(note);
         // mNoteEngine.removeNote(startIndex, endIndex, noteId);
         mNoteEngine.removeNote(note);

@@ -17,7 +17,6 @@ import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
-import com.xnote.wow.xnote.fragments.SearchResultsFragment;
 import com.xnote.wow.xnote.fragments.SearchRetainedFragment;
 import com.xnote.wow.xnote.fragments.SettingsFragment;
 import com.xnote.wow.xnote.models.ParseArticle;
@@ -25,7 +24,7 @@ import com.xnote.wow.xnote.models.ParseArticle;
 /**
  * Created by koopuluri on 2/28/15.
  */
-public class MainActivity extends Activity implements SearchResultsFragment.OnItemDeleted,
+public class MainActivity extends Activity implements SearchFragment.OnItemDeleted,
                                                       ArticleListFragment.ArticleListListener {
 
     public static final String TAG = "MainActivity";

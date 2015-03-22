@@ -14,16 +14,23 @@ import android.view.MenuItem;
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
+import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
+import com.xnote.wow.xnote.fragments.ArticleListFragment;
+import com.xnote.wow.xnote.fragments.ArticleRetainedFragment;
+import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
+
+import java.util.List;
 
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleActivity extends Activity {
+public class ArticleActivity extends Activity implements ArticleFragment.ArticleFragmentInterface {
     public static final String TAG = "ArticleActivity";
 
     ArticleFragment mArticleFrag;
+    ArticleRetainedFragment mRetained;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,14 +39,25 @@ public class ArticleActivity extends Activity {
 
         // initializing articleFragment with tis articleText:
         FragmentManager fm = getFragmentManager();
+        // initializing the retained buffer if it doesn't exist:
+        mRetained = (ArticleRetainedFragment) fm.findFragmentByTag(ArticleRetainedFragment.TAG);
+        if (mRetained == null) {
+            mRetained = new ArticleRetainedFragment();
+            fm.beginTransaction()
+                    .add(mRetained, ArticleRetainedFragment.TAG)
+                    .commit();
+        }
+        // now this retained data can be passed to underlying article fragment!
+
+        // adding the article fragment:
         mArticleFrag = (ArticleFragment) ArticleFragment.newInstance(
                 getIntent().getStringExtra(Constants.ARTICLE_ID));
-
-
         fm.beginTransaction()
                 .add(R.id.poop_fragment_container, mArticleFrag, ArticleFragment.TAG)
                         // .add(R.id.poop_fragment_container, mLoadingFrag, ArticleLoadingFragment.TAG)
                 .commit();
+
+
     }
 
 
@@ -115,10 +133,9 @@ public class ArticleActivity extends Activity {
                 }
                 return true;
 
-
             case R.id.action_share:
                 Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
-                            getResources().getString(R.string.article_share_message), this);
+                        getResources().getString(R.string.article_share_message), this);
                 Log.d(TAG, "article shared: " + mArticleFrag.getArticleTitle());
                 return true;
 
@@ -135,4 +152,34 @@ public class ArticleActivity extends Activity {
         return TAG;
     }
 
+
+    // -------------------------- implementing ArticleFragmentInterface ----------------------------
+
+    public ReadBuffer getRetainedBuffer() {
+        Log.d(TAG, "getRetainedBuffer(): " + String.valueOf(mRetained));
+        mRetained = (ArticleRetainedFragment) getFragmentManager().
+                findFragmentByTag(ArticleRetainedFragment.TAG);
+        Log.d(TAG, "getRetainedBuffer() after: " + String.valueOf(mRetained));
+        return mRetained.getArticleBuffer();
+    }
+
+    public void setRetainedBuffer(ReadBuffer buffer) {
+        mRetained.setArticleBuffer(buffer);
+    }
+
+    public ParseArticle getRetainedArticle() {
+        return mRetained.getArticle();
+    }
+
+    public void setRetainedArticle(ParseArticle article) {
+        mRetained.setArticle(article);
+    }
+
+    public List<ParseNote> getRetainedNotes() {
+        return mRetained.getNotes();
+    }
+
+    public void setRetainedNotes(List<ParseNote> notes) {
+        mRetained.setNotes(notes);
+    }
 }

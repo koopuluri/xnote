@@ -12,7 +12,7 @@ import com.xnote.wow.xnote.activities.LoginSignUpActivity;
 import com.xnote.wow.xnote.activities.MainActivity;
 import com.xnote.wow.xnote.activities.NoteActivity;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
-import com.xnote.wow.xnote.fragments.SearchResultsFragment;
+import com.xnote.wow.xnote.fragments.SearchFragment;
 
 /**
  * Launches all activites and whatnot. It's like the center point in the silk
@@ -38,6 +38,16 @@ public class Controller {
     }
 
 
+//    public static void launchArticleActivity(Activity activity, int noteStart, int noteEnd) {
+//        Intent intent = new Intent(activity, ArticleActivity.class);
+//        Log.d(TAG, "launching ArticleActivity with noteStart, noteEnd.");
+//        intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
+//        intent.putExtra(Constants.START_INDEX, noteStart);
+//        intent.putExtra(Constants.END_INDEX, noteEnd);
+//        activity.startActivity(intent);
+//    }
+//
+
     public static void launchNoteActivity(Activity activity,
                                           String articleId,
                                           String noteId,
@@ -50,7 +60,7 @@ public class Controller {
         if (launchingFragmentName.equals(ArticleFragment.TAG)) {
             activity.startActivityForResult(intent, Constants.NOTE_REQUEST);
             Log.d(TAG, "NoteActivity launched from ArticleActivity for result");
-        } else if (launchingFragmentName.equals(SearchResultsFragment.TAG)) {
+        } else if (launchingFragmentName.equals(SearchFragment.TAG)) {
             activity.startActivity(intent);
             Log.d(TAG, "NoteActivity launched from SearchActivity not for result");
         } else {
@@ -58,6 +68,7 @@ public class Controller {
                     launchingFragmentName));
         }
     }
+
 
 
     public static void launchNoteActivity(Activity activity, String articleId, int start, int end) {
