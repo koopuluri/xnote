@@ -86,13 +86,17 @@ public class DiffbotParser {
      */
     private List<DiffbotImageInfo> parseArticle(String articleURL) {
         String url = "http://api.diffbot.com/v3/article";
-        String token = Constants.DIFFBOT_TOKEN;
-        if(Constants.DIFFBOT_TOKEN == null) {
-            token = "9fa0294020c516932daf9ad7d45cd36b";
+        String token = DB.getConstantCloud();
+
+        if (token == null) {
+            token = "poop";
+            Log.e(TAG, "token is null!");
         }
+
         String query;
         String query2;
-        //Removing the .m from the URL so desktop version of the site is used when parsing
+        //Removing the m. from the URL so desktop version of the site is used when parsing
+        //TODO: Remove the mobile. form the urls as well
         if(articleURL.contains("http://m.")) {
             int position = articleURL.indexOf("http://m.");
             String newArticleURL = articleURL.substring(0, position + 7);

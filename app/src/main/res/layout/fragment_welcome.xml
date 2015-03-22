@@ -34,6 +34,7 @@
         android:id="@+id/signup_button"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:layout_marginBottom="20dip"
         android:layout_below="@+id/caption_text_view"
         android:layout_centerHorizontal="true" />
 

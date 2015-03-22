@@ -12,13 +12,13 @@ import com.xnote.wow.xnote.DB;
 @ParseClassName(DB.CONSTANT)
 public class ParseConstant extends ParseObject {
 
-    public static final String DIFFBOT_TOKEN = "DiffbotToken";
+    public static final String ID = "Id";
 
     public String getDiffbotToken() {
-        return getString(DIFFBOT_TOKEN);
+        return getString(ID);
     }
 
     public void setDiffbotToken(String token) {
-        put(DIFFBOT_TOKEN, token);
+        put(ID, token);
     }
 }

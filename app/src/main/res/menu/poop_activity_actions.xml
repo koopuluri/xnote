@@ -11,9 +11,4 @@
         android:title="@string/action_share"
 
         />
-
-    <item android:id="@+id/article_refresh"
-        android:icon="@android:drawable/ic_menu_rotate"
-        android:title="@string/action_refresh"
-        android:showAsAction="ifRoom|withText"/>
 </menu>

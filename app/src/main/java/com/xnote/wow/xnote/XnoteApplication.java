@@ -37,15 +37,5 @@ public class XnoteApplication extends Application {
         ParseACL.setDefaultACL(defaultACL, true);
         //Get diffbot token either from the cloud or locally if cloud is
         //not available
-        Log.d(TAG, "gettingDiffbotToken");
-        String diffbotToken = DB.getConstantCloud();
-        if(diffbotToken != null) {
-            DB.clearLocalConstants();
-            DB.saveConstantLocally(diffbotToken);
-            Constants.DIFFBOT_TOKEN = diffbotToken;
-        } else {
-            diffbotToken = DB.getConstantLocally();
-            Constants.DIFFBOT_TOKEN = diffbotToken;
-        }
     }
 }

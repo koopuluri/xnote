@@ -6,7 +6,7 @@
     <string name="action_refresh">refresh</string>
     <string name="action_delete">delete</string>
     <string name="app_name">Xnote</string>
-    <string name="caption">Post it notes for the internet</string>
+    <string name="caption">Notes for the internet</string>
     <string name="anonymous_user_confirmation">
         You have chosen to continue as an anonymous user. Your content will not be stored online and
         will not be accessible from other devices. Are you sure you want to continue?
@@ -19,7 +19,7 @@
     <string name="receive_open">Open now.</string>
     <string name="receive_later">Open later</string>
     <string name="parse_error_message">There was an error parsing your article. Check your internet connection and try again later.</string>
-
+    <string name="note_tutorial_message">Highlight text to take notes</string>
     <color name="note_color">#FFFF99</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
@@ -58,7 +58,7 @@
     <string name="title_activity_feedback">FeedbackActivity</string>
     <string name="no_articles_message">
         You don\'t seem to have any articles. Save one by going to any content provider such
-        as Google Chrome or Hacker News and share to xnote.
+        as Google Chrome and share to xnote.
     </string>
 
 </resources>

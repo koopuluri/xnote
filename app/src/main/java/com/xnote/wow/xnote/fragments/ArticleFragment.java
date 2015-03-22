@@ -200,7 +200,7 @@ public class ArticleFragment extends Fragment {
                 new TextSelectionCallback());
 
 
-        // TODO: set the text for the artilce veiw!
+        // TODO: set the text for the article view!
         ViewTreeObserver vto = mArticleView.getViewTreeObserver();
 //        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
@@ -377,6 +377,7 @@ public class ArticleFragment extends Fragment {
             Log.d(TAG, "setRetainedInformation()");
 
             isUserNew = DB.isNew();
+            Log.d(TAG, "isUserNew: " + String.valueOf(isUserNew));
             return null;
         }
 
@@ -387,6 +388,8 @@ public class ArticleFragment extends Fragment {
             mLoadingSpinner.setVisibility(View.GONE);
             if (isUserNew) {
                 mTutorialLayout.setVisibility(View.VISIBLE);
+            } else {
+                mTutorialLayout.setVisibility(View.GONE);
             }
         }
     }

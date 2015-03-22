@@ -88,6 +88,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                     if (!a.isParsed()) {
                         // do nothing:
                         mSwipeRefreshLayout.setRefreshing(false);
+                        Log.d(TAG, "onRefresh() is cancelling.");
                         return;
                     }
                 }

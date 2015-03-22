@@ -39,19 +39,20 @@ public class DB {
 
         List<ParseObject> cloudNoteObjects = (List<ParseObject>)(List<?>) getAllNotesFromCloud();
         List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
+//
+//        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
+//        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
-        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
-        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
-
-        if (cloudNoteObjects.size() == 0) {
+        if((cloudNoteObjects.size() == 0) && (localNoteObjects.size() == 0)) {
+            Log.d(TAG, "Setting is new to true");
             setIsNew(true);
         } else {
-
+            Log.d(TAG, "Setting is new to false");
+            setIsNew(false);
         }
 
         syncObjects(localArticleObjects, cloudArticleObjects);
         syncObjects(localNoteObjects, cloudNoteObjects);
-        syncObjects(localImageObjects, cloudImageObjects);
 
         Log.d(TAG, "sync complete.");
     }
@@ -60,16 +61,19 @@ public class DB {
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
     public static void setIsNew(boolean isNew) {
+        Log.d(TAG, "setIsNew():");
         ParseQuery query = ParseQuery.getQuery(PARSE_USER_INFO);
         query.fromLocalDatastore();
         try {
             ParseUserInfo info = (ParseUserInfo) query.getFirst();
             if (info == null) {
+                Log.d(TAG, "Set is new set to: " + isNew);
                 info = new ParseUserInfo();
                 info.setIsNew(isNew);
                 info.pin();
             } else {
-                if (!info.getIsNew()) {
+                Log.d(TAG, "info is not null isUserNew().");
+                if (info.getIsNew() != isNew) {
                     info.setIsNew(isNew);
                     info.pin();
                 }
@@ -80,6 +84,7 @@ public class DB {
             info = new ParseUserInfo();
             info.setIsNew(isNew);
             try {
+                Log.d(TAG, "Set is new set to " + isNew);
                 info.pin();
             } catch (ParseException e2) {
                 Log.e(TAG, "couldn't pin: " + e2);
@@ -412,6 +417,9 @@ public class DB {
                 note.pinInBackground();
             }
         });
+        if (isNew()) {
+            setIsNew(false);
+        }
     }
 
 
