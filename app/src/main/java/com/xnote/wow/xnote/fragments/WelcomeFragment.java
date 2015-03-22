@@ -61,7 +61,7 @@ public class WelcomeFragment extends Fragment {
         mCaptionTextView = (TextView)view.findViewById(R.id.caption_text_view);
         mCaptionTextView.setText(getActivity().getResources().getString(R.string.caption));
         Util.setXnoteTypeFace(getActivity(), mCaptionTextView);
-        mCaptionTextView.setTextSize(20.0f);
+        mCaptionTextView.setTextSize(15.0f);
 
         mSignUpButton = (Button)view.findViewById(R.id.signup_button);
         mSignUpButton.setOnClickListener(new View.OnClickListener() {

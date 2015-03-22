@@ -36,5 +36,6 @@
             android:layout_marginEnd="@dimen/add_button_margin"
             android:layout_marginRight="@dimen/add_button_margin"
             android:background="@drawable/round_button"
+            android:backgroundTint="@color/accent_color_dark"
             android:src="@drawable/add_icon"/>
 </FrameLayout>

@@ -2,12 +2,12 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.ListFragment;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.adapters.ArticleAdapter;
 import com.xnote.wow.xnote.adapters.BaseListAdapter;
 import com.xnote.wow.xnote.adapters.SearchResultAdapter;
@@ -65,7 +66,11 @@ public abstract class BaseSelectableListFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // View view  = super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_article_list, container, false);
-        mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message); // TODO: take this out of this base class
+        mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message);
+        mNoArticlesMessage.setPadding(15, 0, 15, 0);
+        mNoArticlesMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        Util.setXnoteTypeFace(getActivity(), mNoArticlesMessage);
+         // TODO: take this out of this base class
         mNoArticlesMessage.setVisibility(View.GONE);
 
 

@@ -16,7 +16,6 @@ import com.xnote.wow.xnote.R;
 import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
-import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.ArticleRetainedFragment;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
@@ -137,11 +136,6 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                 Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
                         getResources().getString(R.string.article_share_message), this);
                 Log.d(TAG, "article shared: " + mArticleFrag.getArticleTitle());
-                return true;
-
-            case R.id.article_refresh:
-                Log.d(TAG, "article refresh.");
-                mArticleFrag.refresh();
                 return true;
         }
         return super.onOptionsItemSelected(item);

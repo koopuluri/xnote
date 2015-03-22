@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="50dp"
+        android:paddingBottom="50dip"
         android:layout_centerInParent="true">
     <ImageView
         android:layout_height="wrap_content"
@@ -16,14 +16,14 @@
         android:src="@drawable/logo"
         android:id="@+id/icon_image_view"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="40dip"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/caption_text_view"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="60dip"
         android:layout_below="@+id/icon_image_view"
         android:layout_centerHorizontal="true" />
 
@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:text="Sign Up"
         android:id="@+id/signup_button"
-        android:layout_marginBottom="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/caption_text_view"
@@ -42,8 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/continue_textview"
-        android:textSize="12dp"
-        android:layout_marginBottom="10dp"
+        android:textSize="12sp"
+        android:layout_marginBottom="10dip"
         android:layout_below="@+id/signup_button"
         android:layout_centerHorizontal="true" />
 
@@ -51,8 +50,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="12dp"
-        android:layout_marginBottom="10dp"
+        android:textSize="12sp"
+        android:layout_marginBottom="10dip"
         android:id="@+id/continue_to_login_textview"
         android:layout_below="@+id/continue_textview"
         android:layout_centerHorizontal="true" />

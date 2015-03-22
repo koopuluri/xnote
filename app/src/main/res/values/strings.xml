@@ -43,8 +43,6 @@
 
     <string name="drawer_close">drawer_close</string>
     <string name="drawer_open">drawer_open</string>
-
-    <string name="note_color">#339966</string>
     <string name="continue_textview">Continue without registration</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
@@ -54,16 +52,12 @@
     <string name="trial_expired_message">Trial expired. Please sign up to continue.</string>
     <string name="continue_without_login">"Continue without login"</string>
     <string name="are_you_sure_logout">Are you sure you want to logout?</string>
-
     <string name="article_share_message">Share Annotated Article</string>
     <string name="note_share_message">Share Note</string>
     <string name="share_disabled_message">Please sign up to share.</string>
-    <string-array name="settings_list">
-        <item>Logout</item>
-    </string-array>
     <string name="title_activity_feedback">FeedbackActivity</string>
     <string name="no_articles_message">
-        You don\'t seem to have any articles. You can save one by going to any content provider such
+        You don\'t seem to have any articles. Save one by going to any content provider such
         as Google Chrome or Hacker News and share to xnote.
     </string>
 
