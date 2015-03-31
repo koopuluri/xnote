@@ -6,9 +6,8 @@
         <!--android:title="@string/action_search"/>-->
 
     <item android:id="@+id/action_share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_xnote_share"
         android:showAsAction="ifRoom|withText"
         android:title="@string/action_share"
-
         />
 </menu>

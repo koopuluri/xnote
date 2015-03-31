@@ -224,11 +224,11 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
     private int getTabIconImage(String tabName) {
         switch(tabName) {
             case(SEARCH_TAB):
-                return R.drawable.search;
+                return R.drawable.ic_xnote_search;
             case(ARTICLES_TAB):
-                return R.drawable.article;
+                return R.drawable.ic_xnote_article_list;
             case(SETTINGS_TAB):
-                return R.drawable.settings;
+                return R.drawable.ic_xnote_settings;
         }
         return R.drawable.ic_launcher;
     }

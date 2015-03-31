@@ -39,7 +39,7 @@ public class DB {
 
         List<ParseObject> cloudNoteObjects = (List<ParseObject>)(List<?>) getAllNotesFromCloud();
         List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
-//
+
 //        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
 //        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
@@ -56,7 +56,6 @@ public class DB {
 
         Log.d(TAG, "sync complete.");
     }
-
 
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
