@@ -30,6 +30,8 @@
     <color name="accent_color_dark">#FFEB3B</color>
     <color name="accent_color_darker">#F57F17</color>
 
+    <color name="xnote_color">#FF55A955</color>
+
     <color name="text_color_primary">#000000</color>
     <color name="text_color_error">#999999</color>
 

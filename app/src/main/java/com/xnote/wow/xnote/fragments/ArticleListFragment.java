@@ -2,7 +2,6 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.parse.ParseException;
 import com.xnote.wow.xnote.Constants;
@@ -76,8 +74,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        getActivity().getActionBar().setDisplayShowHomeEnabled(false);
-        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
         mInitialized = false;
         getSwipeRefreshLayout().setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

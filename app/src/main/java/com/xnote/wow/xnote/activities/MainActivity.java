@@ -1,28 +1,29 @@
 package com.xnote.wow.xnote.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.xnote.wow.xnote.ParseArticleManager;
 import com.xnote.wow.xnote.ParseCallback;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 import com.xnote.wow.xnote.fragments.SearchRetainedFragment;
 import com.xnote.wow.xnote.fragments.SettingsFragment;
 import com.xnote.wow.xnote.models.ParseArticle;
+import com.xnote.wow.xnote.views.SlidingTabLayout;
 
 /**
  * Created by koopuluri on 2/28/15.
  */
-public class MainActivity extends Activity implements SearchFragment.OnItemDeleted,
+public class MainActivity extends ActionBarActivity implements SearchFragment.OnItemDeleted,
                                                       ArticleListFragment.ArticleListListener {
 
     public static final String TAG = "MainActivity";
@@ -41,63 +42,38 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
     String newArticleId;
     ParseArticleManager mArticleManager;
     SearchRetainedFragment mSearchRetained;
+    SlidingTabLayout mSlidingTabLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         mPagerAdapter = new PagerAdapter(this);
         mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
 
-        final Activity me = this;
-
         mArticleManager = ParseArticleManager.getInstance();
         if (savedInstanceState != null)
             currentPosition = savedInstanceState.getInt(CURRENT_POSITION);  // so the fragment that was last viewed can be given focus.
-        // action bar shii:
-        final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
 
-        mViewPager.setOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        actionBar.setSelectedNavigationItem(position);
-                        currentPosition = position;
-                        if (currentPosition != 1) {
-                            try {
-                                Util.hideKeyboard(me);
-                            } catch (NullPointerException e) {
-                                Log.e(TAG, "getWindowToken() on the activity's getWindow() returns null" +
-                                        "so not hiding the keyboard: " + e);
-                            }
-                        }
-                    }
-                });
-        // specifying that tabs should be displayed in actionbar:
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        // creating a Tab listener called when user changes tabs:
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-                mViewPager.setCurrentItem(tab.getPosition());
-            }
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        // getting the TabLayout:
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setViewPager(mViewPager);
 
-            }
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        // getting actionBarHeight for this device (toolBar in our case):
+        // http://stackoverflow.com/a/7167086/2713471
+        final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
 
-            }
-        };
-        // add 3 tabs specifying tab's next and tabListener??
-        for (String tabName : TABS) {
-            ActionBar.Tab tab = actionBar.newTab();
-            //tab.setText(tabName);
-            tab.setTabListener(tabListener);
-            tab.setIcon(getTabIconImage(tabName));
-            actionBar.addTab(tab);
-        }
+        mSlidingTabLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                actionBarHeight
+        ));
+
         Log.d(TAG, "end of onCreate()");
 
         // getting / setting the SearchRetainedFrag:
@@ -218,18 +194,5 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
                 mArticleListFrag.onParseArticleFailed();
             }
         });
-    }
-
-
-    private int getTabIconImage(String tabName) {
-        switch(tabName) {
-            case(SEARCH_TAB):
-                return R.drawable.ic_xnote_search;
-            case(ARTICLES_TAB):
-                return R.drawable.ic_xnote_article_list;
-            case(SETTINGS_TAB):
-                return R.drawable.ic_xnote_settings;
-        }
-        return R.drawable.ic_launcher;
     }
 }

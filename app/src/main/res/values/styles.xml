@@ -7,7 +7,20 @@
         <item name="android:icon">@drawable/icon</item>
         <item name="android:textColorLink">@color/accent_color_darker</item>
         <item name="android:colorLongPressedHighlight">@color/primary_palette_medium</item>
+
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+        <item name="windowActionModeOverlay">true</item>
     </style>
+
+
+    <style name="ToolBarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/xnote_color</item>
+        <item name="android:background">@drawable/toolbar_bottom_border</item>
+    </style>
+
 
     <style name="ActionBarTabStyle.Action_bar_tab" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_action_bar_tab</item>

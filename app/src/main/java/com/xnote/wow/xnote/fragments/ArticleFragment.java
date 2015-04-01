@@ -10,11 +10,11 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.AttributeSet;
@@ -28,11 +28,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xnote.wow.xnote.ArticleImageGetter;
@@ -48,17 +46,18 @@ import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.NoteEngine;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseNote;
+import com.xnote.wow.xnote.views.ObservableScrollView;
 
 import java.util.List;
 
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleFragment extends Fragment {
+public class ArticleFragment extends Fragment implements ObservableScrollView.ScrollViewListener{
     public static final String TAG = "ArticleFragment";
     Spanned mContent;
     ArticleView mArticleView;
-    ScrollView mScrollView;
+    ObservableScrollView mScrollView;
     ReadBuffer mBuffer;
     ParseArticle mArticle;
     String mArticleId;
@@ -118,7 +117,8 @@ public class ArticleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_read, container, false);
-        mScrollView = (ScrollView) view.findViewById(R.id.read_scroll_view);
+        mScrollView = (ObservableScrollView) view.findViewById(R.id.read_scroll_view);
+        mScrollView.setScrollViewListener(this);
         mArticleView = new ArticleView(getActivity());
         mTutorialLayout = (FrameLayout) view.findViewById(R.id.note_taking_tutorial);
         ImageButton tutorialButton = (ImageButton)
@@ -184,6 +184,25 @@ public class ArticleFragment extends Fragment {
         }
 
         return view;
+    }
+
+
+    /**
+     *
+     * Use to hide toolbar if scrolling down, and make visible if scrolling up.
+     */
+    public void onScrollChanged(ObservableScrollView scrollView, int x, int y, int oldx, int oldy) {
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        if (y > oldy) {
+            // need to hide if visible
+            if (toolbar.getVisibility() == View.VISIBLE) {
+                toolbar.setVisibility(View.INVISIBLE);
+            }
+        } else if (y <= oldy) {
+            if (toolbar.getVisibility() == View.INVISIBLE) {
+                toolbar.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     /**
@@ -570,9 +589,9 @@ public class ArticleFragment extends Fragment {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             Log.d(TAG, "onCreateActionMode()");
+            mode.setCustomView(null);
             MenuInflater inflater = mode.getMenuInflater();
             menu.removeItem(android.R.id.selectAll);
-
             // --------------------------------------------------------------------
             int start = mArticleView.getSelectionStart();
             int end = mArticleView.getSelectionEnd();
@@ -583,7 +602,6 @@ public class ArticleFragment extends Fragment {
             if (mNoteEngine.noteExistsWithRange(start, end)) {
                 Log.d(TAG, "note exists within range!");
                 inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
-                // display edit, delete options:
                 mNewNoteButton.setVisibility(View.INVISIBLE);
                 mIsNoteSelected = true;
             } else {
@@ -602,7 +620,7 @@ public class ArticleFragment extends Fragment {
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             Log.d(TAG, "onPrepareActionMode()");
-            return true;
+            return false;
         }
     }
 }

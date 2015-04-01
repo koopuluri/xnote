@@ -1,11 +1,11 @@
 package com.xnote.wow.xnote.activities;
 
-import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleActivity extends Activity implements ArticleFragment.ArticleFragmentInterface {
+public class ArticleActivity extends ActionBarActivity implements ArticleFragment.ArticleFragmentInterface {
     public static final String TAG = "ArticleActivity";
 
     ArticleFragment mArticleFrag;
@@ -35,7 +35,17 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poop);
+//
+//        final ActionBar actionBar = getActionBar();
+//        actionBar.setDisplayShowTitleEnabled(false);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_xnote_cancel);
+//        if (toolbar != null) {
+//            setSupportActionBar(toolbar);
+//        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         // initializing articleFragment with tis articleText:
         FragmentManager fm = getFragmentManager();
         // initializing the retained buffer if it doesn't exist:
@@ -47,7 +57,6 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                     .commit();
         }
         // now this retained data can be passed to underlying article fragment!
-
         // adding the article fragment:
         mArticleFrag = (ArticleFragment) ArticleFragment.newInstance(
                 getIntent().getStringExtra(Constants.ARTICLE_ID));
@@ -114,7 +123,7 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                     Log.d(TAG, "activity not part of this app's stack");
                     // this means that this activity is not part of this app's task,
                     // so create new task when navigating up, with synthesized (???) back stack.
-                    TaskStackBuilder.create(this)
+                    android.support.v4.app.TaskStackBuilder.create(this)
                             // Add all of activity's parents to back stack:
                             .addNextIntentWithParentStack(upIntent)
                                     // navigate up to closest parent:
