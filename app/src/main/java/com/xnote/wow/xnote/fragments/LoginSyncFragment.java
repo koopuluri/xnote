@@ -46,7 +46,7 @@ public class LoginSyncFragment extends Fragment {
         });
         mMainButton.setVisibility(View.GONE);
         mSyncMessage.setText("Login successful, now syncing your articles and notes...");
-        Util.setXnoteTypeFace(getActivity(), mSyncMessage);
+        Util.setXnoteNoteTypeFace(getActivity(), mSyncMessage);
         new LoginTask(getActivity()).execute();
         return view;
     }

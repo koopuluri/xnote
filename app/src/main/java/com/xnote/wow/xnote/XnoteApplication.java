@@ -1,8 +1,6 @@
 package com.xnote.wow.xnote;
 
 import android.app.Application;
-import android.util.Log;
-
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseObject;
@@ -19,6 +17,7 @@ import com.xnote.wow.xnote.models.ParseUserInfo;
 public class XnoteApplication extends Application {
     public static final String TAG = "XnoteApplication";
     public static final boolean LOG_IN = true;
+    public static boolean FIRST_TIME = true;
 
     @Override
     public void onCreate() {

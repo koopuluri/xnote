@@ -39,12 +39,12 @@ public class SettingsFragment extends ListFragment {
         //OptionsList stores the options available to the user
         //Currently only logout or login
         mOptionsList = new ArrayList<String>();
+        mOptionsList.add(FEEDBACK);
         if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
             mOptionsList.add(SIGN_UP);
         } else {
             mOptionsList.add(LOGOUT);
         }
-        mOptionsList.add(FEEDBACK);
         final ArrayAdapter mAdapter = new ArrayAdapter(this.getActivity(),
                 android.R.layout.simple_list_item_1, mOptionsList);
         setListAdapter(mAdapter);

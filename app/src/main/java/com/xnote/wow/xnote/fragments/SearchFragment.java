@@ -41,9 +41,10 @@ public class SearchFragment extends ListFragment {
     OnItemDeleted mListener;
     ListView mListView;
     ProgressBar mSpinner;
+    String mQuery;
 
     public interface OnItemDeleted {
-        public void onItemDeleted();
+        public void onSearchItemDeleted();
     }
 
     @Override
@@ -74,6 +75,7 @@ public class SearchFragment extends ListFragment {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                mQuery = query;
                 new UpdateSearchResultsTask(query).execute();
                 Util.hideKeyboard(getActivity());
                 return true;
@@ -81,6 +83,7 @@ public class SearchFragment extends ListFragment {
 
             @Override
             public boolean onQueryTextChange(String newQuery) {
+                mQuery = newQuery;
                 new UpdateSearchResultsTask(newQuery).execute();
                 return true;
             }
@@ -240,10 +243,27 @@ public class SearchFragment extends ListFragment {
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
             Log.d(TAG, "poopOnPostExecute().");
-            mListener.onItemDeleted();
+            mListener.onSearchItemDeleted();
         }
     }
 
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (mQuery != null) {  // only run if user has submitted a query previously.
+                new UpdateSearchResultsTask(mQuery).execute();
+            }
+        } else {
+            // hiding keyboard:
+            if (getActivity() != null) {
+                Util.hideKeyboard(getActivity());
+            } else {
+                // do nothing. (Why would the activity be null at this point?
+            }
+        }
+    }
 
     public List<SearchResult> getCurrentSearchResultList() {
         return mAdapter.getSearchResultList();

@@ -1,15 +1,18 @@
 package com.xnote.wow.xnote.activities;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
@@ -25,7 +28,7 @@ import java.util.List;
 /**
  * Created by koopuluri on 2/22/15.
  */
-public class ArticleActivity extends ActionBarActivity implements ArticleFragment.ArticleFragmentInterface {
+public class ArticleActivity extends Activity implements ArticleFragment.ArticleFragmentInterface {
     public static final String TAG = "ArticleActivity";
 
     ArticleFragment mArticleFrag;
@@ -35,19 +38,19 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poop);
-//
-//        final ActionBar actionBar = getActionBar();
-//        actionBar.setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeAsUpIndicator(R.drawable.ic_xnote_navigation_up_colored);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_xnote_cancel);
-//        if (toolbar != null) {
-//            setSupportActionBar(toolbar);
-//        }
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        // setting the custom toolbar as the activity's action bar:
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        android.widget.Toolbar toolbar = (android.widget.Toolbar) findViewById(R.id.toolbar);
+//        toolbar.setNavigationIcon(R.drawable.ic_xnote_cancel);
+        //setSupportActionBar(toolbar);
+        //getSupportActionBar().setDisplayShowTitleEnabled(false);
         // initializing articleFragment with tis articleText:
         FragmentManager fm = getFragmentManager();
+//        setActionBar(toolbar);
         // initializing the retained buffer if it doesn't exist:
         mRetained = (ArticleRetainedFragment) fm.findFragmentByTag(ArticleRetainedFragment.TAG);
         if (mRetained == null) {
@@ -64,8 +67,6 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
                 .add(R.id.poop_fragment_container, mArticleFrag, ArticleFragment.TAG)
                         // .add(R.id.poop_fragment_container, mLoadingFrag, ArticleLoadingFragment.TAG)
                 .commit();
-
-
     }
 
 
@@ -74,7 +75,6 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
         Log.d(TAG, "onActivityResult()");
         if (requestCode == Constants.NOTE_REQUEST) {
             // time to update buffers:
-            Log.d(TAG, "NoteActivity attempted the note that was requested...");
             if (resultCode == RESULT_OK) {
                 // unpack the data received:
                 ParseNote note = new ParseNote();
@@ -85,8 +85,11 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
                 note.setEndIndex(data.getIntExtra(Constants.END_INDEX, 0));
                 note.setArticleId(data.getStringExtra(Constants.ARTICLE_ID));
                 note.setSelectedText(data.getStringExtra(Constants.NOTE_SELECTED_TEXT));
+                Log.d(TAG, "note to update buffers with: " + note.getContent());
                 // Log.d(TAG, "onActivityResult() with noteId: " + noteId);
                 int noteState = data.getIntExtra(Constants.NOTE_STATE, 0);
+                Log.d(TAG, "noteState: " + noteState);
+                Log.d(TAG, "noteId: " + note.getId());
                 // ---------------------------------- PUT IN BACKGROUND!!--------------------------
                 if (noteState != 0)  // TODO: remove this check, needs to save note regardless of noteState!
                     mArticleFrag.addNoteFromNoteActivity(note, noteState);
@@ -109,7 +112,8 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.poop_activity_actions, menu);
-        return super.onCreateOptionsMenu(menu);
+        //return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
 
@@ -154,7 +158,6 @@ public class ArticleActivity extends ActionBarActivity implements ArticleFragmen
     public String toString() {
         return TAG;
     }
-
 
     // -------------------------- implementing ArticleFragmentInterface ----------------------------
 

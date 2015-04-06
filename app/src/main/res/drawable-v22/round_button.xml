@@ -3,7 +3,8 @@
 android:color="?android:colorControlHighlight">
 <item>
     <shape android:shape="oval">
-        <solid android:color="@color/accent_color_dark"/>
+        <!--<solid android:color="@color/accent_color_dark"/>-->
+        <solid android:color="@color/xnote_color"/>
     </shape>
 </item>
 </ripple>

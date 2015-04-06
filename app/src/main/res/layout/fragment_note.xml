@@ -26,7 +26,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:background="@drawable/textlines"/>
+                    android:background="@drawable/note_clipped_bottom_border"
+                    android:layout_marginLeft="@dimen/note_clipped_text_margin"
+                    android:layout_marginRight="@dimen/note_clipped_text_margin"/>
 
                 <EditText
                     android:id="@+id/note_edit_text"
@@ -34,7 +36,10 @@
                     android:layout_height="fill_parent"
                     android:inputType="textMultiLine"
                     android:gravity="top"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:layout_marginTop="@dimen/note_clipped_text_margin"
+                    android:layout_marginLeft="@dimen/note_clipped_text_margin"
+                    android:layout_marginRight="@dimen/note_clipped_text_margin"/>
 
             </LinearLayout>
         </ScrollView>

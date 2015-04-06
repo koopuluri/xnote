@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xnote.wow.xnote" >
+    package="com.xnote.wow.xnote">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -41,7 +41,8 @@
         </activity>
         <activity android:name=".activities.ReceiveActivity"
             android:theme="@style/Theme.Transparent"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:label="Add to Xnote">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAUlT" />
@@ -50,8 +51,13 @@
         </activity>
         <activity
             android:name=".activities.FeedbackActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:label="Xnote"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activities.TutorialActivity"
+            android:screenOrientation="portrait">
+
+            </activity>
     </application>
 </manifest>

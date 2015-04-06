@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +58,9 @@ public class NoteActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         // if the parent is ArticleActivity and this note is an old note:
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeAsUpIndicator(R.drawable.ic_xnote_navigation_up_colored);
         if (getIntent().getStringExtra(Constants.PARENT_ACTIVITY).equals(ArticleActivity.TAG)
                 && getIntent().getExtras().containsKey(Constants.NOTE_ID)) {
             Log.d(TAG, "parent is: " + ArticleActivity.TAG);
@@ -88,6 +92,7 @@ public class NoteActivity extends Activity {
             }
         }
         mDoneButton = (ImageButton) findViewById(R.id.done_button);
+        mDoneButton.setColorFilter(Color.parseColor("#FFFFFFFF"));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
                 @TargetApi(Build.VERSION_CODES.LOLLIPOP)

@@ -11,6 +11,7 @@ import com.xnote.wow.xnote.activities.FeedbackActivity;
 import com.xnote.wow.xnote.activities.LoginSignUpActivity;
 import com.xnote.wow.xnote.activities.MainActivity;
 import com.xnote.wow.xnote.activities.NoteActivity;
+import com.xnote.wow.xnote.activities.TutorialActivity;
 import com.xnote.wow.xnote.fragments.ArticleFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 
@@ -22,6 +23,13 @@ import com.xnote.wow.xnote.fragments.SearchFragment;
 public class Controller {
     public static final String TAG = "Controller";
     public static final String PREFS_NAME = "MyPrefsFile";
+
+
+    public static void launchTutorialActivity(Activity activity) {
+        Intent intent = new Intent(activity, TutorialActivity.class);
+        intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
+        activity.startActivity(intent);
+    }
 
 
     /**

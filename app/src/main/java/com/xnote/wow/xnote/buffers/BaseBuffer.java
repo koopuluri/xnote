@@ -25,10 +25,11 @@ public abstract class BaseBuffer {
     public static final String TAG = "BaseBuffer";
     public static final int NUM_SPANS = 4;  // this is the number of spans in the buffer for one note.
     // public static final String NOTE_COLOR = "#FFF9C4";
-    public static final String NOTE_COLOR = "#FFF9C4";
-    public static final String SELECTION_COLOR = "#FDD835";
-
-    public static final String SEARCH_SELECTION_COLOR = "#FDD835";
+    //public static final String NOTE_COLOR = "#FFF9C4";
+    public static final String NOTE_COLOR = "#D9FFFF00";  // using 50% transparency
+//    public static final String SELECTION_COLOR = "#FDD835";
+//
+//    public static final String SEARCH_SELECTION_COLOR = "#FDD835";
 
     Layout mLayout;
     Activity mActivity;

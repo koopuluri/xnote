@@ -23,7 +23,7 @@ public class NoArticlesFragment extends Fragment {
         mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message);
         mNoArticlesMessage.setText(getActivity().getResources().
                 getString(R.string.no_articles_message));
-        Util.setXnoteTypeFace(getActivity(), mNoArticlesMessage);
+        Util.setXnoteNoteTypeFace(getActivity(), mNoArticlesMessage);
         return view;
     }
 }

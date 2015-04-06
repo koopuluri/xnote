@@ -15,7 +15,11 @@
     <dimen name="receive_button_diameter">90dp</dimen>
     <dimen name="negative_receive_button_diameter">-90dp</dimen>
 
-    <dimen name="note_clipped_text_margin">30dp</dimen>
+    <dimen name="note_clipped_text_margin">18dp</dimen>
 
+    <dimen name="article_title_size">30dp</dimen>
+    <dimen name="article_timestamp_size">9dp</dimen>
+
+    <dimen name="article_timestamp_padding_bottom">18dp</dimen>
 
 </resources>

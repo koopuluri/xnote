@@ -664,14 +664,14 @@ public class DB {
 
     //-----------------------------------DELETE NOTES-----------------------------------------------
 
-    public static void deleteNote(final ParseNote note) {
-        Log.d(TAG, "deletNote(note):" + note);
-        deleteNoteLocallyInBackground(note);
-        if (!Util.IS_ANON) {
-            Log.d(TAG, "deleteNote(): user is not anon, so deleting from cloud as well.");
-            deleteNoteInCloudInBackground(note);
-        }
-    }
+//    public static void deleteNote(final ParseNote note) {
+//        Log.d(TAG, "deletNote(note):" + note);
+//        deleteNoteLocallyInBackground(note);
+//        if (!Util.IS_ANON) {
+//            Log.d(TAG, "deleteNote(): user is not anon, so deleting from cloud as well.");
+//            deleteNoteInCloudInBackground(note);
+//        }
+//    }
 
     private static void deleteNoteLocallyInBackground(final ParseNote note) {
         note.unpinInBackground();

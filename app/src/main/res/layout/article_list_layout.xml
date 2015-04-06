@@ -2,7 +2,8 @@
 <FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/adapter_item">
+    android:id="@+id/adapter_item"
+    android:background="@drawable/note_clipped_bottom_border">
 
     <LinearLayout
         android:orientation="vertical"
@@ -42,10 +43,11 @@
                     android:layout_marginBottom="5dp"/>
 
                 <TextView
-                    android:id="@+id/tstamp_text_view"
-                    android:textColor="@color/text_color_primary"
+                    android:id="@+id/num_notes_view"
+                    android:text="3 notes"
+                    android:textColor="@color/xnote_color"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:textSize="10dp"/>
             </LinearLayout>
 

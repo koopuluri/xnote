@@ -64,7 +64,32 @@ public class Util {
      * @param activity: the activity that contains the textView
      * @param tv: textView to stylize.
      */
-    public static void setXnoteTypeFace(Activity activity, TextView tv) {
+    public static void setXnoteArticleTypeFace(Activity activity, TextView tv) {
+        Typeface normalTypeface = Typeface.createFromAsset(activity.getAssets(),
+                "CrimsonText-Regular.ttf");
+        tv.setTypeface(normalTypeface);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tv.setElegantTextHeight(true);
+            tv.setLetterSpacing(-0.02f);
+        }
+        tv.setIncludeFontPadding(true);
+        tv.setLineSpacing(0.0f, 1.2f);
+        tv.setPadding(30, 0, 30, 0);
+        tv.setTextSize(16);
+        tv.setVisibility(View.VISIBLE);
+        tv.setTextColor(activity.getResources().getColor(R.color.text_color_primary));
+        tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
+        Log.d(TAG, "xnoteTypeFaceSet.");
+    }
+
+
+    /**
+     * @TargetApi
+     * @param activity: the activity that contains the textView
+     * @param tv: textView to stylize.
+     */
+    public static void setXnoteNoteTypeFace(Activity activity, TextView tv) {
         Typeface normalTypeface = Typeface.createFromAsset(activity.getAssets(),
                 "Dual-300.ttf");
         tv.setTypeface(normalTypeface);
@@ -82,6 +107,8 @@ public class Util {
         tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
         Log.d(TAG, "xnoteTypeFaceSet.");
     }
+
+
 
     public static void share(String subjectText, String extraText, String userMessage,
                              final Activity launchActivity) {

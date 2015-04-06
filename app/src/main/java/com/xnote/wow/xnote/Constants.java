@@ -10,6 +10,10 @@ public class Constants {
     public static final int TRIAL_ARTICLES = 10;
     //Text padding in article fragment
     public static final int PADDING = 30;
+
+    public static final float ARTICLE_VIEW_LINE_SPACING_MULTIPLIER = 1.5f;
+
+
     // NoteActivity constants:
     public static final String NOTE_ID = "NOTE_ID";
     public static final String CLIPPED_TEXT = "CLIPPED_TEXT";

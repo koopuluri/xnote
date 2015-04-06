@@ -27,7 +27,6 @@ public class ArticleAdapter  extends BaseListAdapter {
     public static final String TAG = "ArrayAdapter";
     public static final String IMAGE_VIEW = "ImageView";
     TextView mArticleTitleTv;
-    TextView mTstampTv;
     ImageView mIcon;
     public ArticleAdapter(Context context, List<Object> articles, Fragment parent) {
         super(context, articles, parent, R.layout.article_list_layout);
@@ -37,7 +36,6 @@ public class ArticleAdapter  extends BaseListAdapter {
         View view = super.getView(position, convertView, parent);
         ParseArticle article = (ParseArticle) getItem(position);
         mArticleTitleTv = (TextView) view.findViewById(R.id.article_title_text_view);
-        mTstampTv = (TextView) view.findViewById(R.id.tstamp_text_view);
         mIcon = (ImageView) view.findViewById(R.id.icon_image_view);
         if(article.getCouldNotBeParsed()) {
             view.findViewById(R.id.could_not_be_parsed).setVisibility(View.VISIBLE);
@@ -61,7 +59,8 @@ public class ArticleAdapter  extends BaseListAdapter {
                 String iconURL = article.getIconURL();
                 if(iconURL != null) {
                     if ((iconURL.equals(""))) {
-                        mIcon.setImageResource(R.drawable.icon_for_adapter);
+                        //mIcon.setImageResource(R.drawable.icon_for_adapter);
+                        // set no icon!!
                     } else {
                         new DownloadImageTask(article, mIcon).execute(iconURL);
                     }
@@ -75,7 +74,6 @@ public class ArticleAdapter  extends BaseListAdapter {
             }
         }
         mArticleTitleTv.setText(article.getTitle());
-        mTstampTv.setText(Util.dateFromSeconds(article.getTimestamp()));
         return view;
     }
 

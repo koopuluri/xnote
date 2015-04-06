@@ -76,8 +76,8 @@ public class NoteFragment extends Fragment {
         mNoteEdit = (EditText) view.findViewById(R.id.note_edit_text);
         mNoteEdit.requestFocus();
 
-        Util.setXnoteTypeFace(getActivity(), mClippedText);
-        Util.setXnoteTypeFace(getActivity(), mNoteEdit);
+        Util.setXnoteNoteTypeFace(getActivity(), mClippedText);
+        Util.setXnoteNoteTypeFace(getActivity(), mNoteEdit);
 
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.note_loading_spinner);
         new NoteInitializeTask().execute();
@@ -150,7 +150,7 @@ public class NoteFragment extends Fragment {
                 Log.d(TAG, "Timestamp for note : " + Util.dateFromSeconds(mNote.getTimestamp()));
                 mNote.setId();
 
-                Spanned articleBuffer = ArticleFragment.htmlEscapedContent(
+                Spanned articleBuffer = ArticleFragment.htmlEscapedArticleContent(
                         mArticle,
                         getActivity());
                 Spanned selectedBuffer = (Spanned)

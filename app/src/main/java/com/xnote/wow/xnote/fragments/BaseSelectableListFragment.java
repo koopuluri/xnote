@@ -69,7 +69,7 @@ public abstract class BaseSelectableListFragment extends ListFragment {
         mNoArticlesMessage = (TextView) view.findViewById(R.id.no_articles_message);
         mNoArticlesMessage.setPadding(15, 0, 15, 0);
         mNoArticlesMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        Util.setXnoteTypeFace(getActivity(), mNoArticlesMessage);
+        Util.setXnoteNoteTypeFace(getActivity(), mNoArticlesMessage);
          // TODO: take this out of this base class
         mNoArticlesMessage.setVisibility(View.GONE);
 

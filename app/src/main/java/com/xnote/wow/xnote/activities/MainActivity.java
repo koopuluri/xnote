@@ -6,13 +6,14 @@ import android.app.FragmentManager;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.ParseArticleManager;
 import com.xnote.wow.xnote.ParseCallback;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.XnoteApplication;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 import com.xnote.wow.xnote.fragments.SearchRetainedFragment;
@@ -23,7 +24,7 @@ import com.xnote.wow.xnote.views.SlidingTabLayout;
 /**
  * Created by koopuluri on 2/28/15.
  */
-public class MainActivity extends ActionBarActivity implements SearchFragment.OnItemDeleted,
+public class MainActivity extends Activity implements SearchFragment.OnItemDeleted,
                                                       ArticleListFragment.ArticleListListener {
 
     public static final String TAG = "MainActivity";
@@ -49,6 +50,9 @@ public class MainActivity extends ActionBarActivity implements SearchFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+
+
+        getActionBar().hide();
         mPagerAdapter = new PagerAdapter(this);
         mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
         mViewPager.setAdapter(mPagerAdapter);
@@ -85,6 +89,11 @@ public class MainActivity extends ActionBarActivity implements SearchFragment.On
             fm.beginTransaction()
                     .add(mSearchRetained, SearchRetainedFragment.TAG)
                     .commit();
+        }
+
+        if (XnoteApplication.FIRST_TIME) {
+            // launching the tutorial for first time:
+            Controller.launchTutorialActivity(this);
         }
     }
 
@@ -171,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements SearchFragment.On
     }
 
     @Override
-    public void onItemDeleted() {
+    public void onSearchItemDeleted() {
         // need to refresh ArticleListFragment:
         Log.d(TAG, "Refresh the article list fragment");
         mArticleListFrag.localRefresh();

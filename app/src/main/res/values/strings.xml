@@ -21,20 +21,18 @@
     <string name="parse_error_message">There was an error parsing your article. Check your internet connection and try again later.</string>
     <string name="note_tutorial_message">Highlight text to take notes</string>
     <color name="note_color">#FFFF99</color>
+    <color name="border_color">#B8B8B8</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-
     <color name="primary_palette_medium">#FFFFFF</color>
-
     <color name="accent_color_light">#FFF9C4</color>
     <color name="accent_color_dark">#FFEB3B</color>
     <color name="accent_color_darker">#F57F17</color>
-
-    <color name="xnote_color">#FF55A955</color>
-
+    <color name="xnote_color">#FF34BE5F</color>
     <color name="text_color_primary">#000000</color>
     <color name="text_color_error">#999999</color>
-
+    <color name="xnote_note_color">#D9FFFF00</color>
+    <color name="article_timestamp_text_color">#80D3D3D3</color>
     <string-array name="feedback_nature_array">
             <item>Bugs</item>
             <item>Design</item>

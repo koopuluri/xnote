@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
@@ -14,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -28,8 +30,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -62,13 +66,19 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
     ParseArticle mArticle;
     String mArticleId;
     boolean mInitialized;
+    LinearLayout mArticleContainer;
 
     // buttons:
     ImageButton mNewNoteButton;
     NoteEngine mNoteEngine;
     List<ParseNote> mNotes;
     ProgressBar mLoadingSpinner;
-    FrameLayout mTutorialLayout;
+
+    TextView mTitleView;
+    TextView mTimestampView;
+    TextView mNumberNotesView;
+
+    View mDecorView;
 
     boolean mIsNoteSelected;
     ArticleFragmentInterface mListener;
@@ -92,7 +102,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                     "must implement ArticleFragmentInterface.");
         }
     }
-
 
     public static Fragment newInstance(String articleId) {
         Bundle args = new Bundle();
@@ -120,18 +129,13 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mScrollView = (ObservableScrollView) view.findViewById(R.id.read_scroll_view);
         mScrollView.setScrollViewListener(this);
         mArticleView = new ArticleView(getActivity());
-        mTutorialLayout = (FrameLayout) view.findViewById(R.id.note_taking_tutorial);
-        ImageButton tutorialButton = (ImageButton)
-                mTutorialLayout.findViewById(R.id.tutorial_done_button);
-        tutorialButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // if visible, hide the tutorial:
-                mTutorialLayout.setVisibility(View.GONE);
-            }
-        });
+        mArticleContainer = (LinearLayout) view.findViewById(R.id.article_container);
 
-        mTutorialLayout.setVisibility(View.GONE);
+        mTitleView = (TextView) view.findViewById(R.id.article_title_text_view);
+        mTimestampView = (TextView) view.findViewById(R.id.article_timestamp_text_view);
+        mNumberNotesView = (TextView) view.findViewById(R.id.article_number_notes_text_view);
+
+
         // setting spinner:
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.fragment_article_loading_spinner);
         mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -139,8 +143,23 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mArticleView.setLayoutParams(lp);
+
         // BUTTONS:
+//        mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
+//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+//                ViewGroup.LayoutParams.WRAP_CONTENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT
+//        );
+//        params.setMargins(0, 0, 0, getNavBarHeight());
+
         mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
+                mNewNoteButton.getLayoutParams();
+        int buttonMargin = getResources().getDimensionPixelSize(R.dimen.add_button_margin);
+        params.setMargins(0, 0, buttonMargin, getNavBarHeight() + buttonMargin);
+        mNewNoteButton.setLayoutParams(params);
+
+        mNewNoteButton.setColorFilter(Color.parseColor("#FFFFFFFF"));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
                 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -154,6 +173,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             mNewNoteButton.setOutlineProvider(viewOutlineProvider);
             mNewNoteButton.setClipToOutline(true);
         }
+
         mNewNoteButton.setVisibility(View.INVISIBLE);
         mNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +203,43 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         }
 
+        mDecorView = getActivity().getWindow().getDecorView();
+        showSystemUI();  // to make first-time toggling smoother.
         return view;
+    }
+
+
+    private int getNavBarHeight() {
+        Resources resources = getActivity().getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
+
+    // This snippet hides the system bars.
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    // This snippet shows the system bars. It does this by removing all the flags
+// except for the ones that make the content appear under the system bars.
+    private void showSystemUI() {
+        mDecorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
 
@@ -192,16 +248,17 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
      * Use to hide toolbar if scrolling down, and make visible if scrolling up.
      */
     public void onScrollChanged(ObservableScrollView scrollView, int x, int y, int oldx, int oldy) {
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        mArticleView.clearFocus();  // removes a selection if there is currently one.
+
+        if (y <= 0) {
+            showSystemUI();
+            return;
+        }
+
         if (y > oldy) {
-            // need to hide if visible
-            if (toolbar.getVisibility() == View.VISIBLE) {
-                toolbar.setVisibility(View.INVISIBLE);
-            }
-        } else if (y <= oldy) {
-            if (toolbar.getVisibility() == View.INVISIBLE) {
-                toolbar.setVisibility(View.VISIBLE);
-            }
+            hideSystemUI();
+        } else {
+            showSystemUI();
         }
     }
 
@@ -213,10 +270,12 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
     public void initializeFromRetained() {
         //mArticleView.setText(mBuffer.getBuffer());
         mArticleView.setTextIsSelectable(true);
-        Util.setXnoteTypeFace(getActivity(), mArticleView);
+        Util.setXnoteArticleTypeFace(getActivity(), mArticleView);
         mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
         mArticleView.setCustomSelectionActionModeCallback(
                 new TextSelectionCallback());
+        mArticleView.setHighlightColor(getActivity().getResources()
+                .getColor(R.color.xnote_note_color));
 
 
         // TODO: set the text for the article view!
@@ -254,35 +313,49 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         }
     }
 
+
+    private void setTitleAndTimeStampView() {
+        String title = mArticle.getTitle();
+        String tstamp = Util.dateFromSeconds(mArticle.getTimestamp()).toString();
+        Util.setXnoteArticleTypeFace(getActivity(), mTitleView);
+        Util.setXnoteNoteTypeFace(getActivity(), mTimestampView);
+        String offset = "<br><br>";
+
+
+        mTitleView.setTextSize(36);
+
+        mTimestampView.setTextSize(11);
+        mTitleView.setText(Html.fromHtml(offset + "<b>" + title + "</b>"));
+        mTimestampView.setText(tstamp);
+
+    }
+
+
     /**
      * @param article:
      * @param activity:
      * @return Spanned
      */
-    public static Spanned htmlEscapedContent(ParseArticle article, Activity activity) {
+    public static Spanned htmlEscapedArticleContent(ParseArticle article, Activity activity) {
         Spanned out;
 
-        String title = "<h2>" + article.getTitle() + "</h2>";
-        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
-        String content = title + timestamp + article.getContent();
+//        String title = "<h2>" + article.getTitle() + "</h2>";
+//        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
+//        String offset = "<br><br><br><br>";
+//        String content = offset + title + timestamp + article.getContent();
 
         try {
-            out = Html.fromHtml(content,
+            out = Html.fromHtml(article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandler());
         } catch (RuntimeException e) {
             // catching the "PARAGRAPH span must start at paragraph boundary" exception:
             Log.d(TAG, "Paragraph span exception caught, not handling the list items.");
-            out = Html.fromHtml(content,
+            out = Html.fromHtml(article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandlerWithoutList());
         }
         return out;
-    }
-
-
-    public void refresh() {
-        new ArticleInitializeTask(this, true).execute();
     }
 
 
@@ -324,7 +397,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             String title = "<h2>" + mArticle.getTitle() + "</h2>";
             String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
             content = title + timestamp + content;
-            mContent = htmlEscapedContent(mArticle, parent.getActivity());
+            mContent = htmlEscapedArticleContent(mArticle, parent.getActivity());
             return null;
         }
 
@@ -333,13 +406,16 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             // adding to parent scrollView.
             try {
                 mArticleView.setText(mContent);
-                mArticleView.setTextIsSelectable(true);
-                Util.setXnoteTypeFace(getActivity(), mArticleView);
+                mArticleView.setTextIsSelectable(true);  //TODO: put this aticleView formatting into single func.
+                Util.setXnoteArticleTypeFace(getActivity(), mArticleView);
                 mArticleView.setMovementMethod(LinkTouchMovementMethod.getInstance());
                 mArticleView.setCustomSelectionActionModeCallback(
                         new TextSelectionCallback());
+                mArticleView.setHighlightColor(getActivity().getResources()
+                        .getColor(R.color.xnote_note_color));
+                setTitleAndTimeStampView();
                 if (!isRefresh) {
-                    mScrollView.addView(mArticleView); // TODO: check!
+                    mArticleContainer.addView(mArticleView); // TODO: check!
                     ViewTreeObserver vto = mArticleView.getViewTreeObserver();
                     vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -364,6 +440,16 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 Log.e(TAG, "nullPointer Exception " +
                         "(probably with the activity.getAssets() with null activity: " + e);
             }
+        }
+    }
+
+
+    private void setNumberNotesView() {
+        int num = mNoteEngine.size();
+        if (num == 1) {
+            mNumberNotesView.setText(num + " note");
+        } else {
+            mNumberNotesView.setText(num + " notes");
         }
     }
 
@@ -404,12 +490,8 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         @Override
         public void onPostExecute(Void _) {
             redraw();  // sets text for ArticleView with mBuffer.getBuffer().
+            setNumberNotesView();
             mLoadingSpinner.setVisibility(View.GONE);
-            if (isUserNew) {
-                mTutorialLayout.setVisibility(View.VISIBLE);
-            } else {
-                mTutorialLayout.setVisibility(View.GONE);
-            }
         }
     }
 
@@ -456,6 +538,9 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.parseColor("#000000"));
             setHighlightColor(getResources().getColor(R.color.accent_color_light));
+            setLineSpacing(0.0f, Constants.ARTICLE_VIEW_LINE_SPACING_MULTIPLIER);
+            // left, top, right, bottom:
+            setPadding(0, 18, 0, 0);
         }
 
         public ArticleView(Context context) {
@@ -535,7 +620,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 DB.saveNote(note);
                 Log.d(TAG, "note saved with noteId: " + note.getId());
             } else {
-                DB.deleteNote(note);
+                DB.deleteNote(note.getId());
                 Log.d(TAG, "note removed with noteId: " + note.getId());
             }
 
@@ -549,6 +634,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             super.onPostExecute(_);
             // updating buffers with the note:
             redraw();
+            setNumberNotesView();
         }
     }
 
@@ -589,9 +675,11 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             Log.d(TAG, "onCreateActionMode()");
+            showSystemUI();
             mode.setCustomView(null);
             MenuInflater inflater = mode.getMenuInflater();
             menu.removeItem(android.R.id.selectAll);
+
             // --------------------------------------------------------------------
             int start = mArticleView.getSelectionStart();
             int end = mArticleView.getSelectionEnd();
@@ -614,6 +702,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             destroySelection();
+            hideSystemUI();
             Log.d(TAG, "onDestroyActionMode()");
         }
 
