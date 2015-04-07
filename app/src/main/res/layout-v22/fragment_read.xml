@@ -10,7 +10,7 @@
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:layout_height="match_parent">
-        <com.xnote.wow.xnote.views.ObservableScrollView
+        <com.xnote.lol.xnote.views.ObservableScrollView
             android:id="@+id/read_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -76,7 +76,7 @@
 
 
 
-        </com.xnote.wow.xnote.views.ObservableScrollView>
+        </com.xnote.lol.xnote.views.ObservableScrollView>
     </FrameLayout>
 
     <ProgressBar

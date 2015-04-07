@@ -8,7 +8,7 @@
         android:id="@+id/fragment_read_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.xnote.wow.xnote.views.ObservableScrollView
+        <com.xnote.lol.xnote.views.ObservableScrollView
             android:id="@+id/read_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -70,7 +70,7 @@
 
             </FrameLayout>
 
-        </com.xnote.wow.xnote.views.ObservableScrollView>
+        </com.xnote.lol.xnote.views.ObservableScrollView>
 
     </FrameLayout>
 
