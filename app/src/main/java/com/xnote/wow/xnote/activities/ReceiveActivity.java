@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 
 import java.net.MalformedURLException;
@@ -58,7 +55,6 @@ public class ReceiveActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume().");
         isPaused = false;
     }
 
@@ -76,7 +72,6 @@ public class ReceiveActivity extends Activity {
             mNewArticleInitialized = true;
             if (mNewArticle.getArticleUrl() != null) {
                 if(ParseUser.getCurrentUser() != null) {
-                    Log.d(TAG, "launching main activity");
                     Controller.launchMainActivity(mThisActivity);
                     finish();
                 } else {
@@ -84,7 +79,6 @@ public class ReceiveActivity extends Activity {
                     finish();
                 }
             } else {
-                Log.e(TAG, "stringUrl is null after handleText().");
             }
             if (isPaused) finish();  // kill this activity if a newer one has opened up over it. of later button was clicked.
         }
@@ -96,14 +90,11 @@ public class ReceiveActivity extends Activity {
      * @param intent
      */
     void handleSendText(Intent intent) {
-        Log.d(TAG, "handleSendText()");
         String stringUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
-        Log.d(TAG, "url: " + stringUrl);
         // checking if it is possible to make url from this string:
         try {
             new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(TAG, "malformed url: " + stringUrl);
             return;
         }
         // creating holder article:

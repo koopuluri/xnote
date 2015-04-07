@@ -1,7 +1,5 @@
 package com.xnote.wow.xnote.models;
 
-import android.util.Log;
-
 import com.xnote.wow.xnote.TwoThings;
 
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ public class NoteEngine {
             mMap.put(note.getStartIndex(),
                     new TwoThings<>(note.getEndIndex(), note.getId()));
         }
-        Log.d(TAG, "setNotes() completed.");
     }
 
 
@@ -57,11 +54,9 @@ public class NoteEngine {
     }
 
     public String getNoteIdAtPos(int position) {
-        Log.d(TAG, "getNoteIdAtPos(): " + position);
         List<Integer> keys = new ArrayList<>();
         keys.addAll(mMap.keySet());
         Collections.sort(keys);
-        Log.d(TAG, "keys: " + String.valueOf(keys));
         return mMap.get(keys.get(position)).b;  // the noteId.
     }
 
@@ -82,13 +77,9 @@ public class NoteEngine {
                     return 0;
             }
         });
-        Log.d(TAG, "entryList: " + String.valueOf(entryList));
         // finding the note in map:
         for (int i = 0; i < entryList.size(); i++) {
-            Log.d(TAG, String.format("entry_note_id: %s vs. noteId: %s",
-                    entryList.get(i).getValue().b, noteId));
             if (entryList.get(i).getValue().b.equals(noteId)) {
-                Log.d(TAG, "noteId found in entryList: " + i);
                 return i;
             }
         }
@@ -103,12 +94,10 @@ public class NoteEngine {
     public boolean notesPresentWithinRange(int start, int end) {
         for (int noteStart : mMap.keySet()) {
             if (noteStart >= start && noteStart <= end) {
-                Log.d(TAG, "note start in range. noteId: " + mMap.get(noteStart).b);
                 return true;
             } else {
                 int noteEnd = mMap.get(noteStart).a;
                 if (noteEnd >= start && noteEnd <= end) {
-                    Log.d(TAG, "note end in range. noteId: " + mMap.get(noteStart).b);
                     return true;
                 }
             }
@@ -119,7 +108,6 @@ public class NoteEngine {
 
     public void addNote(ParseNote n) {
         mMap.put(n.getStartIndex(), new TwoThings<>(n.getEndIndex(), n.getId()));
-        Log.d(TAG, "addNote(): " + n.getId());
     }
 
 
@@ -127,7 +115,6 @@ public class NoteEngine {
         try {
             return mMap.get(start).b;
         } catch (Exception e) {
-            Log.d(TAG, "note does not exist with this start: " + start);
             return null;
         }
     }
@@ -142,6 +129,5 @@ public class NoteEngine {
                 return;
             }
         }
-        Log.e(TAG, "could not remove: " + start + ", with noteId: " + noteId);
     }
 }

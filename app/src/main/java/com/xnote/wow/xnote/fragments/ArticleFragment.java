@@ -23,7 +23,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -160,7 +159,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                 mNewNoteButton.getLayoutParams();
         int buttonMargin = getResources().getDimensionPixelSize(R.dimen.add_button_margin);
-        Log.d(TAG, "NAVBAR HEIGHT: " + getNavBarHeight());
         params.setMargins(0, 0, buttonMargin, getNavBarHeight() + buttonMargin);
         mNewNoteButton.setLayoutParams(params);
 
@@ -183,19 +181,15 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mNewNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "newNoteButton onClick()");
                 int start = mArticleView.getSelectionStart();
                 int end = mArticleView.getSelectionEnd();
                 if (end - start > 0 && !mNoteEngine.notesPresentWithinRange(start, end)) {
                     // launch note activity:
-                    if (mArticle.getId() == null)
-                        Log.e(TAG, "mArticle.getId() is null!");
                     Controller.launchNoteActivity(getActivity(), mArticle.getId(),
                             start, end);
                     ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(20);
                 } else {
-                    Log.d(TAG, String.format("Other notes in Range of this new note region: %s, %s", String.valueOf(start),
-                            String.valueOf(end)));
+                    // do nothing.
                 }
             }
         });
@@ -204,7 +198,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         if (mBuffer != null && mArticle != null && mNotes != null) {
             initializeFromRetained();
         } else {
-            Log.d(TAG, "NOT FROM RETAINED! LAUNCHING ARTICLEINITIALIZATIONTASK!");
             new ArticleInitializeTask(this, false).execute();  // false because this is not refresh, but initialization.
         }
 
@@ -289,19 +282,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mArticleView.setHighlightColor(getActivity().getResources()
                 .getColor(R.color.xnote_note_color));
 
-
-        // TODO: set the text for the article view!
-        ViewTreeObserver vto = mArticleView.getViewTreeObserver();
-//        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                if (!mInitialized) {
-//                    mArticleView.setText(mBuffer.getBuffer());
-//                    mInitialized = true;
-//                    Log.d(TAG, "onGlobalLayout(), not initialized, so InitializeTask executed!");
-//                }
-//            }
-//        });
         mArticleView.setText(mBuffer.getBuffer());
         mNoteEngine = NoteEngine.getInstance();
         mNoteEngine.initializeNotes(mNotes); // TODO: makes sure this clears before adding!
@@ -321,7 +301,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         if (mBuffer != null) {
             mArticleView.setText(mBuffer.getBuffer());
         } else {
-            Log.e(TAG, "mBuffer is null!");
+            // do nothing.
         }
     }
 
@@ -351,7 +331,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
     public static Spanned htmlEscapedArticleContent(ParseArticle article, Activity activity) {
         Spanned out;
         String title = "<h2>" + article.getTitle() + "</h2>";
-        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
         String offset = "";
         // adding the 4 to correctly place below the divider (look in fragment_read).
         for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + 4; i++) {
@@ -371,7 +350,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                     new HtmlTagHandler());
         } catch (RuntimeException e) {
             // catching the "PARAGRAPH span must start at paragraph boundary" exception:
-            Log.d(TAG, "Paragraph span exception caught, not handling the list items.");
             out = Html.fromHtml(article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandlerWithoutList());
@@ -409,7 +387,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public Void doInBackground(Void... params) {
-            Log.d(TAG, "ArticleInitializeTask.doInBackground()");
             if (getActivity() == null)
                 this.cancel(true);
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
@@ -444,22 +421,18 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                             if (!mInitialized) {
                                 new BufferInitializeTask().execute();
                                 mInitialized = true;
-                                Log.d(TAG, "onGlobalLayout(), not initialized, so InitializeTask executed!");
                             }
                         }
                     });
                 } else {
-                    Log.d(TAG, "refreshed, mInitialized set to false!");
                     // mInitialized = false; // this is so that onGlobalLayout() is executed in articleView's view tree observer.
                     // that means that BufferInitializeTask will be executed.
                     new BufferInitializeTask().execute();
                 }
             } catch (IllegalStateException e) {
-                Log.e(TAG, "article not attached to activity?: " + e);
                 //getActivity().finish();
             } catch (NullPointerException e) {
-                Log.e(TAG, "nullPointer Exception " +
-                        "(probably with the activity.getAssets() with null activity: " + e);
+                // do nothing.
             }
         }
     }
@@ -480,30 +453,20 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public Void doInBackground(Void... params) {
-            Log.d(TAG, "InitializeTask: doInBackground()");
             if (getActivity() == null)
                 return null; // TODO: for when fragment not yet attached (when changing orientation).
 
             mNotes = DB.getNotesForArticleLocally(mArticleId);
-            Log.d(TAG, "mNotes obtained from local datastore.");
-
             mNoteEngine = NoteEngine.getInstance();
             mNoteEngine.initializeNotes(mNotes);
-            Log.d(TAG, "value of articleView's layout in InitializeTask: " +
-                    String.valueOf(mArticleView.getLayout()));
             // initializing buffer and adding notes to it.
             mBuffer = new ReadBuffer(mArticleView.getLayout(), mArticleId, getActivity(), mContent);
             for (ParseNote note : mNotes) {
-                Log.d(TAG, "InitializationTask: note added with noteId: " + note.getId());
-                Log.d(TAG, "InitializationTask: note added with tstamp: " + note.getTimestamp());
                 mBuffer.addNoteSpan(note);  // since initializing, all notes are new!
             }
-            Log.d(TAG, "InitializeTask.doInBackground() complete");
             setRetainedInformation();
-            Log.d(TAG, "setRetainedInformation()");
 
             isUserNew = DB.isNew();
-            Log.d(TAG, "isUserNew: " + String.valueOf(isUserNew));
             return null;
         }
 
@@ -520,7 +483,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
     public void addNote(ParseNote note) {
         mBuffer.addNoteSpan(note);
         mNoteEngine.addNote(note);
-        Log.d(TAG, "addNote()");
     }
 
 
@@ -529,12 +491,10 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mBuffer.removeNoteSpan(note);
         // mNoteEngine.removeNote(startIndex, endIndex, noteId);
         mNoteEngine.removeNote(note);
-        Log.d(TAG, "remove note");
     }
 
 
     public void addNoteFromNoteActivity(ParseNote note, int state) {
-        Log.d(TAG, "addNoteFromNoteActivity with state: " + state);
         new UpdateBuffersWithNoteTask(note, state).execute();
     }
 
@@ -619,7 +579,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             super();
             this.note = note;
             noteState = state;
-            Log.d(TAG, "UpdateBufferswithNoteTask: state: " + state);
         }
 
 
@@ -634,20 +593,15 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             // get note from db:
             // note = DB.getNote(noteId);
             if (note == null) {
-                Log.d(TAG, "note is null, getting a new note");
                 note = DB.getLocalNote(noteId);
             }
-            Log.d(TAG, "UpdateBufferTask: noteState: " + noteState);
             if (noteState >= 0) {
                 DB.saveNote(note);
-                Log.d(TAG, "note saved with noteId: " + note.getId());
             } else {
                 DB.deleteNote(note.getId());
-                Log.d(TAG, "note removed with noteId: " + note.getId());
             }
 
             updateBuffersWithNote(note, noteState);
-            Log.d(TAG, "note obtained, and BuffersUpdated in doInBackground()");
             return null;
         }
 
@@ -677,7 +631,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Log.d(TAG, "onActionItemClicked");
             switch (item.getItemId()) {
                 case R.id.action_delete_note:
                     // delete selected note:
@@ -685,18 +638,15 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                     int end = mArticleView.getSelectionEnd();
                     String noteId = mNoteEngine.getNoteId(start, end);
                     if (noteId == null) {
-                        Log.e(TAG, "this shouldn't be null");
                         return true;
                     }
                     new UpdateBuffersWithNoteTask(noteId, -1).execute();
-                    Log.d(TAG, "note deleted with id: " + noteId);
             }
             return true;
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            Log.d(TAG, "onCreateActionMode()");
             showSystemUI();
             mode.setCustomView(null);
             MenuInflater inflater = mode.getMenuInflater();
@@ -710,12 +660,10 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 mArticleView.clearFocus();
 
             if (mNoteEngine.noteExistsWithRange(start, end)) {
-                Log.d(TAG, "note exists within range!");
                 inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
                 mNewNoteButton.setVisibility(View.INVISIBLE);
                 mIsNoteSelected = true;
             } else {
-                Log.d(TAG, "note doesn't exist within range! new note:");
                 mNewNoteButton.setVisibility(View.VISIBLE);
             }
             return true;
@@ -725,12 +673,10 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         public void onDestroyActionMode(ActionMode mode) {
             destroySelection();
             hideSystemUI();
-            Log.d(TAG, "onDestroyActionMode()");
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            Log.d(TAG, "onPrepareActionMode()");
             return false;
         }
     }

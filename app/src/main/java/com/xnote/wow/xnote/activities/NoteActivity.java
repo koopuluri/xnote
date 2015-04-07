@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,7 +62,6 @@ public class NoteActivity extends Activity {
         getActionBar().setHomeAsUpIndicator(R.drawable.ic_xnote_navigation_up_colored);
         if (getIntent().getStringExtra(Constants.PARENT_ACTIVITY).equals(ArticleActivity.TAG)
                 && getIntent().getExtras().containsKey(Constants.NOTE_ID)) {
-            Log.d(TAG, "parent is: " + ArticleActivity.TAG);
             mNoteEngine = NoteEngine.getInstance();
             mNotePagerAdapter = new NotePagerAdapter(getFragmentManager());
             mViewPager = (ViewPager) findViewById(R.id.note_view_pager);
@@ -76,10 +74,8 @@ public class NoteActivity extends Activity {
             mNoteEngine = null;
             // adding initial note frag.
             if (getIntent().getExtras().containsKey(Constants.NOTE_ID)) {
-                Log.d(TAG, "Old note, but parent not ArticleActivity");
                 mNoteFrag = NoteFragment.newInstance(getIntent().getStringExtra(Constants.NOTE_ID));
             } else {
-                Log.d(TAG, "New Note.");
                 mNoteFrag = NoteFragment.newInstance(getIntent().getStringExtra(Constants.ARTICLE_ID),
                         getIntent().getIntExtra(Constants.START_INDEX, -1),
                         getIntent().getIntExtra(Constants.END_INDEX, -1));
@@ -88,7 +84,6 @@ public class NoteActivity extends Activity {
                 getFragmentManager().beginTransaction()
                         .add(R.id.note_container, mNoteFrag, NoteFragment.TAG)
                         .commit();
-                Log.d(TAG, "NoteFragment added to note_container");
             }
         }
         mDoneButton = (ImageButton) findViewById(R.id.done_button);
@@ -138,7 +133,6 @@ public class NoteActivity extends Activity {
             case android.R.id.home:
                 Intent upIntent = NavUtils.getParentActivityIntent(this);
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-                    Log.d(TAG, "activity not part of this app's stack");
                     // this means that this activity is not part of this app's task,
                     // so create new task when navigating up, with synthesized (???) back stack.
                     TaskStackBuilder.create(this)
@@ -147,9 +141,7 @@ public class NoteActivity extends Activity {
                             // navigate up to closest parent:
                             .startActivities();
                     // else just go to the parent activity that this was called from:
-                    Log.d(TAG, "ran TaskStackBuilder.create...");
                 } else {
-                    Log.d(TAG, "NavUtils.navigateUpFromSameTask(this)");
                     // http://stackoverflow.com/a/16147110/2713471:
                     // launching intent based on parent:
                     if (getIntent().getStringExtra(Constants.PARENT_ACTIVITY).equals(ArticleActivity.TAG)) {
@@ -169,16 +161,13 @@ public class NoteActivity extends Activity {
                 return true;
 
             case R.id.note_delete_button:
-                Log.d(TAG, "note to be deleted!");
                 if (mNoteFrag != null) {
                     // this case is when Note launched through SearchResultsFrag, because there's not viewPager.
-                    Log.d(TAG, "note deleted (launched from SearchResultsFrag.");
                     mNoteFrag.delete();
                 } else {
                     // when Note launched from ArticleFrag; Viewpager exists:
                     NoteFragment noteFrag = mNoteFragMap.get(mViewPager.getCurrentItem());
                     noteFrag.delete();
-                    Log.d(TAG, "note deleted at position: " + mViewPager.getCurrentItem());
                 }
                 return true;
 

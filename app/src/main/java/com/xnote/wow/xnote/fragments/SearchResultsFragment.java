@@ -4,11 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,7 +70,6 @@ public class SearchResultsFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mQuery = args.getString(QUERY);
-        Log.d(TAG, "onCreate() complete, listAdapter set.");
     }
 
     @Override
@@ -89,7 +85,6 @@ public class SearchResultsFragment extends ListFragment {
                 (SearchRetainedFragment) fm.findFragmentByTag(SearchRetainedFragment.TAG);
         if (searchRetainedFragment != null) { // TODO: make sure this is always true! (it must be...)
             searchRetainedFragment.setResults(results);
-            Log.d(TAG, "search results set.");
         }
     }
 
@@ -100,7 +95,6 @@ public class SearchResultsFragment extends ListFragment {
         if (searchRetainedFragment != null) { // TODO: make sure this is always true! (it must be...)
             return searchRetainedFragment.getSearchResults();
         } else {
-            Log.d(TAG, "getRetainedResults returns null, should never be the case!");
             return null;
         }
     }
@@ -109,7 +103,6 @@ public class SearchResultsFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume()");
         new UpdateSearchResultsTask();
     }
 
@@ -125,7 +118,6 @@ public class SearchResultsFragment extends ListFragment {
 
         mAdapter = new SearchResultAdapter(getActivity(), new ArrayList<Object>(), this);  // initializing with an empty list.
         List<SearchResult> retainedResults = getRetainedResults();
-        Log.d(TAG, "retainedResults: " + String.valueOf(retainedResults));
         if (retainedResults != null) {
             mAdapter.addAll(retainedResults);
             setListAdapter(mAdapter);
@@ -143,18 +135,15 @@ public class SearchResultsFragment extends ListFragment {
         // when an article is selected from the Article List:
         SearchResult result = (SearchResult) getListAdapter().getItem(position);
         if (result.type.equals(DB.ARTICLE)) {
-            Log.d(TAG, String.format("Article '%s' was clicked!", result.title));
-
             // launching ArticleActivity with the note-id as an EXTRA for the intent:
             Controller.launchArticleActivity(getActivity(), result.id);
         } else if (result.type.equals(DB.NOTE)) {
-            Log.d(TAG, String.format("Note with note.id: '%s', was clicked!", result.id));
             Controller.launchNoteActivity(getActivity(),
                                             result.articleId,
                                             result.id,
                                             SearchResultsFragment.TAG);
         } else {
-            Log.e(TAG, "Result type is neither an Article or Note; incompatible result type.");
+            // do nothing.
         }
     }
 
@@ -223,12 +212,10 @@ public class SearchResultsFragment extends ListFragment {
                 SearchResult result = copiedItemList.get(pos);
                 if (result.type.equals(DB.ARTICLE)) {
                     DB.deleteArticle(result.id);
-                    Log.d(TAG, "deleteSelectedItems(), article deleted with id: " + result.id);
                 } else if (result.type.equals(DB.NOTE)) {
                     DB.deleteNote(result.id);
-                    Log.d(TAG, "deleteSelectedItems(), note deleted with id: " + result.id);
                 } else {
-                    Log.e (TAG, "incorrect type for SearchResult.");
+                    // do nothing.
                 }
             }
             return null;
@@ -237,7 +224,6 @@ public class SearchResultsFragment extends ListFragment {
         @Override
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
-            Log.d(TAG, "poopOnPostExecute().");
             mListener.onItemDeleted();
         }
     }
@@ -273,7 +259,6 @@ public class SearchResultsFragment extends ListFragment {
             // Respond to clicks on the actions in the CAB
             switch (item.getItemId()) {
                 case R.id.menu_delete:
-                    Log.d(TAG, "menu_delete clicked. time to delete the selected articles");
                     new DeleteSelectedItemsTask().execute();
                     mode.finish(); // Action picked, so close the CAB
                     return true;

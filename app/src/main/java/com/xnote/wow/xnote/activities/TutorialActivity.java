@@ -2,14 +2,12 @@ package com.xnote.wow.xnote.activities;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,10 +16,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.Util;
-import com.xnote.wow.xnote.XnoteApplication;
+
 
 /**
  * Created by koopuluri on 4/5/15.

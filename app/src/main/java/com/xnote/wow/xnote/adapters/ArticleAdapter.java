@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.models.ParseArticle;
 import com.xnote.wow.xnote.models.ParseImage;
 
@@ -41,13 +39,11 @@ public class ArticleAdapter  extends BaseListAdapter {
             view.findViewById(R.id.could_not_be_parsed).setVisibility(View.VISIBLE);
             view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
             view.findViewById(R.id.article_list_loading_spinner).setVisibility(View.INVISIBLE);
-            Log.d(TAG, "error text being displayed");
         } else if (!article.isParsed()) {
             view.findViewById(R.id.article_list_loading_spinner).setVisibility(View.VISIBLE);
             TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
             errorText.setVisibility(View.INVISIBLE);
             view.findViewById(R.id.icon_image_view).setVisibility(View.INVISIBLE);
-            Log.d(TAG, "article hasn't completed parsing yet, spinner set for article list item");
         } else {
             TextView errorText = (TextView) view.findViewById(R.id.could_not_be_parsed);
             errorText.setVisibility(View.INVISIBLE);
@@ -103,7 +99,6 @@ public class ArticleAdapter  extends BaseListAdapter {
             try {
                 sourceImage = (ParseImage) article.getSourceImage().fetchIfNeeded();
             } catch (com.parse.ParseException e) {
-                Log.e(TAG, "could not fetchIfNeeded() the sourceImage: " + e);
             }
             return null;
         }
@@ -115,7 +110,6 @@ public class ArticleAdapter  extends BaseListAdapter {
             if (sourceImage != null) {
                 setImageViewWithIcon(icon, sourceImage);
             } else {
-                Log.d(TAG, "fetching sourceImage from local datastore was not successful.");
             }
         }
     }
@@ -140,7 +134,6 @@ public class ArticleAdapter  extends BaseListAdapter {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             //Getting image from imageView so we can store it in parse image
@@ -152,12 +145,9 @@ public class ArticleAdapter  extends BaseListAdapter {
                 ParseImage image1 = new ParseImage();
                 DB.saveImage(image1);
                 Bitmap bitmap = mIcon11;
-                Log.d(TAG, String.valueOf(bitmap));
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                Log.d(TAG, String.valueOf(stream));
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
-                Log.d(TAG, "IS THIS TOO BIG? : " + imageInByte.length);
                 image1.setData(imageInByte);
                 article.setSourceImage(image1);
             }

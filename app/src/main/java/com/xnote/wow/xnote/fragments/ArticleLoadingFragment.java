@@ -2,7 +2,6 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ public class ArticleLoadingFragment extends Fragment {
         ProgressBar loadingBar = (ProgressBar) view.findViewById(
                 R.id.loading_article_fragment_progress_bar);
         loadingBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "loading spinner set visible.");
         return view;
     }
 }

@@ -1,14 +1,8 @@
 package com.xnote.wow.xnote.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
-
 import com.xnote.wow.xnote.models.SearchResult;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**

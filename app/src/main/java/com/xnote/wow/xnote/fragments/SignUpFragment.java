@@ -3,7 +3,6 @@ package com.xnote.wow.xnote.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,6 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
         final Fragment thisFragment = this;
         nameEditText = (EditText)view.findViewById(R.id.name);
-        Log.d(TAG, String.valueOf(nameEditText));
         nameEditText.addTextChangedListener(new TextValidator(nameEditText) {
             //Override the validator of the abstract class
             @Override

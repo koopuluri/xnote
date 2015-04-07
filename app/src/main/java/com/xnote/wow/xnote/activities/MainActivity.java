@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -109,7 +108,6 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
                 actionBarHeight
         ));
 
-        Log.d(TAG, "end of onCreate()");
         // getting / setting the SearchRetainedFrag:
         FragmentManager fm = getFragmentManager();
         mSearchRetained = (SearchRetainedFragment) fm
@@ -160,7 +158,6 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
     public void onStop() {
         super.onStop();
         ParseArticleManager.cancelAll();
-        Log.d(TAG, "onStop().");
     }
 
 
@@ -174,9 +171,7 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
 
         @Override
         public Fragment getItem(int i) {
-            Log.d(TAG, "getItem() in PageAdapter");
             if (i == 0) {
-                Log.d(TAG, "ArticleListFragment selected.");
                 if (mArticleListFrag == null) {
                     mArticleListFrag = ArticleListFragment.newInstance(newArticleId);
                 }
@@ -185,16 +180,13 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
                 if (mSearchFrag == null) {
                     mSearchFrag = new SearchFragment();
                 }
-                Log.d(TAG, "SearchFragment selected.");
                 return mSearchFrag;
             } else if (i == 2) {
                 if (mSettingsFrag == null) {
                     mSettingsFrag = new SettingsFragment();
                 }
-                Log.d(TAG, "SettingsFragment selected.");
                 return mSettingsFrag;
             } else {
-                Log.e(TAG, "no fragment chosen, this state should not be possible!");
                 return null;
             }
         }
@@ -213,7 +205,6 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
     @Override
     public void onSearchItemDeleted() {
         // need to refresh ArticleListFragment:
-        Log.d(TAG, "Refresh the article list fragment");
         mArticleListFrag.localRefresh();
     }
 
@@ -228,14 +219,10 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
         ParseArticleManager.startParsing(articleId, new ParseCallback() {
             @Override
             public void run(ParseArticle updatedArticle) {
-                Log.d(TAG, "ParseArticleCallBack ArticleListFragment : " +
-                        String.valueOf(mArticleListFrag));
                 mArticleListFrag.onParseArticleCompleted(updatedArticle);
             }
 
             public void runFailed() {
-                Log.d(TAG, "ParseArticleCallBack ArticleListFragment : " +
-                        String.valueOf(mArticleListFrag));
                 mArticleListFrag.onParseArticleFailed();
             }
         });

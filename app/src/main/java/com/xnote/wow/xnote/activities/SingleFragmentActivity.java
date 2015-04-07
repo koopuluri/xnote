@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.xnote.wow.xnote.R;
 
@@ -22,7 +21,6 @@ public abstract class SingleFragmentActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_fragment);
         FragmentManager fm = getFragmentManager();
-        Log.d(TAG, "fragment manager value: " + String.valueOf(fm));
         Fragment fragment = fm.findFragmentById(R.id.single_fragment_container);
         if (fragment == null) {  // only want to add fragment if one is not already hosted by the SingleFragmentActivity.
             fragment = createFragment();

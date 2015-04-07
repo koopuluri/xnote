@@ -2,7 +2,6 @@ package com.xnote.wow.xnote.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.text.Spanned;
 
 import com.xnote.wow.xnote.buffers.ReadBuffer;
 import com.xnote.wow.xnote.models.ParseArticle;

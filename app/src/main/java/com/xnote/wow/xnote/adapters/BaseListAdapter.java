@@ -2,7 +2,6 @@ package com.xnote.wow.xnote.adapters;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -33,7 +32,6 @@ public abstract class BaseListAdapter extends ArrayAdapter {
 
     public void addSelection(int position) {
         mSelectedPositions.add(position);
-        Log.d(TAG, "selection added at position: " + position);
     }
 
     public void removeSelection(int position) {
@@ -58,7 +56,6 @@ public abstract class BaseListAdapter extends ArrayAdapter {
     }
 
     public List<Integer> getSelectedPositions() {
-        Log.d(TAG, "selected positions: " + String.valueOf(mSelectedPositions));
         return mSelectedPositions;
     }
 
@@ -77,7 +74,6 @@ public abstract class BaseListAdapter extends ArrayAdapter {
         else view = convertView;
 
         if (mSelectedPositions.contains(pos)) {
-            Log.d(TAG, "getView(); this is a selected position.");
             view.setBackgroundColor(parentFrag.getActivity().getResources().getColor(R.color.accent_color_light));
         } else {
             view.setBackgroundColor(parentFrag.getActivity().getResources().getColor(R.color.white));

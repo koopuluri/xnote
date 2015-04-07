@@ -6,7 +6,6 @@ import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -34,8 +33,6 @@ public class SettingsFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "Settings fragment loaded");
-
         //OptionsList stores the options available to the user
         //Currently only logout or login
         mOptionsList = new ArrayList<String>();
@@ -97,7 +94,6 @@ public class SettingsFragment extends ListFragment {
         @Override
         public Void doInBackground(Void... params) {
             ParseUser.logOut();
-            Log.d(TAG, "ParseUser.logged out and cleared local datastore.");
             return null;
         }
 

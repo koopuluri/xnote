@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +83,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                     if (!a.isParsed()) {
                         // do nothing:
                         mSwipeRefreshLayout.setRefreshing(false);
-                        Log.d(TAG, "onRefresh() is cancelling.");
                         return;
                     }
                 }
@@ -93,7 +91,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         });
 
         new ArticleListInitializationTask(getActivity(), false).execute();
-        Log.d(TAG, "launched ArticleListInitializationTask!");
         mContentViewSet = true;
         return getSwipeRefreshLayout();
     }
@@ -104,7 +101,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         for (Object obj : itemList) {
             ParseArticle a = (ParseArticle) obj;
             if (!a.isParsed()) {
-                Log.d(TAG, "there's an article that's not parsed, so not refreshing.");
                 mSwipeRefreshLayout.setRefreshing(false);
                 return;
             }
@@ -125,7 +121,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         for (Object obj : itemList) {
             ParseArticle a = (ParseArticle) obj;
             if (!a.isParsed()) {
-                Log.d(TAG, "there's an article that's not parsed, so not changing configuration.");
                 return;
             }
         }
@@ -137,37 +132,30 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // when an article is selected from the Article List:
         ParseArticle a = (ParseArticle) getListAdapter().getItem(position);
-        Log.d(TAG, String.format("article '%s' was clicked!", a.getTitle()));
         if (a.isParsed()) {
             Controller.launchArticleActivity(getActivity(), a.getId());
-            Log.d(TAG, "article already parsed, launching ArticleActivity with articleId: "
-                    + a.getId());
         } else {
-            Log.d(TAG, "article not loaded, doing nothing with this click. " + a.getId());
+            // do nothing.
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume()");
         new ArticleListInitializationTask(getActivity(), false).execute();
     }
 
 
 
     private List<ParseArticle> initializeAdapterList(Boolean fromCloud) {
-        Log.d(TAG, "initializeAdapter");
         List<ParseArticle> articleList;
         if((fromCloud) && (Util.isNetworkAvailable(getActivity())) && (!Util.IS_ANON)) {
             //Don't need to check if any article is being parsed
             //because the check is being made in the refresh method
             //Local database is cleared and is synced with the cloud
-            Log.d(TAG, "Clearing local datastore and syncing from cloud");
             try {
                 DB.sync();
             } catch (ParseException e) {
-                Log.d(TAG, "sync failed.");
                 Toast.makeText(getActivity(), "Refresh failed. Check connection.",
                         Toast.LENGTH_SHORT)
                 .show();
@@ -175,16 +163,12 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             articleList = DB.getArticlesLocally();
         } else {
             articleList = DB.getArticlesLocally();
-            Log.d(TAG, "Article List: " + String.valueOf(articleList));
             for (ParseArticle a : articleList) {
                 if (!a.isParsed()) {
                     a.setCouldNotBeParsed(false);
                     mListener.parseArticle(a);
-                    Log.d(TAG, "article is not parsed, telling parent Activity to parse article "
-                            + a.toString());
                 }
             }
-            Log.d(TAG, "initializeAdapter, articleList output: " + String.valueOf(articleList));
         }
         return articleList;
     }
@@ -201,7 +185,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
                 return;
             }
         }
-        Log.e(TAG, "article wasn't in the list!");
         // new ArticleListInitializationTask(false);
     }
 
@@ -213,18 +196,13 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
     @Override
     protected void deleteSelectedItems() {
         List<Integer> selectedItemPositions = getAdapter().getSelectedPositions();
-        Log.d(TAG, "selected positions: " + String.valueOf(selectedItemPositions));
         List<Object> itemList = getItemList();
-        Log.d(TAG, "selected item list: " + String.valueOf(itemList));
         for (int pos : selectedItemPositions) {
             try {
                 ParseArticle a = (ParseArticle) itemList.get(pos);
                 DB.deleteArticleInBackground(a); // article is deleted in background.
             } catch (IndexOutOfBoundsException e) {
-                Log.e(TAG, String.format("index out of bounds, length of itemList: %s," +
-                                " selected item positions: %s",
-                        itemList.size(),
-                        String.valueOf(selectedItemPositions)));
+                // do nothing.
             }
         }
         mAdapter.removeItemsAtIndices(selectedItemPositions);
@@ -258,7 +236,6 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         protected Void doInBackground(Void... params) {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             articles = initializeAdapterList(fromCloud);
-            Log.d(TAG, "number of articles in ArticleInitTAsk.doInBackground(): " + String.valueOf(articles));
             return null;
         }
 

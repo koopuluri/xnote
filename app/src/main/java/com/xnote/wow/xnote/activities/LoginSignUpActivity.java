@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseUser;
@@ -57,23 +56,19 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
             // used apply rather than commit so it runs in the background
             // Note my first time is updated in hte fragment
             settings.edit().putBoolean("chosen_to_signup", false).apply();
-            Log.d(TAG, "using the application first time");
             this.openWelcome(null);
         } else {
             //Check if the user has logged in before and the details are on the cache
-            Log.d(TAG, "not first time");
             ParseUser currentUser = ParseUser.getCurrentUser();
             if(settings.getBoolean("chosen_to_signup", true)) {
                 //Anonymous user has indicated that he wants to sign up
                 settings.edit().putBoolean("chosen_to_signup", false).apply();
-                Log.d(TAG, "Anonymous user has chosen to signup");
                 this.openSignUp(null);
             } else if ((currentUser != null) && (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()))) {
                 //If login details are in the cache and user is not anonymous
                 Util.IS_ANON = false;
                 Controller.launchMainActivity(activity);
                 finish();
-                Log.d(TAG, "A user is logged in and cached");
                 finish();
             } else {
                 //Check if the user has indicated anonymous user preference before
@@ -83,13 +78,11 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                     ParseUser.getCurrentUser().saveInBackground();
                     Controller.launchMainActivity(activity);
                     finish();
-                    Log.d(TAG, "User has chosen to be anonymous user");
                     finish();
                 } else {
                     // If user is not anonymous then the user must be asked to login
                     settings.edit().putBoolean("chosen_to_signup", false).apply();
                     this.openLogin(null);
-                    Log.d(TAG, "User has logged out and needs to be asked to login");
                 }
             }
         }

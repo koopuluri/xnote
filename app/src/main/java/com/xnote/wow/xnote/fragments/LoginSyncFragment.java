@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,6 @@ public class LoginSyncFragment extends Fragment {
             public void onClick(View v) {
                 // launch main Activity:
                 Controller.launchMainActivity(getActivity());
-                Log.d(TAG, "main Activity launched through button.");
                 getActivity().finish();
             }
         });
@@ -76,10 +74,8 @@ public class LoginSyncFragment extends Fragment {
                 DB.sync();
                 mSuccessful = true;
             } catch (com.parse.ParseException e) {
-                Log.d(TAG, "could not sync, so displaying message" +
-                        " and letting user go to the mainActivity.");
+                // do nothing.
             }
-            Log.d(TAG, "doInBackground() DB.synced!");
             return null;
         }
 

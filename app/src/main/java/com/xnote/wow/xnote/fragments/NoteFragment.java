@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,23 +130,19 @@ public class NoteFragment extends Fragment {
 
         @Override
         public Void doInBackground(Void... params) {
-            Log.d(TAG, "NoteInitializationTask.doInBackground()");
             if (mIsOld) {
-                Log.d(TAG, "done(): OLD_NOTE!");
                 mNote = DB.getLocalNote(getArguments().getString(Constants.NOTE_ID));
                 mArticle = DB.getLocalArticle(mNote.getArticleId());
                 String selectedText = mNote.getSelectedText();
                 clipBuffer = Html.fromHtml("<br><i>\"" + Html.fromHtml(selectedText).toString()
                         + "\"</i><br>");
             } else {
-                Log.d(TAG, "done(): NEW NOTE!");
                 mArticle = DB.getLocalArticle(getArguments().getString(Constants.ARTICLE_ID));
                 mNote = new ParseNote();
                 mNote.setStartIndex(getArguments().getInt(Constants.START_INDEX));
                 mNote.setEndIndex(getArguments().getInt(Constants.END_INDEX));
                 mNote.setArticleId(mArticle.getId());
                 mNote.setTimestamp(System.currentTimeMillis());
-                Log.d(TAG, "Timestamp for note : " + Util.dateFromSeconds(mNote.getTimestamp()));
                 mNote.setId();
 
                 Spanned articleBuffer = ArticleFragment.htmlEscapedArticleContent(
@@ -158,7 +153,6 @@ public class NoteFragment extends Fragment {
 
                 clipBuffer = Html.fromHtml("<br><i>\"" + selectedBuffer.toString() + "\"</i><br>");
                 String selectedHtml = Html.toHtml(selectedBuffer);
-                Log.d(TAG, "selectedHtml: " + selectedHtml);
                 mNote.setSelectedText(selectedHtml);
             }
             return null;
@@ -196,8 +190,6 @@ public class NoteFragment extends Fragment {
         if (!mInitialized)
             return;
         mNote.setContent(mNoteEdit.getText().toString());
-        Log.d(TAG, "done(): noteId: " + mNote.getId());
-        Log.d(TAG, "done(): tstamp: " + Util.dateFromSeconds(mNote.getTimestamp()));
         Intent intent = new Intent();
         intent.putExtra(Constants.NOTE_ID, mNote.getId());
         intent.putExtra(Constants.START_INDEX, mNote.getStartIndex());
@@ -209,10 +201,7 @@ public class NoteFragment extends Fragment {
         // note state determines whether this note previously existed and was modified, or it is new, or it was deleted.
         intent.putExtra(Constants.NOTE_STATE, noteState);
         // performing harakiri for the betterment of the other notes. :(
-        Log.d(TAG, "about to return the result in done()");
         getActivity().setResult(getActivity().RESULT_OK, intent);
-        Log.d(TAG, "result set!");
         getActivity().finish();  // (^(TT)^)
-        Log.d(TAG, "finished!");
     }
 }

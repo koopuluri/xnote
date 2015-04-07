@@ -1,6 +1,5 @@
 package com.xnote.wow.xnote.models;
 
-import android.util.Log;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
@@ -35,7 +34,7 @@ public class ParseImage extends ParseObject {
         try {
             put(DATA, imgData);
         } catch (IllegalArgumentException e) {
-            Log.d("ParseImage", "caught.");
+            // do nothing.
         }
     }
     public void setArticleId(String articleId) { put(ARTICLE_ID, articleId); }

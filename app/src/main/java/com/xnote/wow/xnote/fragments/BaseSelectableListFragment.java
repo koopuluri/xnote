@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,7 +54,7 @@ public abstract class BaseSelectableListFragment extends ListFragment {
         } else if (mChildName.equals(SearchFragment.TAG)) {  //TODO: this class isn't yet being used for SearchFragment! Only ArticleListFragment.
             mAdapter = new SearchResultAdapter(getActivity(), mList, this);
         } else {
-            Log.e(TAG, "unkown child fragment.");
+            // do nothing.
         }
         setListAdapter(mAdapter);
     }
@@ -199,7 +198,6 @@ public abstract class BaseSelectableListFragment extends ListFragment {
             switch (item.getItemId()) {
                 case R.id.menu_delete:
                     deleteSelectedItems();
-                    Log.d(TAG, "menu clicked.");
                     mode.finish(); // Action picked, so close the CAB
                     return true;
                 default:

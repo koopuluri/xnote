@@ -5,14 +5,10 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.Window;
 
 import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
@@ -72,7 +68,6 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult()");
         if (requestCode == Constants.NOTE_REQUEST) {
             // time to update buffers:
             if (resultCode == RESULT_OK) {
@@ -85,11 +80,8 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                 note.setEndIndex(data.getIntExtra(Constants.END_INDEX, 0));
                 note.setArticleId(data.getStringExtra(Constants.ARTICLE_ID));
                 note.setSelectedText(data.getStringExtra(Constants.NOTE_SELECTED_TEXT));
-                Log.d(TAG, "note to update buffers with: " + note.getContent());
                 // Log.d(TAG, "onActivityResult() with noteId: " + noteId);
                 int noteState = data.getIntExtra(Constants.NOTE_STATE, 0);
-                Log.d(TAG, "noteState: " + noteState);
-                Log.d(TAG, "noteId: " + note.getId());
                 // ---------------------------------- PUT IN BACKGROUND!!--------------------------
                 if (noteState != 0)  // TODO: remove this check, needs to save note regardless of noteState!
                     mArticleFrag.addNoteFromNoteActivity(note, noteState);
@@ -98,11 +90,11 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                 // "Result from NoteActivity OK. buffers have been updated!");
             }
             else {
-                Log.e(TAG, "result not OK from NoteActivity's done() maybe it was unexpectedly killed! :(");
+                // do nothing
             }
         }
         else {
-            Log.d(TAG, "NoteActivity did not return the NOTE_REQUEST.");
+            // do nothing
         }
     }
 
@@ -124,7 +116,6 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
             case android.R.id.home:
                 Intent upIntent = NavUtils.getParentActivityIntent(this);
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-                    Log.d(TAG, "activity not part of this app's stack");
                     // this means that this activity is not part of this app's task,
                     // so create new task when navigating up, with synthesized (???) back stack.
                     android.support.v4.app.TaskStackBuilder.create(this)
@@ -133,9 +124,7 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                                     // navigate up to closest parent:
                             .startActivities();
                     // else just go to the parent activity that this was called from:
-                    Log.d(TAG, "ran TaskStackBuilder.create...");
                 } else {
-                    Log.d(TAG, "NavUtils.navigateUpFromSameTask(this)");
                     Intent intent = NavUtils.getParentActivityIntent(this);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                             Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -148,7 +137,6 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
             case R.id.action_share:
                 Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
                         getResources().getString(R.string.article_share_message), this);
-                Log.d(TAG, "article shared: " + mArticleFrag.getArticleTitle());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -162,10 +150,8 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
     // -------------------------- implementing ArticleFragmentInterface ----------------------------
 
     public ReadBuffer getRetainedBuffer() {
-        Log.d(TAG, "getRetainedBuffer(): " + String.valueOf(mRetained));
         mRetained = (ArticleRetainedFragment) getFragmentManager().
                 findFragmentByTag(ArticleRetainedFragment.TAG);
-        Log.d(TAG, "getRetainedBuffer() after: " + String.valueOf(mRetained));
         return mRetained.getArticleBuffer();
     }
 
