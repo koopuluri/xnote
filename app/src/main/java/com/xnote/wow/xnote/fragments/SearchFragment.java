@@ -261,7 +261,9 @@ public class SearchFragment extends ListFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            mSearchView.setIconified(false);
+            if (mSearchView.isIconified())
+                mSearchView.setIconified(false);
+            
             if (mQuery != null) {  // only run if user has submitted a query previously.
                 new UpdateSearchResultsTask(mQuery).execute();
             }
