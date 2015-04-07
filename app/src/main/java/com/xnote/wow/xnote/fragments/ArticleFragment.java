@@ -15,8 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -27,6 +25,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,10 +35,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -162,6 +160,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                 mNewNoteButton.getLayoutParams();
         int buttonMargin = getResources().getDimensionPixelSize(R.dimen.add_button_margin);
+        Log.d(TAG, "NAVBAR HEIGHT: " + getNavBarHeight());
         params.setMargins(0, 0, buttonMargin, getNavBarHeight() + buttonMargin);
         mNewNoteButton.setLayoutParams(params);
 
@@ -216,7 +215,14 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
 
     private int getNavBarHeight() {
+        //Checks to see if NavBar is present
+        //http://stackoverflow.com/a/16608481/4671651
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
         Resources resources = getActivity().getResources();
+        if (hasBackKey && hasHomeKey) {
+            return 0;
+        }
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return resources.getDimensionPixelSize(resourceId);

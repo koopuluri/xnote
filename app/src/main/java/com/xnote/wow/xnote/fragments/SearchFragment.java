@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -80,7 +79,6 @@ public class SearchFragment extends ListFragment {
             public boolean onQueryTextSubmit(String query) {
                 mQuery = query;
                 new UpdateSearchResultsTask(query).execute();
-
                 if (mListener.keyboardVisible())
                     Util.hideKeyboard(getActivity());
                 return true;

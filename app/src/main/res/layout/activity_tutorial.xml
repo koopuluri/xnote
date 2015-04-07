@@ -15,7 +15,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color_primary"
             android:text="Welcome to Xnote! Here's a short tutorial to get you started!"
-            android:textSize="32sp"
             android:layout_marginBottom="@dimen/note_clipped_text_margin"
             android:layout_marginTop="@dimen/note_clipped_text_margin"
             android:layout_marginLeft="@dimen/note_clipped_text_margin"
