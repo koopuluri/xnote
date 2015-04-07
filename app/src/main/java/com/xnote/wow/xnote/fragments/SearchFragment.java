@@ -77,6 +77,7 @@ public class SearchFragment extends ListFragment {
             public boolean onQueryTextSubmit(String query) {
                 mQuery = query;
                 new UpdateSearchResultsTask(query).execute();
+                
                 Util.hideKeyboard(getActivity());
                 return true;
             }
