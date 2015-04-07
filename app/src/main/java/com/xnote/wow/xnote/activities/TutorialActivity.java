@@ -2,17 +2,25 @@ package com.xnote.wow.xnote.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xnote.wow.xnote.Constants;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 import com.xnote.wow.xnote.XnoteApplication;
 
 /**
@@ -21,14 +29,20 @@ import com.xnote.wow.xnote.XnoteApplication;
 public class TutorialActivity extends Activity {
 
     String[] TEXTS = {
-            "Save articles to xnote.",
+            "When you come across an article on your browser that " +
+                    "you'd like to save, select the share option and \"Add to xnote\".",
             "Highlight to take notes.",
-            "Search through all notes and articles."};
+            "Search through all notes and articles.",
+            "Share an individual note.",
+            "You can even share an entire article containing all of your notes." +
+                    " The recipient will receive a url at xnote.io with your annotated article."};
 
     int[] IMAGES = {
-            R.drawable.save_tutorial,
-            R.drawable.highlight_tutorial,
-            R.drawable.search_tutorial};
+            R.drawable.xnote_save_tutorial,
+            R.drawable.xnote_highlight_tutorial,
+            R.drawable.xnote_search_tutorial,
+            R.drawable.xnote_note_share_tutorial,
+            R.drawable.xnote_article_sharetutorial};
 
     TextView mText;
     ImageView mImage;
@@ -58,8 +72,29 @@ public class TutorialActivity extends Activity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tutorial_actions, menu);
+        //return super.onCreateOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // respond to action-up button:
+
+            case R.id.action_cancel:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void next() {
-        if (position >= TEXTS.length-1) {
+        if (position >= TEXTS.length) {
             // goes to MainActivity as this is launched from it.
             SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
             // Code to run once
@@ -69,9 +104,10 @@ public class TutorialActivity extends Activity {
             finish();
             return;
         }
-        position++;
+
         // display the next tutorial item:
         mText.setText(TEXTS[position]);
         mImage.setImageResource(IMAGES[position]);
+        position++;
     }
 }

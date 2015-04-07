@@ -24,13 +24,21 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/textlines">
+                    android:background="@drawable/note_clipped_bottom_border"
+                    android:layout_marginTop="@dimen/note_clipped_text_margin"
+                    android:layout_marginBottom="@dimen/note_clipped_text_margin"
+                    android:layout_marginLeft="@dimen/note_clipped_text_margin"
+                    android:layout_marginRight="@dimen/note_clipped_text_margin">
                     <Spinner
                         android:id="@+id/feedback_nature_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
-                        android:layout_alignParentStart="true">
+                        android:layout_gravity="center"
+                        android:layout_alignParentStart="true"
+                        android:paddingTop="@dimen/note_clipped_text_margin"
+                        android:paddingBottom="@dimen/note_clipped_text_margin"
+                        >
 
                     </Spinner>
                 </FrameLayout>
@@ -57,7 +65,7 @@
             android:layout_marginEnd="@dimen/add_button_margin"
             android:background="@drawable/round_button"
             android:elevation="@dimen/elevation_low"
-            android:src="@drawable/done_icon"/>
+            android:src="@drawable/ic_xnote_check"/>
 
     </FrameLayout>
 
