@@ -15,13 +15,18 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,10 +35,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -66,7 +69,8 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
     ParseArticle mArticle;
     String mArticleId;
     boolean mInitialized;
-    LinearLayout mArticleContainer;
+    FrameLayout mArticleContainer;
+    Spanned mTitleSpan;
 
     // buttons:
     ImageButton mNewNoteButton;
@@ -129,7 +133,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mScrollView = (ObservableScrollView) view.findViewById(R.id.read_scroll_view);
         mScrollView.setScrollViewListener(this);
         mArticleView = new ArticleView(getActivity());
-        mArticleContainer = (LinearLayout) view.findViewById(R.id.article_container);
+        mArticleContainer = (FrameLayout) view.findViewById(R.id.article_container);
 
         mTitleView = (TextView) view.findViewById(R.id.article_title_text_view);
         mTimestampView = (TextView) view.findViewById(R.id.article_timestamp_text_view);
@@ -156,6 +160,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                 mNewNoteButton.getLayoutParams();
         int buttonMargin = getResources().getDimensionPixelSize(R.dimen.add_button_margin);
+        Log.d(TAG, "NAVBAR HEIGHT: " + getNavBarHeight());
         params.setMargins(0, 0, buttonMargin, getNavBarHeight() + buttonMargin);
         mNewNoteButton.setLayoutParams(params);
 
@@ -210,7 +215,14 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
 
     private int getNavBarHeight() {
+        //Checks to see if NavBar is present
+        //http://stackoverflow.com/a/16608481/4671651
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
         Resources resources = getActivity().getResources();
+        if (hasBackKey && hasHomeKey) {
+            return 0;
+        }
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return resources.getDimensionPixelSize(resourceId);
@@ -315,19 +327,19 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
 
     private void setTitleAndTimeStampView() {
-        String title = mArticle.getTitle();
+        String title = "<h2>" + mArticle.getTitle() + "</h2>";
         String tstamp = Util.dateFromSeconds(mArticle.getTimestamp()).toString();
         Util.setXnoteArticleTypeFace(getActivity(), mTitleView);
         Util.setXnoteNoteTypeFace(getActivity(), mTimestampView);
-        String offset = "<br><br>";
-
-
-        mTitleView.setTextSize(36);
-
-        mTimestampView.setTextSize(11);
-        mTitleView.setText(Html.fromHtml(offset + "<b>" + title + "</b>"));
+        String offset = "";
+        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET; i++) {
+            offset += "<br>";
+        }
+//        mTitleView.setTextSize(Constants.ARTICLE_TITLE_FONT_SIZE);
+        mTimestampView.setTextSize(Constants.ARTICLE_TSTAMP_FONT_SIZE);
+        mTitleSpan = Html.fromHtml(offset + "<b>" + title + "</b>");
+        mTitleView.setText(mTitleSpan);
         mTimestampView.setText(tstamp);
-
     }
 
 
@@ -338,10 +350,19 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
      */
     public static Spanned htmlEscapedArticleContent(ParseArticle article, Activity activity) {
         Spanned out;
+        String title = "<h2>" + article.getTitle() + "</h2>";
+        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
+        String offset = "";
+        // adding the 4 to correctly place below the divider (look in fragment_read).
+        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + 4; i++) {
+            offset += "<br>";
+        }
 
-//        String title = "<h2>" + article.getTitle() + "</h2>";
-//        String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
-//        String offset = "<br><br><br><br>";
+        SpannableStringBuilder transparentTitle =  (SpannableStringBuilder)
+                Html.fromHtml(title + offset);
+        transparentTitle.setSpan(new ForegroundColorSpan(Color.TRANSPARENT),
+                0, transparentTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
 //        String content = offset + title + timestamp + article.getContent();
 
         try {
@@ -355,7 +376,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandlerWithoutList());
         }
-        return out;
+        return new SpannableString(TextUtils.concat(transparentTitle, out));
     }
 
 
@@ -541,6 +562,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             setLineSpacing(0.0f, Constants.ARTICLE_VIEW_LINE_SPACING_MULTIPLIER);
             // left, top, right, bottom:
             setPadding(0, 18, 0, 0);
+            setLinkTextColor(getActivity().getResources().getColor(R.color.xnote_color));
         }
 
         public ArticleView(Context context) {

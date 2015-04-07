@@ -2,15 +2,18 @@ package com.xnote.wow.xnote.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.XnoteApplication;
 
 /**
  * Created by koopuluri on 4/5/15.
@@ -58,6 +61,11 @@ public class TutorialActivity extends Activity {
     private void next() {
         if (position >= TEXTS.length-1) {
             // goes to MainActivity as this is launched from it.
+            SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+            // Code to run once
+            SharedPreferences.Editor editor = wmbPreference.edit();
+            editor.putBoolean("FIRSTRUN", false);
+            editor.apply();
             finish();
             return;
         }

@@ -16,8 +16,9 @@
         <item name="android:actionModeStyle">@style/ToolBarTheme</item>
         <item name="android:actionModeBackground">@drawable/toolbar_bottom_border</item>
         <item name="android:actionModeCopyDrawable">@drawable/ic_xnote_copy</item>
-        <item name="android:actionBarStyle">@style/ToolBarTheme</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_xnote_navigation_up_colored</item>
 
+        <item name="android:actionBarStyle">@style/ToolBarTheme</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>

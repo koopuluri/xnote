@@ -3,17 +3,22 @@ package com.xnote.wow.xnote.activities;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.ParseArticleManager;
 import com.xnote.wow.xnote.ParseCallback;
 import com.xnote.wow.xnote.R;
-import com.xnote.wow.xnote.XnoteApplication;
 import com.xnote.wow.xnote.fragments.ArticleListFragment;
 import com.xnote.wow.xnote.fragments.SearchFragment;
 import com.xnote.wow.xnote.fragments.SearchRetainedFragment;
@@ -23,9 +28,14 @@ import com.xnote.wow.xnote.views.SlidingTabLayout;
 
 /**
  * Created by koopuluri on 2/28/15.
+ *
+ * To run a block of code only when app is first installed: use sharedPreferences:
+ * http://stackoverflow.com/a/7144339
  */
-public class MainActivity extends Activity implements SearchFragment.OnItemDeleted,
+public class MainActivity extends Activity implements SearchFragment.SearchListener,
                                                       ArticleListFragment.ArticleListListener {
+
+    public static final int HEIGHT_DIFF_KEYBOARD = 500;
 
     public static final String TAG = "MainActivity";
     public static final String ARTICLES_TAB = "Articles";
@@ -44,15 +54,36 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
     ParseArticleManager mArticleManager;
     SearchRetainedFragment mSearchRetained;
     SlidingTabLayout mSlidingTabLayout;
+    boolean mIsKeyboardVisible;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.main);
 
-
-
         getActionBar().hide();
+
+        final View activityRootView = findViewById(R.id.main_root);
+        mIsKeyboardVisible = false;
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Rect r = new Rect();
+                        //r will be populated with the coordinates of your view that area still visible.
+                        activityRootView.getWindowVisibleDisplayFrame(r);
+                        int heightDiff = activityRootView.getRootView().getHeight()
+                                - (r.bottom - r.top);
+                        if (heightDiff > HEIGHT_DIFF_KEYBOARD) { // if more than 100 pixels, its probably a keyboard...
+                            mIsKeyboardVisible = true;
+                        } else {
+                            mIsKeyboardVisible = false;
+                        }
+                    }
+                }
+        );
+
         mPagerAdapter = new PagerAdapter(this);
         mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
         mViewPager.setAdapter(mPagerAdapter);
@@ -79,7 +110,6 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
         ));
 
         Log.d(TAG, "end of onCreate()");
-
         // getting / setting the SearchRetainedFrag:
         FragmentManager fm = getFragmentManager();
         mSearchRetained = (SearchRetainedFragment) fm
@@ -91,8 +121,9 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
                     .commit();
         }
 
-        if (XnoteApplication.FIRST_TIME) {
-            // launching the tutorial for first time:
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
+        if (isFirstRun) {
             Controller.launchTutorialActivity(this);
         }
     }
@@ -184,6 +215,11 @@ public class MainActivity extends Activity implements SearchFragment.OnItemDelet
         // need to refresh ArticleListFragment:
         Log.d(TAG, "Refresh the article list fragment");
         mArticleListFrag.localRefresh();
+    }
+
+    @Override
+    public boolean keyboardVisible() {
+        return mIsKeyboardVisible;
     }
 
     @Override

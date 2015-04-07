@@ -61,6 +61,7 @@ public class ArticleAdapter  extends BaseListAdapter {
                     if ((iconURL.equals(""))) {
                         //mIcon.setImageResource(R.drawable.icon_for_adapter);
                         // set no icon!!
+                        mIcon.setImageResource(0);
                     } else {
                         new DownloadImageTask(article, mIcon).execute(iconURL);
                     }
