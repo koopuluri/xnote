@@ -3,11 +3,9 @@ package com.xnote.wow.xnote.spans;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
 
 import com.xnote.wow.xnote.NoteSpan;
-import com.xnote.wow.xnote.buffers.BaseBuffer;
 
 /**
  * This hack shouldn't be required to get the desired functionality.
@@ -45,16 +43,4 @@ public class FirstLineSpan extends ReplacementSpan implements NoteSpan {
         // resetting original color.
         paint.setColor(originalColor);
     }
-
-//    @Override
-//    public void updateDrawState(TextPaint p) {
-//        super.updateDrawState(p);
-//        p.bgColor = Color.parseColor(BaseBuffer.NOTE_COLOR);
-//    }
-//
-//    @Override
-//    public void updateMeasureState(TextPaint p) {
-//        super.updateMeasureState(p);
-//        p.bgColor = Color.parseColor(BaseBuffer.NOTE_COLOR);
-//    }
 }

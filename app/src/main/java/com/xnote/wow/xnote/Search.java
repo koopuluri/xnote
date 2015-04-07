@@ -1,8 +1,7 @@
 package com.xnote.wow.xnote;
 
-import android.util.Log;
 
-import com.parse.Parse;
+
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -66,7 +65,6 @@ public class Search {
                 }
             }
         } catch (ParseException e) {
-            Log.e(TAG, "searchArticleText(): unable to get results: " + e);
         }
         return articles;
     }
@@ -99,12 +97,8 @@ public class Search {
                 }
                 notesForGivenArticle.add(result);
                 out.put(n.getArticleId(), notesForGivenArticle);
-                Log.d(TAG, "searchNoteText(): result added to hashmap: " + result.title + ", " + result.id);
-                Log.d(TAG, "timestamp for note: " + Util.dateFromSeconds(result.tstamp) + " " +
-                        Util.dateFromSeconds(n.getTimestamp()));
             }
         } catch (ParseException e) {
-            Log.e(TAG, "searchNoteText(): unable to get results: " + e);
         }
         return out;
     }

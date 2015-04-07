@@ -3,7 +3,6 @@ package com.xnote.wow.xnote;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import com.xnote.wow.xnote.runnables.ParseArticleRunnable;
 
@@ -37,7 +36,6 @@ public class ParseArticleManager {
     }
 
     static public ParseArticleTask startParsing(String articleId, ParseCallback callback) {
-        Log.d(TAG, "startParsing(): " + articleId);
         ParseArticleTask pTask = new ParseArticleTask(articleId, callback);
         sInstance.mParseArticleThreadPool
                 .execute(new ParseArticleRunnable(pTask));
@@ -70,7 +68,6 @@ public class ParseArticleManager {
                 }
             }
         }
-        Log.d(TAG, "all threads cancelled.");
     }
 
 
@@ -82,13 +79,10 @@ public class ParseArticleManager {
             @Override
             public void handleMessage(Message inputMessage) {
                 ParseArticleTask parseTask = (ParseArticleTask) inputMessage.obj;
-                Log.d(TAG, "Input message.what: " + inputMessage.what);
                 switch (inputMessage.what) {
                     case TASK_COMPLETED:
-                        Log.d(TAG, "handleMessage(): task completed.");
                         parseTask.onArticleParsed();
                     case TASK_NOT_COMPLETED:
-                        Log.d(TAG, "handleMessage(): task not completed.");
                         parseTask.onArticleFailed();
                     default:
                         super.handleMessage(inputMessage);
@@ -106,23 +100,19 @@ public class ParseArticleManager {
                 mWorkQueue
         );
 
-        Log.d(TAG, "thread pool initialized.");
     }
 
     public void handleState(ParseArticleTask parseArticleTask, int state) {
-        Log.d(TAG, "handleState(ParseArticleTask, state).");
         switch (state) {
             case TASK_COMPLETED:
                 /**
                  * Create message for Handler with the state and the task object:
                  */
-                Log.d(TAG, "handleState() task completed");
                 Message completeMessage =
                         mHandler.obtainMessage(state, parseArticleTask);
                 completeMessage.sendToTarget();  // I wonder what this does!
                 break;
             case TASK_NOT_COMPLETED:
-                Log.d(TAG, "handleState() task not completed");
                 Message incompleteMessage = mHandler.obtainMessage(state, parseArticleTask);
                 incompleteMessage.sendToTarget(); //I wonder what this does too!
         }

@@ -3,10 +3,7 @@ package com.xnote.wow.xnote;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.style.BulletSpan;
-import android.text.style.LeadingMarginSpan;
 import android.text.style.TypefaceSpan;
-import android.util.Log;
 
 import org.xml.sax.XMLReader;
 
@@ -37,7 +34,6 @@ public class HtmlTagHandlerWithoutList implements Html.TagHandler {
             if(opening) {
                 output.setSpan(new TypefaceSpan("monospace"), output.length(), output.length(), Spannable.SPAN_MARK_MARK);
             } else {
-                Log.d(TAG,"Code Tag encountered; WTF is a code tag?");
                 Object obj = getLast(output, TypefaceSpan.class);
                 int where = output.getSpanStart(obj);
                 output.setSpan(new TypefaceSpan("monospace"), where, output.length(), 0);

@@ -1,7 +1,5 @@
 package com.xnote.wow.xnote.runnables;
 
-import android.util.Log;
-
 import com.xnote.wow.xnote.DB;
 import com.xnote.wow.xnote.DiffbotParser;
 import com.xnote.wow.xnote.ParseArticleTask;
@@ -24,7 +22,6 @@ public class ParseArticleRunnable implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "run().");
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         DiffbotParser parser = new DiffbotParser(mArticleId);
 
@@ -34,17 +31,14 @@ public class ParseArticleRunnable implements Runnable {
         // setting task state to 'completed':
         if(updatedArticle != null ) {
             if(!updatedArticle.getCouldNotBeParsed()) {
-                Log.d(TAG, "updateArticle: " + String.valueOf(updatedArticle));
                 DB.saveArticleImmediately(updatedArticle);
                 mTask.setUpdatedArticle(updatedArticle);
                 mTask.handleParseState(PARSE_COMPLETED);
             } else {
-                Log.d(TAG, "Error could not parse");
                 DB.saveArticleImmediatelyLocally(updatedArticle);
                 mTask.handleParseState(PARSE_NOT_COMPLETED);
             }
         } else {
-            Log.d(TAG, "Article already parsed");
             mTask.handleParseState(PARSE_COMPLETED);
         }
     }
@@ -52,5 +46,4 @@ public class ParseArticleRunnable implements Runnable {
     public Thread getThread() {
         return Thread.currentThread();
     }
-
 }

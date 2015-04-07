@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
 
 import com.xnote.wow.xnote.models.ParseImage;
@@ -39,7 +38,6 @@ public class ArticleImageGetter implements Html.ImageGetter {
         //any content are not returned. Empty parse images could be returned if there is
         //any error while downloading the image - perhaps if the image is too big.
         if((image != null) && (image.getNaturalWidth() != 0) && (!image.getError())) {
-            Log.d(TAG, "Image is not null, going to return drawable");
             //Get screenwidth to zoom in images to fit phone size
             //http://stackoverflow.com/a/9316553/4671651
             DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -62,7 +60,6 @@ public class ArticleImageGetter implements Html.ImageGetter {
                 (image.getNaturalHeight() * width / image.getNaturalWidth()));
             return drawable;
         } else {
-            Log.d(TAG, "Image is null");
             return null;
         }
     }
@@ -82,5 +79,4 @@ public class ArticleImageGetter implements Html.ImageGetter {
         }
         return inSampleSize;
     }
-
 }
