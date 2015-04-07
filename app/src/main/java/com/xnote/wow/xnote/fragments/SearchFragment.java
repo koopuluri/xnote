@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -38,20 +39,22 @@ public class SearchFragment extends ListFragment {
     SearchView mSearchView;
     SearchResultAdapter mAdapter;
     boolean mInitialized;
-    OnItemDeleted mListener;
+    SearchListener mListener;
     ListView mListView;
     ProgressBar mSpinner;
     String mQuery;
 
-    public interface OnItemDeleted {
+    public interface SearchListener {
         public void onSearchItemDeleted();
+        public boolean keyboardVisible();
+
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnItemDeleted) activity;
+            mListener = (SearchListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement onItemDeleted().");
         }
@@ -77,7 +80,9 @@ public class SearchFragment extends ListFragment {
             public boolean onQueryTextSubmit(String query) {
                 mQuery = query;
                 new UpdateSearchResultsTask(query).execute();
-                Util.hideKeyboard(getActivity());
+
+                if (mListener.keyboardVisible())
+                    Util.hideKeyboard(getActivity());
                 return true;
             }
 
@@ -88,6 +93,12 @@ public class SearchFragment extends ListFragment {
                 return true;
             }
         });
+//        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                return true;
+//            }
+//        });
 
 
         mAdapter = new SearchResultAdapter(getActivity(), new ArrayList<Object>(), this);
@@ -113,7 +124,6 @@ public class SearchFragment extends ListFragment {
         super.onStop();
         Log.d(TAG, "onStop().");
     }
-
 
     //----------------------------------------------------------------------------------------------
 
@@ -242,7 +252,6 @@ public class SearchFragment extends ListFragment {
         @Override
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
-            Log.d(TAG, "poopOnPostExecute().");
             mListener.onSearchItemDeleted();
         }
     }
@@ -252,13 +261,15 @@ public class SearchFragment extends ListFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
+            mSearchView.setIconified(false);
             if (mQuery != null) {  // only run if user has submitted a query previously.
                 new UpdateSearchResultsTask(mQuery).execute();
             }
         } else {
             // hiding keyboard:
             if (getActivity() != null) {
-                Util.hideKeyboard(getActivity());
+                if (mListener.keyboardVisible())
+                    Util.hideKeyboard(getActivity());
             } else {
                 // do nothing. (Why would the activity be null at this point?
             }

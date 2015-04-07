@@ -2,6 +2,7 @@ package com.xnote.wow.xnote;
 
 import android.util.Log;
 
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -23,17 +24,32 @@ import java.util.Set;
 public class Search {
     public static final String TAG = "Search";
 
+    /**
+     * Use compound queries: https://www.parse.com/docs/android_guide#queries-compound
+     * @param textToSearch
+     * @return
+     */
     public static List<SearchResult> searchArticleText(final String textToSearch) {
         // full text search through articles:
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(DB.ARTICLE);
-        query.whereContains(ParseArticle.CONTENT, textToSearch);
-        query.fromLocalDatastore();
-        query.orderByDescending(ParseArticle.TIMESTAMP);
+        ParseQuery<ParseObject> inTitle = ParseQuery.getQuery(DB.ARTICLE);
+        inTitle.whereContains(ParseArticle.TITLE, textToSearch);
+        inTitle.fromLocalDatastore();
+
+        // TODO: this doesn't work because it exceeds Parse's regex find limit (LOL. get around this).
+//        ParseQuery<ParseObject> inContent = ParseQuery.getQuery(DB.ARTICLE);
+//        inContent.whereContains(ParseArticle.CONTENT, textToSearch);
+//        inContent.fromLocalDatastore();
+
+        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+        queries.add(inTitle);
+//        queries.add(inContent);
+
+        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
         //Returns a list of articles in order of timestamp
         List<SearchResult> articles = new ArrayList<>();
         Set<String> idSet = new HashSet<String>();
         try {
-            List<ParseObject> results = query.find();
+            List<ParseObject> results = mainQuery.find();
             for (ParseObject obj : results) {
                 ParseArticle a = (ParseArticle) obj;
                 if (!a.isParsed())

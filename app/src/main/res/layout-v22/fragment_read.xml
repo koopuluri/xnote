@@ -15,56 +15,64 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/article_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/article_title_text_view"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="21dp"
-                    android:layout_marginRight="21dp"
-                    />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="21dp"
-                    android:layout_marginRight="21dp"
-                    android:layout_marginBottom="30dp"
-                    android:paddingBottom="@dimen/article_timestamp_padding_bottom"
-                    android:background="@drawable/note_clipped_bottom_border">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/article_timestamp_text_view"
+                        android:id="@+id/article_title_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/article_timestamp_text_color"
-                        android:layout_gravity="left"
+                        android:layout_marginLeft="21dp"
+                        android:layout_marginRight="21dp"
+                        android:gravity="center_horizontal"
                         />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <FrameLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/note_icon_search"
-                        android:layout_gravity="right">
+                        android:layout_marginLeft="21dp"
+                        android:layout_marginRight="21dp"
+                        android:layout_marginBottom="30dp"
+                        android:paddingBottom="@dimen/article_timestamp_padding_bottom"
+                        android:background="@drawable/note_clipped_bottom_border">
 
                         <TextView
-                            android:id="@+id/article_number_notes_text_view"
+                            android:id="@+id/article_timestamp_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/article_timestamp_text_color"
+                            android:layout_gravity="left"
+                            />
+
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="12dp"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:paddingTop="1dp"
-                            android:paddingBottom="1dp"
-                            android:textColor="@android:color/white"/>
-                    </LinearLayout>
-                </FrameLayout>
-            </LinearLayout>
+                            android:background="@drawable/note_icon_search"
+                            android:layout_gravity="right">
+
+                            <TextView
+                                android:id="@+id/article_number_notes_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12dp"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
+                                android:paddingTop="1dp"
+                                android:paddingBottom="1dp"
+                                android:textColor="@android:color/white"/>
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+
+
+            </FrameLayout>
 
 
 
@@ -82,8 +90,7 @@
             android:id="@+id/new_note_button"
             android:layout_width="@dimen/round_button_diameter"
             android:layout_height="@dimen/round_button_diameter"
-            android:layout_gravity="right|bottom"
-            android:gravity="right|bottom"
+            android:layout_gravity="bottom|right"
             android:stateListAnimator="@anim/button_elevation"
             android:layout_marginBottom="@dimen/add_button_margin"
             android:layout_marginEnd="@dimen/add_button_margin"

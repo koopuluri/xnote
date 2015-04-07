@@ -19,7 +19,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:descendantFocusability="beforeDescendants"
+                android:focusableInTouchMode="true">
 
                 <TextView
                     android:id="@+id/note_clipped_text"

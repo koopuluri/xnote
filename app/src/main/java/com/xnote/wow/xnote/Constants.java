@@ -13,6 +13,10 @@ public class Constants {
 
     public static final float ARTICLE_VIEW_LINE_SPACING_MULTIPLIER = 1.5f;
 
+    public static final int ARTICLE_TITLE_FONT_SIZE = 36;
+    public static final int ARTICLE_TSTAMP_FONT_SIZE = 11;
+    public static final int ARTICLE_TOP_OFFSET = 3;
+
 
     // NoteActivity constants:
     public static final String NOTE_ID = "NOTE_ID";

@@ -38,7 +38,6 @@ public class NoteFragment extends Fragment {
     ProgressBar mLoadingSpinner;
     boolean mInitialized;
 
-
     public static NoteFragment newInstance(String noteId) {
         Bundle args = new Bundle();
         args.putString(Constants.NOTE_ID, noteId);
@@ -74,7 +73,8 @@ public class NoteFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_note, container, false);
         mClippedText = (TextView) view.findViewById(R.id.note_clipped_text);
         mNoteEdit = (EditText) view.findViewById(R.id.note_edit_text);
-        mNoteEdit.requestFocus();
+        //mNoteEdit.requestFocus();
+        mNoteEdit.clearFocus();
 
         Util.setXnoteNoteTypeFace(getActivity(), mClippedText);
         Util.setXnoteNoteTypeFace(getActivity(), mNoteEdit);
