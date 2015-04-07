@@ -42,8 +42,4 @@ public class SingleLineSpan extends ReplacementSpan implements NoteSpan {
         // resetting original color:
         paint.setColor(originalColor);
     }
-
-    public void reDrawWithNewColor(int newColor) {
-
-    }
 }

@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
@@ -80,7 +79,6 @@ public class Util {
         tv.setVisibility(View.VISIBLE);
         tv.setTextColor(activity.getResources().getColor(R.color.text_color_primary));
         tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
-        Log.d(TAG, "xnoteTypeFaceSet.");
     }
 
 
@@ -105,16 +103,12 @@ public class Util {
         tv.setVisibility(View.VISIBLE);
         tv.setTextColor(activity.getResources().getColor(R.color.text_color_primary));
         tv.setPadding(Constants.PADDING, 0, Constants.PADDING, 0);
-        Log.d(TAG, "xnoteTypeFaceSet.");
     }
 
 
 
     public static void share(String subjectText, String extraText, String userMessage,
                              final Activity launchActivity) {
-        Log.d(TAG, "Subject text: " + subjectText);
-        Log.d(TAG, "extraText: " + extraText);
-        Log.d(TAG, "user message: " + userMessage);
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");

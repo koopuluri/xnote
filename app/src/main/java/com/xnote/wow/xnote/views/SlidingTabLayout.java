@@ -79,7 +79,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private static final int TITLE_OFFSET_DIPS = 24;
     private static final int TAB_VIEW_PADDING_DIPS = 16;
-    private static final int TAB_VIEW_TEXT_SIZE_SP = 12;
 
     private int mTitleOffset;
 
@@ -196,39 +195,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
             populateTabStrip();
         }
     }
-
-//    /**
-//     * Create a default view to be used for tabs. This is called if a custom tab view is not set via
-//     * {@link #setCustomTabView(int, int)}.
-//     */
-//    protected TextView createDefaultTabView(Context context, int tabWidth) {
-//        TextView textView = new TextView(context);
-//        textView.setGravity(Gravity.CENTER);
-//        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
-//        textView.setTypeface(Typeface.DEFAULT_BOLD);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            // If we're running on Honeycomb or newer, then we can use the Theme's
-//            // selectableItemBackground to ensure that the View has a pressed state
-//            TypedValue outValue = new TypedValue();
-//            getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
-//                    outValue, true);
-//            textView.setBackgroundResource(outValue.resourceId);
-//        }
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            // If we're running on ICS or newer, enable all-caps to match the Action Bar tab style
-//            textView.setAllCaps(true);
-//        }
-//
-//
-//        int padding = (int) (TAB_VIEW_PADDING_DIPS * getResources().getDisplayMetrics().density);
-//        textView.setWidth(tabWidth);
-//        textView.setPadding(padding, padding, padding, padding);
-//
-//        return textView;
-//    }
-
 
     private int getIconResourceByPosition(int position) {
         if (position == 0) {

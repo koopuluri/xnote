@@ -39,22 +39,10 @@ public class Controller {
      */
     public static void launchArticleActivity(Activity activity, String articleId) {
         Intent intent = new Intent(activity, ArticleActivity.class);
-        Log.d(TAG, "This is the article_id launching PoopActivity with: " + articleId);
         intent.putExtra(Constants.ARTICLE_ID, articleId);
         intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
         activity.startActivity(intent);
     }
-
-
-//    public static void launchArticleActivity(Activity activity, int noteStart, int noteEnd) {
-//        Intent intent = new Intent(activity, ArticleActivity.class);
-//        Log.d(TAG, "launching ArticleActivity with noteStart, noteEnd.");
-//        intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
-//        intent.putExtra(Constants.START_INDEX, noteStart);
-//        intent.putExtra(Constants.END_INDEX, noteEnd);
-//        activity.startActivity(intent);
-//    }
-//
 
     public static void launchNoteActivity(Activity activity,
                                           String articleId,
@@ -67,28 +55,21 @@ public class Controller {
 
         if (launchingFragmentName.equals(ArticleFragment.TAG)) {
             activity.startActivityForResult(intent, Constants.NOTE_REQUEST);
-            Log.d(TAG, "NoteActivity launched from ArticleActivity for result");
         } else if (launchingFragmentName.equals(SearchFragment.TAG)) {
             activity.startActivity(intent);
-            Log.d(TAG, "NoteActivity launched from SearchActivity not for result");
         } else {
-            Log.e(TAG, String.format("Fragment '%s' shouldn't be launching NoteActivity!",
-                    launchingFragmentName));
         }
     }
 
 
 
     public static void launchNoteActivity(Activity activity, String articleId, int start, int end) {
-        Log.d(TAG, String.format("launchNote: with start: %s, end: %s, articleId: %s",
-                start, end, articleId));
         Intent intent = new Intent(activity, NoteActivity.class);
         intent.putExtra(Constants.ARTICLE_ID, articleId);
         intent.putExtra(Constants.START_INDEX, start);
         intent.putExtra(Constants.END_INDEX, end);
         intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
         activity.startActivityForResult(intent, Constants.NOTE_REQUEST);
-        Log.d(TAG, "text selected and note activity launched with articleId: " + articleId);
     }
 
     /**
@@ -99,8 +80,6 @@ public class Controller {
      */
     public static void onTextSelected(Activity activity, SpannableString article, String articleId,
                                int startIndex, int endIndex) {
-        Log.d(TAG, String.format("article_length: %s, startIndex: %s, endIndex: %s",
-                article.length(), startIndex, endIndex));
         Intent intent = new Intent(activity, NoteActivity.class);
         intent.putExtra(Constants.ARTICLE_ID, articleId);
         intent.putExtra(Constants.CLIPPED_TEXT, article.subSequence(startIndex, endIndex)
@@ -109,13 +88,11 @@ public class Controller {
         intent.putExtra(Constants.END_INDEX, endIndex);
         intent.putExtra(Constants.PARENT_ACTIVITY, activity.toString());
         activity.startActivityForResult(intent, Constants.NOTE_REQUEST);
-        Log.d(TAG, "NoteFragment launched!!!");
     }
 
     public static void launchMainActivity(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Log.d(TAG, "starting MainActivity from: " + activity.toString());
         activity.startActivity(intent);
     }
 
@@ -123,7 +100,6 @@ public class Controller {
     public static void launchLoginSignUpActivity(Activity activity){
         Intent intent = new Intent(activity, LoginSignUpActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Log.d(TAG, "starting LoginSignUpActivity from: " + activity.toString());
         activity.startActivity(intent);
     }
 
@@ -136,13 +112,11 @@ public class Controller {
 
     public static void launchMainActivityWithoutClearingBackStack(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
-        Log.d(TAG, "starting MainActivity without clearing back stack from: " + activity.toString());
         activity.startActivity(intent);
     }
 
     public static void launchFeedbackActivity(Activity activity) {
         Intent intent = new Intent(activity, FeedbackActivity.class);
-        Log.d(TAG, "starting FeedbackActivity from" + activity.toString());
         activity.startActivity(intent);
     }
 }

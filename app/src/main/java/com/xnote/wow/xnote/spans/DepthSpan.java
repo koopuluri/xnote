@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.Layout;
 import android.text.style.LineBackgroundSpan;
-import android.util.Log;
 
 import com.xnote.wow.xnote.NoteSpan;
 import com.xnote.wow.xnote.buffers.BaseBuffer;
@@ -26,8 +25,6 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
         mLayout = layout;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
-        Log.d(TAG, String.format("DepthSpan() with startIndex: %s, endIndex: %s",
-                startIndex, endIndex));
     }
 
 
@@ -35,22 +32,6 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
     public void drawBackground(Canvas canvas, Paint p, int left, int right, int top, int baseline,
                                int bottom, CharSequence text, int start, int end, int lnum) {
         int originalColor = p.getColor();
-//        Log.d(TAG, "--------------------------------------------------------------------------------------------------------------------------");
-//        Log.d(TAG, "drawBackground() for noteId: " + mNoteId);
-//        Log.d(TAG, "left: " + left);
-//        Log.d(TAG, "right: " + right);
-//        Log.d(TAG, "top: " + top);
-//        Log.d(TAG, "baseline: " + baseline);
-//        Log.d(TAG, "bottom: " + bottom);
-//        Log.d(TAG, "start: " + start);
-//        Log.d(TAG, "end: " + end);
-//        Log.d(TAG, "lnum: " + lnum);
-//
-//        // NOTE: mLayout.getLineEnd(lnum) just gives 'end'.!!!!
-//
-//        Log.d(TAG, "mLayout.getPrimaryHorizontal(start): " + mLayout.getPrimaryHorizontal(start));
-//        Log.d(TAG, "mLayout.getPrimaryHorizontal(end): " + mLayout.getPrimaryHorizontal(end));
-
         // setting color:
         p.setColor(Color.parseColor(BaseBuffer.NOTE_COLOR));
 
@@ -59,13 +40,11 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
         // actually though:
         if (startIndex >= start && startIndex <= end) {
             if (endIndex >= start && endIndex <= end) {
-                Log.d(TAG, "spans only one line");
                 rect.left = getPosition(startIndex);
                 rect.right = getPosition(endIndex) ;
                 rect.top = top; // TODO: removed "-20" and the result is the same !?
                 rect.bottom = baseline;
             } else {  // note spans multiple lines:
-                Log.d(TAG, "spans multiple lines");
                 rect.left = getPosition(startIndex);
                 rect.right = (int) mLayout.getPrimaryHorizontal(end-1);  // test!
                 rect.top = top;
@@ -99,7 +78,6 @@ public class DepthSpan implements LineBackgroundSpan, NoteSpan {
     private int getPosition(int charIndex) {
         // TODO:
         int linePosition = (int)mLayout.getPrimaryHorizontal(charIndex);  // this doesn't seem to return the right value.
-        // Log.d(TAG, String.format("getPosition(%s): %s", charIndex, linePosition));
         return linePosition;
         // return 0;
     }

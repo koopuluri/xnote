@@ -1,6 +1,5 @@
 package com.xnote.wow.xnote;
 
-import android.util.Log;
 import android.view.MenuItem;
 
 /**
@@ -12,6 +11,5 @@ public class ActionBarClickController {
     public static final String TAG = "ActionBarController";
 
     public static void handleAction(MenuItem item) {
-        Log.d(TAG, "handleAction() with item: " + item.toString());
     }
 }

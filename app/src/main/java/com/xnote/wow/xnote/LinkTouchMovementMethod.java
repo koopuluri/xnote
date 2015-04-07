@@ -8,7 +8,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -65,7 +64,6 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
     public boolean onTouchEvent(TextView widget, Spannable buffer,
                                 MotionEvent event) {
         int action = event.getAction();
-        //Log.d(TAG, "action: " + action);
 
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -84,7 +82,6 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
         int off = layout.getOffsetForHorizontal(line, x);
 
         WordSpan[] spans = buffer.getSpans(off, off, WordSpan.class);
-        //Log.d(TAG, "length of span: " + spans.length);
         if (spans.length == 0) {
             // this might be a noteAnnotateSpan instead of a wordSpan:
             NoteReadSpan[] noteSpans = buffer.getSpans(off, off, NoteReadSpan.class);
@@ -94,7 +91,6 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
                 return true;  // don't highlight.
             }
             else {
-                //Log.d(TAG, "No spans at touched location: (" + startSpan + ", " + endSpan + ")");
                 return true;  // no spans at touched region.
             }
         }
@@ -110,7 +106,6 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
 
         switch(action) {
             case MotionEvent.ACTION_DOWN:
-                //Log.d(TAG, "ACTION_DOWN");
                 // set the start and end WordSpan:
                 startSpan = touchedSpan.start;
                 endSpan = touchedSpan.end;
@@ -118,7 +113,6 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                //Log.d(TAG, "ACTION_MOVE");
                 // change the endSpan and reset the highlightSpan:
                 endSpan = touchedSpan.end;
                 removeHighlightSpans(buffer);
@@ -127,14 +121,11 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
                 break;
 
             case MotionEvent.ACTION_UP:
-                //Log.d(TAG, "ACTION_UP");
                 Vibrator vibrator = (Vibrator) widget.getContext()
                         .getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(20);
 
                 // THE FOLLOWING LINE COULD POOP, EXERCISE CAUTION!!
-                Log.d(TAG, String.format("size of buffer: %s, startSpan: %s, endSpan: %s",
-                        buffer.length(), startSpan, endSpan));
 
                 // remove the highlight span there:
                 removeHighlightSpans(buffer);
