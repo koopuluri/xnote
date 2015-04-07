@@ -41,6 +41,7 @@
             <item>Other</item>
     </string-array>
 
+    <string name="action_cancel">cancel</string>
     <string name="drawer_close">drawer_close</string>
     <string name="drawer_open">drawer_open</string>
     <string name="continue_textview">Continue without registration</string>

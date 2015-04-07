@@ -70,12 +70,7 @@
                         </LinearLayout>
                     </FrameLayout>
                 </LinearLayout>
-
-
             </FrameLayout>
-
-
-
         </com.xnote.wow.xnote.views.ObservableScrollView>
     </FrameLayout>
 
