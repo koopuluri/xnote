@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.SpannableString;
-import android.util.Log;
 
 import com.xnote.wow.xnote.activities.ArticleActivity;
 import com.xnote.wow.xnote.activities.FeedbackActivity;
@@ -104,6 +103,7 @@ public class Controller {
     }
 
     public static void launchSignUpFromAnonymousUser(Activity activity) {
+        activity.finish();
         SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, 0);
         //Since user has indicated he wants to signup the preference is turned on
         settings.edit().putBoolean("chosen_to_signup", true).apply();

@@ -11,10 +11,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.parse.ParseAnonymousUtils;
 import com.parse.ParseUser;
 import com.xnote.wow.xnote.Controller;
 import com.xnote.wow.xnote.R;
+import com.xnote.wow.xnote.Util;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class SettingsFragment extends ListFragment {
         //Currently only logout or login
         mOptionsList = new ArrayList<String>();
         mOptionsList.add(FEEDBACK);
-        if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+        if (Util.IS_ANON) {
             mOptionsList.add(SIGN_UP);
         } else {
             mOptionsList.add(LOGOUT);

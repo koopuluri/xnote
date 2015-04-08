@@ -106,6 +106,10 @@ public class SignUpFragment extends Fragment {
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Done button registers the user through parse and takes them to application home
+                //Logging out in case anonymous user is logged in
+                if (ParseUser.getCurrentUser() != null) {
+                    ParseUser.logOut();
+                }
                 String name = nameEditText.getText().toString();
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();

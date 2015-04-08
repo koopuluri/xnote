@@ -78,7 +78,7 @@ public abstract class BaseListAdapter extends ArrayAdapter {
 
         if (mSelectedPositions.contains(pos)) {
             Log.d(TAG, "getView(); this is a selected position.");
-            view.setBackgroundColor(parentFrag.getActivity().getResources().getColor(R.color.accent_color_light));
+            view.setBackgroundColor(parentFrag.getActivity().getResources().getColor(R.color.xnote_color_light));
         } else {
             view.setBackgroundColor(parentFrag.getActivity().getResources().getColor(R.color.white));
         }

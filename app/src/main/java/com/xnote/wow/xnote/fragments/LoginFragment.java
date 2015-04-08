@@ -99,6 +99,10 @@ public class LoginFragment extends Fragment {
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Done button logs in the user if the details are correct
+                //Logging out in case anonymous user is still logged in
+                if (ParseUser.getCurrentUser() != null) {
+                    ParseUser.logOut();
+                }
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 if(usernameIsValid && passwordIsValid) {

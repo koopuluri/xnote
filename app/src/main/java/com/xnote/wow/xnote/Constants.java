@@ -14,7 +14,7 @@ public class Constants {
     public static final float ARTICLE_VIEW_LINE_SPACING_MULTIPLIER = 1.5f;
 
     public static final int ARTICLE_TSTAMP_FONT_SIZE = 11;
-    public static final int ARTICLE_TOP_OFFSET = 3;
+    public static final int ARTICLE_TOP_OFFSET = 4;
 
 
     // NoteActivity constants:

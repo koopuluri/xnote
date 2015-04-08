@@ -28,7 +28,6 @@ public class WelcomeFragment extends Fragment {
 
     public static final String TAG = "WelcomeFragment";
     Button mSignUpButton;
-    TextView mCaptionTextView;
     TextView mContinueTextView;
     TextView mContinueToLogin;
     private LoginSignUpInterface mListener;
@@ -57,11 +56,6 @@ public class WelcomeFragment extends Fragment {
         final SharedPreferences settings = this.getActivity().getSharedPreferences(PREFS_NAME, 0);
 
         final Fragment thisFragment = this;
-
-        mCaptionTextView = (TextView)view.findViewById(R.id.caption_text_view);
-        mCaptionTextView.setText(getActivity().getResources().getString(R.string.caption));
-        Util.setXnoteNoteTypeFace(getActivity(), mCaptionTextView);
-        mCaptionTextView.setTextSize(15.0f);
 
         mSignUpButton = (Button)view.findViewById(R.id.signup_button);
         mSignUpButton.setOnClickListener(new View.OnClickListener() {

@@ -354,7 +354,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         String timestamp = "<p>" + Util.dateFromSeconds(article.getTimestamp()).toString();
         String offset = "";
         // adding the 4 to correctly place below the divider (look in fragment_read).
-        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + 4; i++) {
+        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + 5; i++) {
             offset += "<br>";
         }
 

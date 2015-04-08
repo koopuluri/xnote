@@ -6,7 +6,7 @@
     <string name="action_refresh">refresh</string>
     <string name="action_delete">delete</string>
     <string name="app_name">Xnote</string>
-    <string name="caption">Notes for the internet</string>
+    <string name="sign_up">Sign Up</string>
     <string name="anonymous_user_confirmation">
         You have chosen to continue as an anonymous user. Your content will not be stored online and
         will not be accessible from other devices. Are you sure you want to continue?
@@ -29,6 +29,7 @@
     <color name="accent_color_dark">#FFEB3B</color>
     <color name="accent_color_darker">#F57F17</color>
     <color name="xnote_color">#FF34BE5F</color>
+    <color name="xnote_color_light">#AA34BE5F</color>
     <color name="text_color_primary">#000000</color>
     <color name="text_color_error">#999999</color>
     <color name="xnote_note_color">#D9FFFF00</color>
