@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context="com.xnote.wow.xnote.activities.FeedbackActivity">
+    tools:context="com.xnote.lol.xnote.activities.FeedbackActivity">
 
     <FrameLayout
         android:layout_width="fill_parent"
