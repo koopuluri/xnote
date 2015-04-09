@@ -94,6 +94,10 @@ public class SettingsFragment extends ListFragment {
         @Override
         public Void doInBackground(Void... params) {
             ParseUser.logOut();
+            while(ParseUser.getCurrentUser() != null) {
+                //TODO: MAJOR BANDAID HERE! WHY DOESNT LOGOUT WORK THE FIRST TIME?
+                ParseUser.logOut();
+            }
             return null;
         }
 

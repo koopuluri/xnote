@@ -23,6 +23,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -146,14 +147,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mArticleView.setLayoutParams(lp);
-
-        // BUTTONS:
-//        mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-//                ViewGroup.LayoutParams.WRAP_CONTENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT
-//        );
-//        params.setMargins(0, 0, 0, getNavBarHeight());
 
         mNewNoteButton = (ImageButton) view.findViewById(R.id.new_note_button);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
@@ -631,6 +624,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Log.d(TAG, "onActionItemClicked");
             switch (item.getItemId()) {
                 case R.id.action_delete_note:
                     // delete selected note:
@@ -664,6 +658,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 mNewNoteButton.setVisibility(View.INVISIBLE);
                 mIsNoteSelected = true;
             } else {
+                Log.d(TAG, "Add Note button should be set to visible");
                 mNewNoteButton.setVisibility(View.VISIBLE);
             }
             return true;

@@ -14,11 +14,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.xnote.lol.xnote.Constants;
-import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.TextValidator;
-import com.xnote.lol.xnote.Util;
 
 
 /**
@@ -39,7 +37,6 @@ public class SignUpFragment extends Fragment {
     //constraints for the text field.
     public Boolean emailIsValid = true;
     public Boolean passwordIsValid = true;
-    public Boolean nameIsValid = true;
     private LoginSignUpInterface mListener;
 
 
@@ -59,21 +56,6 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
         final Fragment thisFragment = this;
         nameEditText = (EditText)view.findViewById(R.id.name);
-        nameEditText.addTextChangedListener(new TextValidator(nameEditText) {
-            //Override the validator of the abstract class
-            @Override
-            public void validate(TextView textView, String text) {
-                nameIsValid = true;
-                if(text.equals("")) {
-                    textView.setError("Please enter a value for name");
-                    //The boolean variable associated with name is set to false if the value
-                    //is not a valid value. It cannot be changed to true unless the user changes
-                    //the value in this field.
-                    nameIsValid = false;
-                }
-            }
-        });
-
         emailEditText = (EditText)view.findViewById(R.id.email);
         emailEditText.addTextChangedListener(new TextValidator(emailEditText) {
             //Override the validator of the abstract class
@@ -82,7 +64,7 @@ public class SignUpFragment extends Fragment {
                 emailIsValid = true;
                 if(text.equals("")) {
                     emailIsValid = false;
-                    textView.setError("Please enter a value for email");
+                    textView.setError("Please enter your email");
                 }
             }
         });
@@ -105,13 +87,10 @@ public class SignUpFragment extends Fragment {
             public void onClick(View v) {
                 //Done button registers the user through parse and takes them to application home
                 //Logging out in case anonymous user is logged in
-                if (ParseUser.getCurrentUser() != null) {
-                    ParseUser.logOut();
-                }
                 String name = nameEditText.getText().toString();
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                if(nameIsValid && emailIsValid && passwordIsValid) {
+                if(emailIsValid && passwordIsValid) {
                     ParseUser user = new ParseUser();
                     user.setUsername(email);
                     user.setPassword(password);
@@ -120,9 +99,7 @@ public class SignUpFragment extends Fragment {
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
                             if (e == null) {
-                                Util.IS_ANON = false;
-                                Controller.launchMainActivity(getActivity());
-                                getActivity().finish();
+                               mListener.openSignUpSync(thisFragment);
                             } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
                                 emailEditText.setError("Email is already associated with an account");
                             } else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {

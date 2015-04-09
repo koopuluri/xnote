@@ -13,7 +13,6 @@ public class ReadBuffer extends BaseBuffer {
 
     public static final String TAG = "ReadBuffer";
 
-
     public ReadBuffer(Layout textLayout, String articleId, Activity parent, Spanned content) {
         super(textLayout, articleId, parent, content);
     }

@@ -23,7 +23,7 @@ import com.xnote.lol.xnote.spans.SingleLineSpan;
 public abstract class BaseBuffer {
     public static final String TAG = "BaseBuffer";
     public static final int NUM_SPANS = 4;  // this is the number of spans in the buffer for one note.
-    public static final String NOTE_COLOR = "#D9FFFF00";  // using 50% transparency
+    public static final String NOTE_COLOR = "#D9FFFF7F";  // using 50% transparency
 
     Layout mLayout;
     Activity mActivity;
