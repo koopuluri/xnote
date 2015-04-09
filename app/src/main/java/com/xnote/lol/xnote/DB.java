@@ -50,6 +50,23 @@ public class DB {
         syncObjects(localNoteObjects, cloudNoteObjects);
     }
 
+    public static void upwardSync() throws ParseException {
+        List<ParseObject> localArticleObjects = (List<ParseObject>)(List<?>) getArticlesLocally();
+        List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
+
+        if((localArticleObjects.size() != 0)) {
+            for(ParseObject a : localArticleObjects) {
+                a.save();
+            }
+        }
+
+        if((localNoteObjects.size() != 0)) {
+            for(ParseObject a :localNoteObjects) {
+                a.save();
+            }
+        }
+    }
+
     //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
     public static void setIsNew(boolean isNew) {

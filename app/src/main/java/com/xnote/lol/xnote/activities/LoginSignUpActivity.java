@@ -6,7 +6,9 @@ import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.parse.LogInCallback;
 import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.LoginSignUpInterface;
@@ -17,6 +19,7 @@ import com.xnote.lol.xnote.fragments.ForgotPasswordFragment;
 import com.xnote.lol.xnote.fragments.LoginFragment;
 import com.xnote.lol.xnote.fragments.LoginSyncFragment;
 import com.xnote.lol.xnote.fragments.SignUpFragment;
+import com.xnote.lol.xnote.fragments.SignUpSyncFragment;
 import com.xnote.lol.xnote.fragments.WelcomeFragment;
 
 /**
@@ -69,15 +72,17 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
                 Util.IS_ANON = false;
                 Controller.launchMainActivity(activity);
                 finish();
-                finish();
             } else {
                 //Check if the user has indicated anonymous user preference before
                 if ((currentUser != null) && (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()))) {
                     Util.IS_ANON = true;
-                    ParseUser.enableAutomaticUser();
+                    ParseAnonymousUtils.logIn(new LogInCallback() {
+                        @Override
+                        public void done(ParseUser parseUser, ParseException e) {
+                        }
+                    });
                     ParseUser.getCurrentUser().saveInBackground();
                     Controller.launchMainActivity(activity);
-                    finish();
                     finish();
                 } else {
                     // If user is not anonymous then the user must be asked to login
@@ -99,6 +104,21 @@ public class LoginSignUpActivity extends Activity implements LoginSignUpInterfac
         } else {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new LoginSyncFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public void openSignUpSync(Fragment frag) {
+        // need to change fragment to SignUpSyncFragment.java:
+        if (frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .add(R.id.fragment_container, new SignUpSyncFragment())
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new SignUpSyncFragment())
                     .commit();
         }
     }

@@ -11,4 +11,5 @@ public interface LoginSignUpInterface {
     public void openForgotPassword(Fragment frag);
     public void openLogin(Fragment frag);
     public void openWelcome(Fragment frag);
+    public void openSignUpSync(Fragment frag);
 }

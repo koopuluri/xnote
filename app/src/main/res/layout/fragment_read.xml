@@ -6,8 +6,10 @@
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_read_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:weightSum="2">
+
         <com.xnote.lol.xnote.views.ObservableScrollView
             android:id="@+id/read_scroll_view"
             android:layout_width="match_parent"
@@ -65,12 +67,23 @@
                                 android:paddingBottom="1dp"
                                 android:textColor="@android:color/white"/>
                         </LinearLayout>
+
                     </FrameLayout>
+
                 </LinearLayout>
 
             </FrameLayout>
 
         </com.xnote.lol.xnote.views.ObservableScrollView>
+
+        <ImageButton
+            android:id="@+id/new_note_button"
+            android:layout_width="@dimen/round_button_diameter"
+            android:layout_height="@dimen/round_button_diameter"
+            android:layout_gravity="right|bottom"
+            android:gravity="right|bottom"
+            android:background="@drawable/round_button"
+            android:src="@drawable/ic_xnote_add"/>
 
     </FrameLayout>
 
@@ -81,13 +94,6 @@
         android:indeterminate="true"
         android:layout_gravity="center"/>
 
-    <ImageButton
-        android:id="@+id/new_note_button"
-        android:layout_width="@dimen/round_button_diameter"
-        android:layout_height="@dimen/round_button_diameter"
-        android:layout_gravity="right|bottom"
-        android:gravity="right|bottom"
-        android:background="@drawable/round_button"
-        android:src="@drawable/ic_xnote_add"/>
+
 
 </FrameLayout>

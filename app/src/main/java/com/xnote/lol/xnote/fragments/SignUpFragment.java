@@ -14,11 +14,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.xnote.lol.xnote.Constants;
-import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.TextValidator;
-import com.xnote.lol.xnote.Util;
 
 
 /**
@@ -105,9 +103,6 @@ public class SignUpFragment extends Fragment {
             public void onClick(View v) {
                 //Done button registers the user through parse and takes them to application home
                 //Logging out in case anonymous user is logged in
-                if (ParseUser.getCurrentUser() != null) {
-                    ParseUser.logOut();
-                }
                 String name = nameEditText.getText().toString();
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
@@ -120,9 +115,7 @@ public class SignUpFragment extends Fragment {
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
                             if (e == null) {
-                                Util.IS_ANON = false;
-                                Controller.launchMainActivity(getActivity());
-                                getActivity().finish();
+                               mListener.openSignUpSync(thisFragment);
                             } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
                                 emailEditText.setError("Email is already associated with an account");
                             } else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
