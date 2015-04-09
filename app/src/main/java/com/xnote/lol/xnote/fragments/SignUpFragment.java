@@ -37,7 +37,6 @@ public class SignUpFragment extends Fragment {
     //constraints for the text field.
     public Boolean emailIsValid = true;
     public Boolean passwordIsValid = true;
-    public Boolean nameIsValid = true;
     private LoginSignUpInterface mListener;
 
 
@@ -57,21 +56,6 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
         final Fragment thisFragment = this;
         nameEditText = (EditText)view.findViewById(R.id.name);
-        nameEditText.addTextChangedListener(new TextValidator(nameEditText) {
-            //Override the validator of the abstract class
-            @Override
-            public void validate(TextView textView, String text) {
-                nameIsValid = true;
-                if(text.equals("")) {
-                    textView.setError("Please enter a value for name");
-                    //The boolean variable associated with name is set to false if the value
-                    //is not a valid value. It cannot be changed to true unless the user changes
-                    //the value in this field.
-                    nameIsValid = false;
-                }
-            }
-        });
-
         emailEditText = (EditText)view.findViewById(R.id.email);
         emailEditText.addTextChangedListener(new TextValidator(emailEditText) {
             //Override the validator of the abstract class
@@ -80,7 +64,7 @@ public class SignUpFragment extends Fragment {
                 emailIsValid = true;
                 if(text.equals("")) {
                     emailIsValid = false;
-                    textView.setError("Please enter a value for email");
+                    textView.setError("Please enter your email");
                 }
             }
         });
@@ -106,7 +90,7 @@ public class SignUpFragment extends Fragment {
                 String name = nameEditText.getText().toString();
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                if(nameIsValid && emailIsValid && passwordIsValid) {
+                if(emailIsValid && passwordIsValid) {
                     ParseUser user = new ParseUser();
                     user.setUsername(email);
                     user.setPassword(password);
