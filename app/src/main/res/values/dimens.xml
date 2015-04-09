@@ -17,6 +17,8 @@
 
     <dimen name="note_clipped_text_margin">18dp</dimen>
 
+    <dimen name="article_view_margin">12dp</dimen>
+
     <dimen name="article_title_size">30dp</dimen>
     <dimen name="article_timestamp_size">9dp</dimen>
 

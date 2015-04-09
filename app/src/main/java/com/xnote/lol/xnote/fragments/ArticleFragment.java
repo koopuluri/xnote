@@ -323,27 +323,32 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
      */
     public static Spanned htmlEscapedArticleContent(ParseArticle article, Activity activity) {
         Spanned out;
-        String title = "<h2>" + article.getTitle() + "</h2>";
-        String offset = "";
+        String title = "<b><h2>" + article.getTitle() + "</h2></b>";
+        String beforeTitleOffset = "";
         // adding the 4 to correctly place below the divider (look in fragment_read).
-        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + Constants.ARTICLE_ADDITIONAL_OFFSET; i++) {
-            offset += "<br>";
+        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET; i++) {
+            beforeTitleOffset += "<br>";
+        }
+
+        String afterTitleOffset = "";
+        for (int i = 0; i < Constants.ARTICLE_ADDITIONAL_OFFSET; i++) {
+            afterTitleOffset += "<br>";
         }
 
         SpannableStringBuilder transparentTitle =  (SpannableStringBuilder)
-                Html.fromHtml(title + offset);
+                Html.fromHtml(beforeTitleOffset + title);
         transparentTitle.setSpan(new ForegroundColorSpan(Color.TRANSPARENT),
                 0, transparentTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 //        String content = offset + title + timestamp + article.getContent();
 
         try {
-            out = Html.fromHtml(article.getContent(),
+            out = Html.fromHtml(afterTitleOffset + article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandler());
         } catch (RuntimeException e) {
             // catching the "PARAGRAPH span must start at paragraph boundary" exception:
-            out = Html.fromHtml(article.getContent(),
+            out = Html.fromHtml(afterTitleOffset + article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandlerWithoutList());
         }

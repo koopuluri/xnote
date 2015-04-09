@@ -18,7 +18,9 @@
             <FrameLayout
                 android:id="@+id/article_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/article_view_margin"
+                android:layout_marginRight="@dimen/article_view_margin">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -37,9 +39,6 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="21dp"
-                        android:layout_marginRight="21dp"
-                        android:layout_marginBottom="30dp"
                         android:paddingBottom="@dimen/article_timestamp_padding_bottom"
                         android:background="@drawable/note_clipped_bottom_border">
 
