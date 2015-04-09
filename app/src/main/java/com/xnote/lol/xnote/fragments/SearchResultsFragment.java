@@ -117,12 +117,12 @@ public class SearchResultsFragment extends ListFragment {
 
 
         mAdapter = new SearchResultAdapter(getActivity(), new ArrayList<Object>(), this);  // initializing with an empty list.
-        List<SearchResult> retainedResults = getRetainedResults();
-        if (retainedResults != null) {
-            mAdapter.addAll(retainedResults);
-            setListAdapter(mAdapter);
-            return view;
-        }
+        //List<SearchResult> retainedResults = getRetainedResults();
+//        if (retainedResults != null) {
+//            mAdapter.addAll(retainedResults);
+//            setListAdapter(mAdapter);
+//            return view;
+//        }
         setListAdapter(mAdapter);
         mInitialized = false;
         new UpdateSearchResultsTask().execute();
@@ -178,6 +178,7 @@ public class SearchResultsFragment extends ListFragment {
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
             // TODO: turn off spinner.
+            mAdapter.clear(); // TODO: should be cleared already, but isn't for some reason.
             mAdapter.addAll(resultList);
             mAdapter.notifyDataSetChanged();
             if (!mInitialized) {

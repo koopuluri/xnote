@@ -43,7 +43,9 @@ public class HtmlTagHandler implements Html.TagHandler {
             }
         } else if(tag.equalsIgnoreCase("img")) {
             if(opening) {
-                output.append("br");
+                output.append("\n");
+            } else {
+                output.append("\n");
             }
         } else if(tag.equalsIgnoreCase("span")) {
             if(opening) {

@@ -29,6 +29,10 @@ public class HtmlTagHandlerWithoutList implements Html.TagHandler {
             mListItemCount = 0;
         } else if (tag.equals("li") && !opening) {
             // do nothing (why? read the name of the class!).
+        } else if(tag.equalsIgnoreCase("img")) {
+            //if(opening) {
+            output.append("\n");
+            //}
         }
         else if(tag.equalsIgnoreCase("code")) {
             if(opening) {

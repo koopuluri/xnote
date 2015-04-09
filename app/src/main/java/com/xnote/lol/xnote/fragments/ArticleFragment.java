@@ -333,7 +333,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         String title = "<h2>" + article.getTitle() + "</h2>";
         String offset = "";
         // adding the 4 to correctly place below the divider (look in fragment_read).
-        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + 5; i++) {
+        for (int i = 0; i < Constants.ARTICLE_TOP_OFFSET + Constants.ARTICLE_ADDITIONAL_OFFSET; i++) {
             offset += "<br>";
         }
 
