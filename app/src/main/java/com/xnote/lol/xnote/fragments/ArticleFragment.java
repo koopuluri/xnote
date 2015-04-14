@@ -139,7 +139,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mTimestampView = (TextView) view.findViewById(R.id.article_timestamp_text_view);
         mNumberNotesView = (TextView) view.findViewById(R.id.article_number_notes_text_view);
 
-
         // setting spinner:
         mLoadingSpinner = (ProgressBar) view.findViewById(R.id.fragment_article_loading_spinner);
         mLoadingSpinner.setVisibility(View.VISIBLE);
@@ -394,6 +393,8 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
             content = title + timestamp + content;
             mContent = htmlEscapedArticleContent(mArticle, parent.getActivity());
+            mArticle.setAndroidEscapedContent(Html.toHtml(mContent));
+            DB.saveArticle(mArticle);  // saving the androidEscapedContent.
             return null;
         }
 

@@ -13,6 +13,18 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
+            android:name=".activities.ReceiveActivity"
+            android:theme="@style/Theme.Transparent"
+            android:screenOrientation="portrait"
+            android:label="Add to Xnote">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -39,16 +51,7 @@
             android:parentActivityName=".activities.ArticleActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.ReceiveActivity"
-            android:theme="@style/Theme.Transparent"
-            android:screenOrientation="portrait"
-            android:label="Add to Xnote">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAUlT" />
-                <data android:mimeType="text/*" />
-            </intent-filter>
-        </activity>
+
         <activity
             android:name=".activities.FeedbackActivity"
             android:parentActivityName=".activities.MainActivity"

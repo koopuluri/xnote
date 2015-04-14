@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.Controller;
@@ -13,6 +14,10 @@ import com.xnote.lol.xnote.models.ParseArticle;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -37,11 +42,6 @@ public class ReceiveActivity extends Activity {
         mThisActivity = this;
         mNewArticle = new ParseArticle();
         mNewArticle.setId();
-
-//        mSaveMessage = (TextView) findViewById(R.id.save_message);
-//        mSaveMessage.setText("saving to xnote...");
-//        Util.setXnoteTypeFace(this, mSaveMessage);
-
         new HandleSendTextTask().execute();
     }
 
@@ -90,18 +90,50 @@ public class ReceiveActivity extends Activity {
      * @param intent
      */
     void handleSendText(Intent intent) {
-        String stringUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+        String inputText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        String urlString;
         // checking if it is possible to make url from this string:
         try {
-            new URL(stringUrl);
+            new URL(inputText);
+            urlString = inputText;
         } catch (MalformedURLException e) {
-            return;
+            // ok try and get url from this text:
+            List<String> links = pullLinks(inputText);
+            if (links.size() != 0) {
+                urlString = links.get(0);
+            } else {
+                finish();
+                return;
+            }
         }
+        Log.d(TAG, "urlText: " + urlString);
+        Log.d(TAG, "original article url: " + inputText);
         // creating holder article:
         mNewArticle.setTimestamp(System.currentTimeMillis());
         mNewArticle.setIsparsed(false);  // means that information for this article has not yet been parsed from Diffbot API.
-        mNewArticle.setArticleUrl(stringUrl);
+        mNewArticle.setArticleUrl(urlString);
         // saving this placeholder article:
         DB.saveArticleImmediatelyLocally(mNewArticle);
+    }
+
+    /**
+     * http://blog.houen.net/java-get-url-from-string/
+     * @param text
+     * @return
+     */
+    private ArrayList<String> pullLinks(String text) {
+        ArrayList<String> links = new ArrayList();
+
+        String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(text);
+        while(m.find()) {
+            String urlStr = m.group();
+            if (urlStr.startsWith("(") && urlStr.endsWith(")")) {
+                urlStr = urlStr.substring(1, urlStr.length() - 1);
+            }
+            links.add(urlStr);
+        }
+        return links;
     }
 }

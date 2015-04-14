@@ -153,6 +153,9 @@ public class NoteFragment extends Fragment {
 
                 clipBuffer = Html.fromHtml("<br><i>\"" + selectedBuffer.toString() + "\"</i><br>");
                 String selectedHtml = Html.toHtml(selectedBuffer);
+                String other = Html.toHtml(articleBuffer).substring(
+                        mNote.getStartIndex(),
+                        mNote.getEndIndex());
                 mNote.setSelectedText(selectedHtml);
             }
             return null;

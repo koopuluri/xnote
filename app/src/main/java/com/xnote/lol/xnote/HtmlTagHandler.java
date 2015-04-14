@@ -22,7 +22,8 @@ public class HtmlTagHandler implements Html.TagHandler {
     private Vector<String> mListParents = new Vector<String>();
 
     @Override
-    public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
+    public void handleTag(final boolean opening, final String tag, Editable output,
+                          final XMLReader xmlReader) {
         if (tag.equals("ul") || tag.equals("ol") || tag.equals("dd")) {
             if (opening) {
                 mListParents.add(tag);

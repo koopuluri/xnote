@@ -20,6 +20,8 @@ public class ParseArticle extends ParseObject{
     public static final String ICON_URL = "IconURL";
     public static final String IMAGE_ICON = "ImageIcon";
     public static final String COULD_NOT_BE_PARSED = "CouldNotBeParsed";
+    public static final String ANDROID_ESCAPED_CONTENT = "AndroidEscapedContent";
+
     public ParseArticle() {
         super();
     }
@@ -43,6 +45,7 @@ public class ParseArticle extends ParseObject{
     public boolean getCouldNotBeParsed() { return getBoolean(COULD_NOT_BE_PARSED); }
     public String getIconURL() { return getString(ICON_URL); }
     public ParseImage getSourceImage() { return (ParseImage) getParseObject(IMAGE_ICON);}
+    public String getAndroidEscapedContent() { return getString(ANDROID_ESCAPED_CONTENT); }
     // ---------------------------------------SETTERS-----------------------------------------------
     public void setId() {
         put(ID, UUID.randomUUID().toString());
@@ -63,6 +66,8 @@ public class ParseArticle extends ParseObject{
     public void setCouldNotBeParsed(boolean parsed) { put(COULD_NOT_BE_PARSED, parsed); }
     public void setIconURL(String iconURL) { put(ICON_URL, iconURL); }
     public void setSourceImage(ParseImage image) { put(IMAGE_ICON, image); }
+    public void setAndroidEscapedContent(String content) { put(ANDROID_ESCAPED_CONTENT, content); }
+
     @Override
     public String toString() {
         return getString(TITLE);
