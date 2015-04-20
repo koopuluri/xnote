@@ -26,6 +26,7 @@ public class SettingsFragment extends ListFragment {
     public static final String LOGOUT = "Logout";
     public static final String FEEDBACK = "Feedback";
     public static final String SIGN_UP = "Sign Up";
+    public static final String TUTORIAL = "Tutorial";
 
     ArrayList<String> mOptionsList;
 
@@ -37,6 +38,7 @@ public class SettingsFragment extends ListFragment {
         //Currently only logout or login
         mOptionsList = new ArrayList<String>();
         mOptionsList.add(FEEDBACK);
+        mOptionsList.add(TUTORIAL);
         if (Util.IS_ANON) {
             mOptionsList.add(SIGN_UP);
         } else {
@@ -73,6 +75,8 @@ public class SettingsFragment extends ListFragment {
             Controller.launchSignUpFromAnonymousUser(this.getActivity());
         } else if (ch.equalsIgnoreCase(FEEDBACK)) {
             Controller.launchFeedbackActivity(this.getActivity());
+        } else if (ch.equalsIgnoreCase(TUTORIAL)) {
+            Controller.launchTutorialActivity(this.getActivity());
         }
     }
 
