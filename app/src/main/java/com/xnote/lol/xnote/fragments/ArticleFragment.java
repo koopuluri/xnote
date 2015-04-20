@@ -459,7 +459,12 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 }
                 mListener.getLogger().log("ArticleFragment.ArticleInitialization" +
                         ".IllegalStateException", obj);
-                getActivity().finish();
+
+                try {
+                    getActivity().finish();
+                } catch (NullPointerException nullPointer) {
+                    // do nothing... happens when quickly opened and closed sometimes.
+                }
             } catch (NullPointerException e) {
                 JSONObject obj = new JSONObject();
                 try {
@@ -470,7 +475,11 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 }
                 mListener.getLogger().log("ArticleFragment.ArticleInitialization" +
                         ".NullPointerException", obj);
-                getActivity().finish();
+                try {
+                    getActivity().finish();
+                } catch (NullPointerException nullPointer) {
+                    // do nothing... happens when quickly opened and closed sometimes.
+                }
             }
         }
     }
