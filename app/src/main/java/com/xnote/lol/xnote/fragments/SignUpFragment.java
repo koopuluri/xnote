@@ -18,6 +18,9 @@ import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.TextValidator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Created by Vignesh Prasad on 03/02/2015
@@ -91,7 +94,7 @@ public class SignUpFragment extends Fragment {
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 if(emailIsValid && passwordIsValid) {
-                    ParseUser user = new ParseUser();
+                    final ParseUser user = new ParseUser();
                     user.setUsername(email);
                     user.setPassword(password);
                     user.setEmail(email);
@@ -99,7 +102,17 @@ public class SignUpFragment extends Fragment {
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
                             if (e == null) {
-                               mListener.openSignUpSync(thisFragment);
+                               // analytics:
+                                mListener.getLogger().identify(user.getObjectId());
+                                mListener.getLogger().getPeople().identify(user.getObjectId());
+                                JSONObject obj = new JSONObject();
+                                try {
+                                    obj.put("UserId", user.getObjectId());
+                                } catch (JSONException exception) {
+                                    // do nothing.
+                                }
+                                mListener.getLogger().log("Signup", obj);
+                                mListener.openSignUpSync(thisFragment);
                             } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
                                 emailEditText.setError("Email is already associated with an account");
                             } else if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {

@@ -14,6 +14,10 @@ import com.parse.ParseUser;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -28,7 +32,22 @@ public class SettingsFragment extends ListFragment {
     public static final String SIGN_UP = "Sign Up";
 
     ArrayList<String> mOptionsList;
+    SettingsInterface mListener;
 
+
+    public interface SettingsInterface {
+        public XnoteLogger getLogger();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (SettingsInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement SettingsInteface.");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +113,10 @@ public class SettingsFragment extends ListFragment {
         @Override
         public Void doInBackground(Void... params) {
             ParseUser.logOut();
+
+            // analytics:
+            mListener.getLogger().log("SettingsFragment.Logout", null);
+
             while(ParseUser.getCurrentUser() != null) {
                 //TODO: MAJOR BANDAID HERE! WHY DOESNT LOGOUT WORK THE FIRST TIME?
                 ParseUser.logOut();

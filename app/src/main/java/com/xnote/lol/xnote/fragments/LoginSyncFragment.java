@@ -13,10 +13,9 @@ import android.widget.TextView;
 
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
+import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
-
-import java.text.ParseException;
 
 /**
  * Created by koopuluri on 3/18/15.
@@ -26,6 +25,19 @@ public class LoginSyncFragment extends Fragment {
     TextView mSyncMessage;
     ProgressBar mLoadingSpinner;
     Button mMainButton;
+    boolean syncCompleted;
+    LoginSignUpInterface mListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (LoginSignUpInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + e);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,6 +57,7 @@ public class LoginSyncFragment extends Fragment {
         mMainButton.setVisibility(View.GONE);
         mSyncMessage.setText("Login successful, now syncing your articles and notes...");
         Util.setXnoteNoteTypeFace(getActivity(), mSyncMessage);
+        Util.setGlobalNeedToSyncVariable(getActivity(), true);
         new LoginTask(getActivity()).execute();
         return view;
     }
@@ -55,15 +68,14 @@ public class LoginSyncFragment extends Fragment {
     private class LoginTask extends AsyncTask<Void, Void, Void> {
         private static final String TAG = "LoginFragment.LoginTask";
         Activity parentActivity;
-        boolean mSuccessful;
 
         public LoginTask(Activity activity) {
             parentActivity = activity;
-            mSuccessful = false;
         }
 
         @Override
         public void onPreExecute() {
+            syncCompleted = false;
             mLoadingSpinner.setVisibility(View.VISIBLE);
         }
 
@@ -72,7 +84,7 @@ public class LoginSyncFragment extends Fragment {
             Util.IS_ANON = false;
             try {
                 DB.sync();
-                mSuccessful = true;
+                syncCompleted = true;
             } catch (com.parse.ParseException e) {
                 // do nothing.
             }
@@ -82,12 +94,20 @@ public class LoginSyncFragment extends Fragment {
         @Override
         public void onPostExecute(Void _) {
             super.onPostExecute(_);
-            if (!mSuccessful) {
-                mSyncMessage.setText("syncing failed. " +
-                        "Try again to refresh in app when you have a better connection.");
+            if (!syncCompleted) {
+                mSyncMessage.setText("Syncing failed. " +
+                        "Try again to sync in app settings when you have a better connection.");
                 mMainButton.setVisibility(View.VISIBLE);
                 mLoadingSpinner.setVisibility(View.GONE);
+                Util.setGlobalNeedToSyncVariable(parentActivity, true);
+                // launching the main activity:
+                Controller.launchMainActivity(parentActivity);
+                parentActivity.finish();
             } else {
+                // setting the NEED_TO_SYNC shared preference to false.
+                Util.setGlobalNeedToSyncVariable(parentActivity, false);
+
+                // now launching the main activity:
                 Controller.launchMainActivity(parentActivity);
                 parentActivity.finish();
             }

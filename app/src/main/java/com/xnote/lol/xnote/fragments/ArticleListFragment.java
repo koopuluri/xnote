@@ -14,12 +14,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.models.ParseArticle;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -37,6 +42,7 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
     public interface ArticleListListener {
         public void parseArticle(ParseArticle article);
+        public XnoteLogger getLogger();
     }
 
     @Override
@@ -147,6 +153,8 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
 
 
 
+
+
     private List<ParseArticle> initializeAdapterList(Boolean fromCloud) {
         List<ParseArticle> articleList;
         if((fromCloud) && (Util.isNetworkAvailable(getActivity())) && (!Util.IS_ANON)) {
@@ -158,22 +166,30 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
             } catch (ParseException e) {
                 Toast.makeText(getActivity(), "Refresh failed. Check connection.",
                         Toast.LENGTH_SHORT)
-                .show();
+                        .show();
             }
-            articleList = DB.getArticlesLocally();
-        } else {
-            articleList = DB.getArticlesLocally();
-            for (ParseArticle a : articleList) {
-                if (!a.isParsed()) {
-                    a.setCouldNotBeParsed(false);
-                    mListener.parseArticle(a);
-                }
+        }
+
+        articleList = DB.getArticlesLocally();
+        for (ParseArticle a : articleList) {
+            if (!a.isParsed()) {
+                a.setCouldNotBeParsed(false);
+                mListener.parseArticle(a);
             }
         }
         return articleList;
     }
 
     public void onParseArticleCompleted(ParseArticle updatedArticle) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("ArticleId", updatedArticle.getId());
+            obj.put("ArticleTitle", updatedArticle.getTitle());
+        } catch (JSONException e) {
+            // do nothing.
+        }
+        mListener.getLogger().log("ArticleListFragment.ParseCompleted", obj);
+
         List<Object> itemList = getItemList();
         for (int i = 0; i < itemList.size(); i++) {
             ParseArticle a = (ParseArticle) itemList.get(i);
@@ -200,6 +216,11 @@ public class ArticleListFragment extends BaseSelectableListFragment  {
         for (int pos : selectedItemPositions) {
             try {
                 ParseArticle a = (ParseArticle) itemList.get(pos);
+
+                mListener.getLogger().deleteArticle(
+                        a.getId(),
+                        "ArticleListFragment.deleteArticle");
+
                 DB.deleteArticleInBackground(a); // article is deleted in background.
             } catch (IndexOutOfBoundsException e) {
                 // do nothing.

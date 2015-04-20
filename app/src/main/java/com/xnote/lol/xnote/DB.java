@@ -1,5 +1,7 @@
 package com.xnote.lol.xnote;
 
+import android.util.Log;
+
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -38,21 +40,18 @@ public class DB {
         List<ParseObject> cloudNoteObjects = (List<ParseObject>)(List<?>) getAllNotesFromCloud();
         List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
 
-//        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
-//        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
+        List<ParseObject> cloudImageObjects = (List<ParseObject>)(List<?>) getAllImagesFromCloud();
+        List<ParseObject> localImageObjects = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
-        if((cloudNoteObjects.size() == 0) && (localNoteObjects.size() == 0)) {
-            setIsNew(true);
-        } else {
-            setIsNew(false);
-        }
         syncObjects(localArticleObjects, cloudArticleObjects);
         syncObjects(localNoteObjects, cloudNoteObjects);
+        syncObjects(localImageObjects, cloudImageObjects);
     }
 
     public static void upwardSync() throws ParseException {
         List<ParseObject> localArticleObjects = (List<ParseObject>)(List<?>) getArticlesLocally();
         List<ParseObject> localNoteObjects = (List<ParseObject>)(List<?>) getAllNotesLocally();
+        List<ParseObject> localImages = (List<ParseObject>)(List<?>) getAllImagesLocally();
 
         if((localArticleObjects.size() != 0)) {
             for(ParseObject a : localArticleObjects) {
@@ -65,35 +64,15 @@ public class DB {
                 a.save();
             }
         }
-    }
 
-    //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
-
-    public static void setIsNew(boolean isNew) {
-        ParseQuery query = ParseQuery.getQuery(PARSE_USER_INFO);
-        query.fromLocalDatastore();
-        try {
-            ParseUserInfo info = (ParseUserInfo) query.getFirst();
-            if (info == null) {
-                info = new ParseUserInfo();
-                info.setIsNew(isNew);
-                info.pin();
-            } else {
-                if (info.getIsNew() != isNew) {
-                    info.setIsNew(isNew);
-                    info.pin();
-                }
-            }
-        } catch (ParseException e) {
-            ParseUserInfo info = new ParseUserInfo();
-            info = new ParseUserInfo();
-            info.setIsNew(isNew);
-            try {
-                info.pin();
-            } catch (ParseException e2) {
+        if((localImages.size() != 0)) {
+            for(ParseObject a :localImages) {
+                a.save();
             }
         }
     }
+
+    //-----------------------------------GET ARTICLES AND NOTES-------------------------------------
 
 
     public static boolean isNew() {
@@ -123,14 +102,7 @@ public class DB {
         }
         A.retainAll(B);  // 'A' is now the intersection.
 
-        // handling local
-        for (ParseObject o : localObjects) {
-            if (!A.contains(o.getObjectId())) {
-                o.unpin();
-            }
-        }
-
-        // pinning cloudArticle not already in local:
+        // pinning cloudObjects not in local data store:
         for (ParseObject o : cloudObjects) {
             if (!A.contains(o.getObjectId())) {
                 o.pin();
@@ -284,6 +256,7 @@ public class DB {
         try {
             article.save();
         } catch (ParseException e) {
+            Log.e(TAG, "saveArticleImmediatelyToCloud: " + e);
             article.setContent("<br> <h2> The article could not be saved to the cloud. It will " +
                     " not show up if you refresh or login from another device. We are working hard" +
                     " to fix this problem. </h2>");
@@ -347,10 +320,6 @@ public class DB {
         if (!Util.IS_ANON) {
             saveNoteToCloud(note);
         }
-        // toggling is user new:
-        if (isNew()) {
-            setIsNew(false);
-        }
     }
 
 
@@ -368,9 +337,6 @@ public class DB {
                 note.pinInBackground();
             }
         });
-        if (isNew()) {
-            setIsNew(false);
-        }
     }
 
 
@@ -441,6 +407,8 @@ public class DB {
         query.findInBackground(new FindCallback<ParseNote>() {
             @Override
             public void done(List<ParseNote> list, ParseException e) {
+                if (list == null)
+                    return; // nothing to delete.
                 for (ParseNote obj : list) {
                     // delete in background:
                     obj.deleteEventually();
@@ -632,7 +600,6 @@ public class DB {
         });
     }
 
-
     //------------------------------------SOME IMAGE STUFF------------------------------------------
 
     public static void saveImage(ParseImage image) {
@@ -646,14 +613,12 @@ public class DB {
         try {
             image.pin();
         } catch (ParseException e) {
+            Log.e(TAG, "saveImageLocally: " + e);
         }
     }
 
     public static void saveImageToCloud(ParseImage image) {
-        try {
-            image.save();
-        } catch(ParseException e) {
-        }
+        image.saveEventually();
     }
 
     public static ParseImage getImage(String imageUrlString) {
@@ -664,11 +629,7 @@ public class DB {
         try {
             out = query.find();
             if (out.size() == 0) {
-                if(!Util.IS_ANON) {
-                    return getImageFromCloud(imageUrlString);
-                } else {
-                    return null;
-                }
+                return null;
             } else {
                 ParseImage img = (ParseImage) out.get(0);
                 //Check to see if the image has an error before returning.

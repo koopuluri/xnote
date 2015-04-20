@@ -72,6 +72,8 @@ public class WelcomeFragment extends Fragment {
                 //If user chooses to continue without registering
                 //They are taken directly to the first screen of the application
                 //Enable automatic user in Parse so that their data can be stored
+
+                // analytics:
                 Util.IS_ANON = true;
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage(R.string.anonymous_user_confirmation);

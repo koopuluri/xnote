@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,6 +29,19 @@ public class Util {
         // http://stackoverflow.com/a/9754625/2713471:
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return sdf.format(new java.util.Date(seconds));
+    }
+
+
+    public static void setGlobalNeedToSyncVariable(Activity activity, boolean value) {
+        SharedPreferences.Editor editor = activity.getPreferences(activity.MODE_PRIVATE).edit();
+        editor.putBoolean(Constants.NEED_TO_SYNC, value);
+        editor.apply();
+    }
+
+
+    public static boolean getGlobalNeedToSyncVariable(Activity activity) {
+        SharedPreferences prefs = activity.getPreferences(activity.MODE_PRIVATE);
+        return prefs.getBoolean(Constants.NEED_TO_SYNC, false);
     }
 
 
@@ -55,8 +69,9 @@ public class Util {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
+
 
     /**
      * @TargetApi

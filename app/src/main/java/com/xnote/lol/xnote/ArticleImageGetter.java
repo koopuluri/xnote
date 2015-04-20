@@ -10,6 +10,8 @@ import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.xnote.lol.xnote.models.ParseImage;
 
 /**
@@ -37,17 +39,33 @@ public class ArticleImageGetter implements Html.ImageGetter {
         //Checking for natural width along with null to ensure that parse images without
         //any content are not returned. Empty parse images could be returned if there is
         //any error while downloading the image - perhaps if the image is too big.
+        // todo: sketch as f, clean it up: use: http://stackoverflow.com/a/10413698
         if((image != null) && (image.getNaturalWidth() != 0) && (!image.getError())) {
             //Get screenwidth to zoom in images to fit phone size
-            //http://stackoverflow.com/a/9316553/4671651
+            //http://stackoverflow. com/a/9316553/4671651
             DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager wm = (WindowManager) activity.getApplicationContext().
                     getSystemService(Context.WINDOW_SERVICE);
             wm.getDefaultDisplay().getMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
             //Subtracting padding on either side so image fits
-            width = width - 2 * (Constants.PADDING);
-            byte[] data = image.getData();
+            width = width - 2*(Constants.PADDING);
+            byte[] data;
+            ParseFile imgFile = image.getDataFile();
+            if (imgFile == null) {
+                // for articles that were saved pre-update (change of ParseImage schema).
+                data = image.getByteData();
+                if (data == null) {
+                    return null;
+                }
+            } else {
+                try {
+                    data = image.getDataFile().getData();
+                } catch (ParseException e) {
+                    return null;
+                }
+            }
+
             // Generating bitmap from image byte[] data.
             Bitmap bmp;
             BitmapFactory.Options options = new BitmapFactory.Options();

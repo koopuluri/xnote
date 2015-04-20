@@ -22,6 +22,7 @@ import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Search;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.adapters.SearchResultAdapter;
 import com.xnote.lol.xnote.models.SearchResult;
 
@@ -52,6 +53,7 @@ public class SearchResultsFragment extends ListFragment {
 
     public interface OnItemDeleted {
         public void onItemDeleted();
+        public XnoteLogger getLogger();
     }
 
     @Override
@@ -212,8 +214,14 @@ public class SearchResultsFragment extends ListFragment {
             for (int pos : selectedPositions) {
                 SearchResult result = copiedItemList.get(pos);
                 if (result.type.equals(DB.ARTICLE)) {
+                    // todo: analytics:
+                    mListener.getLogger().deleteArticle(result.id,
+                            "SearchResultsFragment.DeleteArticle");
                     DB.deleteArticle(result.id);
+
                 } else if (result.type.equals(DB.NOTE)) {
+                    mListener.getLogger().deleteNote(result.id,
+                            "SearchResultsFragment.DeleteNote");
                     DB.deleteNote(result.id);
                 } else {
                     // do nothing.

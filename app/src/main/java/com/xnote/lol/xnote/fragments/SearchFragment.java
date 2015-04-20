@@ -22,8 +22,12 @@ import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Search;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.adapters.SearchResultAdapter;
 import com.xnote.lol.xnote.models.SearchResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +49,7 @@ public class SearchFragment extends ListFragment {
     public interface SearchListener {
         public void onSearchItemDeleted();
         public boolean keyboardVisible();
-
+        public XnoteLogger getLogger();
     }
 
     @Override
@@ -85,18 +89,19 @@ public class SearchFragment extends ListFragment {
 
             @Override
             public boolean onQueryTextChange(String newQuery) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("query", newQuery);
+                } catch (JSONException e) {
+                    // do nothing.
+                }
+                mListener.getLogger().log("SearchFragment.newQuery", obj);
+
                 mQuery = newQuery;
                 new UpdateSearchResultsTask(newQuery).execute();
                 return true;
             }
         });
-//        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-//            @Override
-//            public boolean onClose() {
-//                return true;
-//            }
-//        });
-
 
         mAdapter = new SearchResultAdapter(getActivity(), new ArrayList<Object>(), this);
         // initializing with an empty list.
@@ -105,19 +110,17 @@ public class SearchFragment extends ListFragment {
             mAdapter.addAll(retainedResults);
         }
         setListAdapter(mAdapter);
-
         return view;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onDestroy() {
+        mListener.getLogger().log("SearchFramgent.onDestroy", null);
+        mListener.getLogger().flush();
+        super.onDestroy();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
+
 
     //----------------------------------------------------------------------------------------------
 

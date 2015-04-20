@@ -10,14 +10,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.buffers.ReadBuffer;
 import com.xnote.lol.xnote.fragments.ArticleFragment;
 import com.xnote.lol.xnote.fragments.ArticleRetainedFragment;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.models.ParseNote;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -29,24 +34,29 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
 
     ArticleFragment mArticleFrag;
     ArticleRetainedFragment mRetained;
+    JSONObject analyticsInfo;
+
+    XnoteLogger logger;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        analyticsInfo = new JSONObject();
+        try {
+            analyticsInfo.put("ArticleId", getIntent().getStringExtra(Constants.ARTICLE_ID));
+        } catch (JSONException e) {
+            // do nothing.
+        }
+
+        logger = new XnoteLogger(getApplicationContext());
+        logger.log("ArticleActivity.onCreate", analyticsInfo);
+
         setContentView(R.layout.activity_poop);
         getActionBar().setDisplayShowTitleEnabled(false);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeAsUpIndicator(R.drawable.ic_xnote_navigation_up_colored);
 
-        // setting the custom toolbar as the activity's action bar:
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        android.widget.Toolbar toolbar = (android.widget.Toolbar) findViewById(R.id.toolbar);
-//        toolbar.setNavigationIcon(R.drawable.ic_xnote_cancel);
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayShowTitleEnabled(false);
-        // initializing articleFragment with tis articleText:
         FragmentManager fm = getFragmentManager();
-//        setActionBar(toolbar);
         // initializing the retained buffer if it doesn't exist:
         mRetained = (ArticleRetainedFragment) fm.findFragmentByTag(ArticleRetainedFragment.TAG);
         if (mRetained == null) {
@@ -108,6 +118,14 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
 
 
     @Override
+    public void onDestroy() {
+        logger.log("ArticleActivity.onDestroy", analyticsInfo);
+        logger.flush();
+        super.onDestroy();
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // respond to action-up button:
@@ -133,6 +151,8 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                 return true;
 
             case R.id.action_share:
+                // analytics:
+                logger.log("ArticleActivity.share", analyticsInfo);
                 Util.share(mArticleFrag.getArticleTitle(), mArticleFrag.getArticleShareMessage(),
                         getResources().getString(R.string.article_share_message), this);
                 return true;
@@ -152,6 +172,10 @@ public class ArticleActivity extends Activity implements ArticleFragment.Article
                 findFragmentByTag(ArticleRetainedFragment.TAG);
         return mRetained.getArticleBuffer();
     }
+
+    @Override
+    public XnoteLogger getLogger() { return logger; }
+
 
     public void setRetainedBuffer(ReadBuffer buffer) {
         mRetained.setArticleBuffer(buffer);

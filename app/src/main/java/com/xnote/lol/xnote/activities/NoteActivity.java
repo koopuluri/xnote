@@ -20,13 +20,19 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageButton;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.fragments.NoteFragment;
 import com.xnote.lol.xnote.models.NoteEngine;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +48,7 @@ import java.util.Map;
  * starts typing a note), the done button slides above the keyboard so the user can hit done while
  * typing; more intuitive than anything I thought of :/. The Android Gods have blessed us.
  */
-public class NoteActivity extends Activity {
+public class NoteActivity extends Activity implements NoteFragment.NoteFragmentListener{
     public static final String TAG = "NoteActivity";
 
     NoteEngine mNoteEngine;
@@ -51,11 +57,30 @@ public class NoteActivity extends Activity {
     NoteFragment mNoteFrag;
     ImageButton mDoneButton;
     Map<Integer, NoteFragment> mNoteFragMap;
+    XnoteLogger logger;
+    String mParentArticleId;
+
+    JSONObject analyticsInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+        mParentArticleId = getIntent().getStringExtra(Constants.ARTICLE_ID);
+        // analytics:
+        analyticsInfo = new JSONObject();
+        try {
+            if (getIntent().getExtras().containsKey(Constants.NOTE_ID))
+                analyticsInfo.put("NoteId", getIntent().getStringExtra(Constants.NOTE_ID));
+            analyticsInfo.put("ArticleId", mParentArticleId);
+        } catch (JSONException e) {
+            // do nothing.
+        }
+
+        logger = new XnoteLogger(getApplicationContext());
+        logger.log("NoteActivity.onCreate", analyticsInfo);
+
         // if the parent is ArticleActivity and this note is an old note:
         getActionBar().setDisplayShowTitleEnabled(false);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -161,23 +186,53 @@ public class NoteActivity extends Activity {
                 return true;
 
             case R.id.note_delete_button:
+                NoteFragment noteFragToDelete;
                 if (mNoteFrag != null) {
                     // this case is when Note launched through SearchResultsFrag, because there's not viewPager.
-                    mNoteFrag.delete();
+                    noteFragToDelete = mNoteFrag;
                 } else {
                     // when Note launched from ArticleFrag; Viewpager exists:
-                    NoteFragment noteFrag = mNoteFragMap.get(mViewPager.getCurrentItem());
-                    noteFrag.delete();
+                    noteFragToDelete = mNoteFragMap.get(mViewPager.getCurrentItem());
                 }
+
+                // analytics:
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("NoteId", noteFragToDelete.getNoteId());
+                    obj.put("ArticleId", mParentArticleId);
+                } catch (JSONException e) {
+                    // do nothing.
+                }
+                logger.deleteNote(noteFragToDelete.getNoteId(), "NoteActivity.NoteDeleted");
+                noteFragToDelete.delete();
                 return true;
 
             case R.id.note_action_share:
                 // Add data to the intent, the receiving app will decide what to do with it.
                 NoteFragment noteFrag = getCurrentNoteFragment();
+
+                // analytics:
+                JSONObject x = new JSONObject();
+                try {
+                    x.put("NoteId", noteFrag.getNoteId());
+                    x.put("ArticleId", mParentArticleId);
+                } catch (JSONException e) {
+                    // do nothing.
+                }
+                logger.log("NoteActivity.shareNote", x);
+
                 Util.share(noteFrag.getArticleTitle(), noteFrag.getNoteShareMessage(),
                     getResources().getString(R.string.note_share_message), this);
             }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        logger.log("NoteActivity.onDestroy", analyticsInfo);
+        logger.flush();
+        super.onDestroy();
     }
 
 
@@ -214,4 +269,11 @@ public class NoteActivity extends Activity {
             return "OBJECT " + (position + 1);
         }
     }
+
+
+    @Override
+    public XnoteLogger getLogger() {
+        return logger;
+    }
+
 }

@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-
+import android.widget.Toast;
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
+import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.models.ParseArticle;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +35,7 @@ public class ReceiveActivity extends Activity {
     boolean isPaused;
     ParseArticle mNewArticle;
     Activity mThisActivity;
-    //TextView mSaveMessage;
+    XnoteLogger logger;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,9 @@ public class ReceiveActivity extends Activity {
         mThisActivity = this;
         mNewArticle = new ParseArticle();
         mNewArticle.setId();
+
+        logger = new XnoteLogger(getApplicationContext());
+
         new HandleSendTextTask().execute();
     }
 
@@ -70,15 +77,27 @@ public class ReceiveActivity extends Activity {
         protected void onPostExecute(Void _) {
             super.onPostExecute(_);
             mNewArticleInitialized = true;
+            logger.flush();
             if (mNewArticle.getArticleUrl() != null) {
                 if(ParseUser.getCurrentUser() != null) {
+                    boolean need_to_sync = Util.getGlobalNeedToSyncVariable(mThisActivity);
+                    if (need_to_sync) {
+                        Controller.launchLoginSignUpActivity(mThisActivity);
+                    }
                     Controller.launchMainActivity(mThisActivity);
-                    finish();
                 } else {
                     Controller.launchLoginSignUpActivity(mThisActivity);
-                    finish();
                 }
+                finish();
             } else {
+                Log.e(TAG, "FUUUUUUUUUCK.");
+
+                // toast to tell user that article url couldn't be found:
+                Toast.makeText(getApplicationContext(),
+                        "couldn't find article url.",
+                        Toast.LENGTH_SHORT).show();
+
+                finish();
             }
             if (isPaused) finish();  // kill this activity if a newer one has opened up over it. of later button was clicked.
         }
@@ -89,39 +108,68 @@ public class ReceiveActivity extends Activity {
      * Obtains string extra that represents the article url from intent.
      * @param intent
      */
-    void handleSendText(Intent intent) {
+    boolean handleSendText(Intent intent) {
         String inputText = intent.getStringExtra(Intent.EXTRA_TEXT);
         String urlString;
+
+        try {
+            JSONObject props = new JSONObject();
+            props.put("InputText", inputText);
+            logger.log("ReceiveActivity.Input", props);
+        } catch (JSONException e) {
+            // do nothing.
+        }
         // checking if it is possible to make url from this string:
         try {
             new URL(inputText);
             urlString = inputText;
         } catch (MalformedURLException e) {
             // ok try and get url from this text:
-            List<String> links = pullLinks(inputText);
-            if (links.size() != 0) {
-                urlString = links.get(0);
-            } else {
-                finish();
-                return;
+            urlString = pullFirstLink(inputText);
+            try {  // once again trying to see if this is a valid url:
+                new URL(urlString);
+            } catch (MalformedURLException ex) {
+                // analytics:
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("InputText", inputText);
+                    obj.put("ExtractedUrl", urlString);
+                } catch (JSONException jsonException) {
+                    // do nothing.
+                }
+                logger.log("ReceiveActivity.Fail", obj);
+
+                return false;  // urlString == "" case is handled here.;
             }
         }
-        Log.d(TAG, "urlText: " + urlString);
-        Log.d(TAG, "original article url: " + inputText);
         // creating holder article:
         mNewArticle.setTimestamp(System.currentTimeMillis());
         mNewArticle.setIsparsed(false);  // means that information for this article has not yet been parsed from Diffbot API.
         mNewArticle.setArticleUrl(urlString);
         // saving this placeholder article:
         DB.saveArticleImmediatelyLocally(mNewArticle);
+
+        // analytics:
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("InputText", inputText);
+            obj.put("ExtractedUrl", urlString);
+            obj.put("NewArticleId", mNewArticle.getId());
+        } catch (JSONException jsonException) {
+            // do nothing.
+        }
+        logger.log("ReceiveActivity.ArticleAdded", obj);
+        return true;
     }
+
 
     /**
      * http://blog.houen.net/java-get-url-from-string/
      * @param text
      * @return
      */
-    private ArrayList<String> pullLinks(String text) {
+    private String pullFirstLink(String text) {
         ArrayList<String> links = new ArrayList();
 
         String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
@@ -132,8 +180,9 @@ public class ReceiveActivity extends Activity {
             if (urlStr.startsWith("(") && urlStr.endsWith(")")) {
                 urlStr = urlStr.substring(1, urlStr.length() - 1);
             }
-            links.add(urlStr);
+            //links.add(urlStr);
+            return urlStr;
         }
-        return links;
+        return "";
     }
 }

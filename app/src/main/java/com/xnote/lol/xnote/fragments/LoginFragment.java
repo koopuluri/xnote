@@ -12,10 +12,14 @@ import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.TextValidator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -109,6 +113,17 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void done(ParseUser parseUser, ParseException e) {
                             if (parseUser != null) {
+                                // analytics:
+                                mListener.getLogger().identify(parseUser.getObjectId());
+                                mListener.getLogger().getPeople().
+                                        identify(parseUser.getObjectId());
+                                JSONObject obj = new JSONObject();
+                                try {
+                                    obj.put("UserId", parseUser.getObjectId());
+                                } catch (JSONException ex) {
+                                    // do nothing.
+                                }
+                                mListener.getLogger().log("Login", obj);
                                 mListener.openLoginSync(thisFragment);
                             } else {
                                 usernameEditText.setError("Invalid username or password");

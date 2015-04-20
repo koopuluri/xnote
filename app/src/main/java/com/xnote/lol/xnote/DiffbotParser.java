@@ -1,7 +1,7 @@
 package com.xnote.lol.xnote;
 
-import android.util.Log;
-
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.xnote.lol.xnote.models.DiffbotImageInfo;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.models.ParseImage;
@@ -34,16 +34,25 @@ public class DiffbotParser {
         mArticleId = articleId;
         mArticle = DB.getLocalArticle(mArticleId);
     }
-    private void downloadAndSaveImage(String imageUrlString, String articleId, int[] heightAndWidth) {
+
+
+    private void downloadAndSaveImage(String imageUrlString, ParseArticle article, int[] heightAndWidth) {
         byte[] data = DiffbotParser.downloadImage(imageUrlString);
-        DiffbotParser.saveImageFromData(imageUrlString, data, articleId, heightAndWidth);
+        if (heightAndWidth != null) {
+            DiffbotParser.saveImageFromData(imageUrlString, data, article.getId(), heightAndWidth);
+        } else {
+            DiffbotParser.saveIconFromData(imageUrlString, data, article);
+        }
     }
+
+
     /**
      *
      * @return updated ParseArticle after parsing through Diffbot API.
      */
     public ParseArticle parse() {
-        List<DiffbotImageInfo> images = parseArticle(mArticle.getArticleUrl());  // article's content has been set after this call!
+        List<DiffbotImageInfo> images = parseArticle(mArticle.getArticleUrl());
+        // article's content has been set after this call!
         if (images == null) {
             mArticle.setCouldNotBeParsed(true);
             return mArticle;
@@ -56,12 +65,28 @@ public class DiffbotParser {
             if (DB.getImage(img.getUrl()) == null) {
                 int height = img.getHeightAndWidth()[0];
                 int width = img.getHeightAndWidth()[1];
-                if((height <= 2048) && (width <= 2048)) {
-                    downloadAndSaveImage(img.getUrl(), mArticle.getId(), img.getHeightAndWidth());
+                if((height <= 2048) && (width <= 2048)) {  // todo: what the fuck is this!?
+                    downloadAndSaveImage(img.getUrl(), mArticle, img.getHeightAndWidth());
                 } else {
+                    // do nothing? So don't download the image?
                 }
             }
         }
+
+        // now handling the icon url:
+        if (!(mArticle.getIconURL() == "" || mArticle.getIconURL() == null)) {
+            ParseImage existingImage = DB.getImage(mArticle.getIconURL());
+            if (existingImage == null) {
+                // then this icon needs to be saved!
+                downloadAndSaveImage(mArticle.getIconURL(), mArticle, null);
+            } else {
+                // icon already exists... needs to be associated with this new article:
+                mArticle.setSourceImage(existingImage);
+            }
+        } else {
+            // do nothing.
+        }
+
         if (mArticle.isParsed()) {
             return null;
         }
@@ -77,11 +102,8 @@ public class DiffbotParser {
     private List<DiffbotImageInfo> parseArticle(String articleURL) {
         String url = "http://api.diffbot.com/v3/article";
         String token = DB.getConstantCloud();
-        Log.d(TAG, "articleUrl: " + articleURL);
         String query;
         String query2;
-        //Removing the m. from the URL so desktop version of the site is used when parsing
-        //TODO: Remove the mobile. form the urls as well
         try {
             query2 = URLEncoder.encode(articleURL, "UTF-8");
             query = URLEncoder.encode(token, "UTF-8");
@@ -131,6 +153,8 @@ public class DiffbotParser {
         //http://www.diffbot.com/products/automatic/
         return jsonToArticle(response.toString());
     }
+
+
     /**
      * @param diffbotResponse: the string response returned by diffbot API
      * @return ParseArticle with content as the articleText in html.
@@ -152,6 +176,8 @@ public class DiffbotParser {
             images = new ArrayList<>();
             for (int i = 0; i < imageInfos.length(); i++) {
                 String imgUrl = imageInfos.getJSONObject(i).getString("url");
+                if (imgUrl.contains(".gif"))
+                    continue;  // todo: (LOW ASS PRIORITY): support gifs.
                 int[] imgHeightAndWidth = {imageInfos.getJSONObject(i).getInt("naturalHeight"),
                         imageInfos.getJSONObject(i).getInt("naturalWidth")
                 };
@@ -164,7 +190,6 @@ public class DiffbotParser {
         // extracting the content from diffbot's json:
         try {
             String content = tags.getString("html");
-            Log.d(TAG, "article content html: " + content);
             String title = tags.getString("title");
             String iconURL;
             try {
@@ -209,10 +234,42 @@ public class DiffbotParser {
             // Here's the content of the image...
             return output.toByteArray();
         } catch (IOException e) {
+            // couldn't fetch... returning null.
         }
-        // couldn't fetch.
         return null;
     }
+
+    private static void saveIconFromData(String iconUrl, byte[] imgData, ParseArticle article) {
+        final ParseImage img = new ParseImage();
+        img.setArticleId(article.getId());
+        img.setUrl(iconUrl);
+        if (imgData != null) {
+            ParseFile dataFile = new ParseFile(imgData);
+            img.setDataFile(dataFile);
+            article.setSourceImage(img);
+            try {
+                dataFile.save();
+                article.pin();
+            } catch (ParseException e) {
+                return;
+            }
+            DB.saveImage(img);
+
+//            // now saving the dataFile:
+//            dataFile.saveInBackground(new SaveCallback() {
+//                @Override
+//                public void done(ParseException e) {
+//                    // save the image:
+//                    Log.d(TAG, "POOOOOOOOOOOOOP");
+//                    DB.saveImage(img);
+//                }
+//            });
+        } else {
+            img.setError(true); // now article.getSourceImage() will return null!
+            DB.saveImage(img);
+        }
+    }
+
     /**
      * Given image data, creates and pins (and saves if possible) a ParseImage that represents image.
      * @param imgData
@@ -220,15 +277,32 @@ public class DiffbotParser {
     public static void saveImageFromData(String imgUrlString, byte[] imgData, String articleId,
                                          int[] heightAndWidth) {
         if(imgData != null) {
-            ParseImage image = new ParseImage();
+            final ParseImage image = new ParseImage();
             image.setArticleId(articleId);
-            image.setData(imgData);
+            ParseFile dataFile = new ParseFile(imgData);
+            image.setDataFile(dataFile);  // parseFile associated with the ParseImage.
             image.setUrl(imgUrlString);
-            image.setNaturalHeight(heightAndWidth[0]);
-            image.setNaturalWidth(heightAndWidth[1]);
+            if (heightAndWidth != null) {
+                image.setNaturalHeight(heightAndWidth[0]);
+                image.setNaturalWidth(heightAndWidth[1]);
+            }
             image.setError(false);
             // saving image:
+            try{
+                dataFile.save();
+            } catch (ParseException e) {
+                return;
+            }
+
             DB.saveImage(image);
+//            dataFile.saveInBackground(new SaveCallback() {
+//                @Override
+//                public void done(ParseException e) {
+//                    // pin the image:
+//                    Log.d(TAG, "WAAAAAAAAZAAAAAAAAA");
+//                    DB.saveImage(image);
+//                }
+//            });
         } else {
             ParseImage image = new ParseImage();
             image.setArticleId(articleId);

@@ -9,21 +9,28 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.LinearLayout;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.ParseArticleManager;
 import com.xnote.lol.xnote.ParseCallback;
 import com.xnote.lol.xnote.R;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.fragments.ArticleListFragment;
 import com.xnote.lol.xnote.fragments.SearchFragment;
 import com.xnote.lol.xnote.fragments.SearchRetainedFragment;
 import com.xnote.lol.xnote.fragments.SettingsFragment;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.views.SlidingTabLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by koopuluri on 2/28/15.
@@ -32,7 +39,8 @@ import com.xnote.lol.xnote.views.SlidingTabLayout;
  * http://stackoverflow.com/a/7144339
  */
 public class MainActivity extends Activity implements SearchFragment.SearchListener,
-                                                      ArticleListFragment.ArticleListListener {
+                                                      ArticleListFragment.ArticleListListener,
+                                                      SettingsFragment.SettingsInterface{
 
     public static final int HEIGHT_DIFF_KEYBOARD = 500;
 
@@ -55,9 +63,14 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
     SlidingTabLayout mSlidingTabLayout;
     boolean mIsKeyboardVisible;
 
+    XnoteLogger logger;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logger = new XnoteLogger(getApplicationContext());
+        logger.log("MainActivity.onCreate", null);
+
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.main);
 
@@ -133,23 +146,19 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
         outState.putInt(CURRENT_POSITION, currentPosition);
     }
 
+
     @Override
     public void onDestroy() {
-        super.onDestroy();
-               // TODO: this way or through the SearchResultInterface?
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
+        logger.log("MainActivity.onDestroy", null);
+        logger.flush();
+        super.onDestroy();// TODO: this way or through the SearchResultInterface?
     }
 
 
     @Override
     public void onStop() {
-        super.onStop();
         ParseArticleManager.cancelAll();
+        super.onStop();
     }
 
 
@@ -218,5 +227,10 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
                 mArticleListFrag.onParseArticleFailed();
             }
         });
+    }
+
+    @Override
+    public XnoteLogger getLogger() {
+        return logger;
     }
 }

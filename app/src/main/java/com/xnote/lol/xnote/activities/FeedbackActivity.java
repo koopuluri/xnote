@@ -15,6 +15,7 @@ import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.models.ParseFeedback;
 
 public class FeedbackActivity extends Activity {
@@ -27,9 +28,14 @@ public class FeedbackActivity extends Activity {
     String spin;
     Activity activity;
 
+    XnoteLogger logger;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        logger = new XnoteLogger(getApplicationContext());
+
         setContentView(R.layout.activity_feedback);
         getActionBar().setDisplayShowTitleEnabled(false);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,7 +68,7 @@ public class FeedbackActivity extends Activity {
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Done button logs in the user if the details are correct
-
+                logger.log("FeedbackSubmitted", null);
                 ParseFeedback feedback = new ParseFeedback();
                 feedback.setFeedbackType(spin);
                 feedback.setComments(mCommentsEditText.getText().toString());

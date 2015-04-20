@@ -17,6 +17,11 @@ public class Constants {
     public static final int ARTICLE_TOP_OFFSET = 5;
     public static final int ARTICLE_ADDITIONAL_OFFSET = 6;
 
+    public static final String MIXPANEL_TOKEN = "b77108a077dfc25a0bd14c78e7afe8f0";
+
+    // used for Mixpanel analytics:
+    public static final String NUMBER_NOTES = "NumberNotes";
+    public static final String NUMBER_ARTICLES = "NumberArticles";
 
 
     // NoteActivity constants:
@@ -28,9 +33,15 @@ public class Constants {
     public static final String NOTE_CONTENT = "NOTE_CONTENT";
     public static final String NOTE_TIMESTAMP = "NOTE_TIMESTAMP";
     public static final String NOTE_SELECTED_TEXT = "NOTE_SELECTED_TEXT";
+
     // ArticleListActivity:
     public static final String NEW_ARTICLE_ID = "NEW_ARTICLE_ID";
+
     // for threads:
     public static final String WEB_URL = "www.xnote.io/article/";
     public static final String NAME="Name";
+
+    // syncing:
+    public static final String NEED_TO_SYNC = "NeedToSync";
+
 }

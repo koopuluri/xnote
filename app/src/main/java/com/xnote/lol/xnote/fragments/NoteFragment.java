@@ -1,5 +1,6 @@
 package com.xnote.lol.xnote.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.DB;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.models.ParseNote;
 
@@ -28,6 +30,22 @@ import com.xnote.lol.xnote.models.ParseNote;
  */
 public class NoteFragment extends Fragment {
     public static final String TAG = "NoteFragment";
+
+    NoteFragmentListener mListener;
+
+    public interface NoteFragmentListener {
+        public XnoteLogger getLogger();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (NoteFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + ": " + e);
+        }
+    }
 
     TextView mClippedText;
     EditText mNoteEdit;
@@ -147,7 +165,8 @@ public class NoteFragment extends Fragment {
 
                 Spanned articleBuffer = ArticleFragment.htmlEscapedArticleContent(
                         mArticle,
-                        getActivity());
+                        getActivity(),
+                        mListener.getLogger());
                 Spanned selectedBuffer = (Spanned)
                         articleBuffer.subSequence(mNote.getStartIndex(), mNote.getEndIndex());
 
@@ -178,6 +197,10 @@ public class NoteFragment extends Fragment {
 
     public String getNoteId() {
         return getArguments().getString(Constants.NOTE_ID);
+    }
+
+    public String getNoteContent() {
+        return mNote.getContent();
     }
 
     @Override

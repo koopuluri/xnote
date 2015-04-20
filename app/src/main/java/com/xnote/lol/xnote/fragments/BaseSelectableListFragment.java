@@ -113,8 +113,6 @@ public abstract class BaseSelectableListFragment extends ListFragment {
      */
     protected abstract void deleteSelectedItems();
 
-
-
     /**
      * Sub-class of {@link android.support.v4.widget.SwipeRefreshLayout} for use in this
      * {@link android.support.v4.app.ListFragment}. The reason that this is needed is because

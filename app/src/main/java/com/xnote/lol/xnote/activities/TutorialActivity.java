@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xnote.lol.xnote.R;
+import com.xnote.lol.xnote.XnoteLogger;
 
 
 /**
@@ -45,9 +46,13 @@ public class TutorialActivity extends Activity {
     ImageButton mNextButton;
     int position;
 
+    XnoteLogger logger;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logger = new XnoteLogger(getApplicationContext());
+        logger.log("TutorialActivity.onCreate", null);
         setContentView(R.layout.activity_tutorial);
         position = 0;
 
@@ -66,6 +71,14 @@ public class TutorialActivity extends Activity {
                 next();
             }
         });
+    }
+
+
+    @Override
+    public void onDestroy() {
+        logger.log("TutorialActivity.onDestroy", null);
+        logger.flush();
+        super.onDestroy();
     }
 
     @Override

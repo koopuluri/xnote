@@ -23,7 +23,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -49,11 +48,15 @@ import com.xnote.lol.xnote.HtmlTagHandlerWithoutList;
 import com.xnote.lol.xnote.LinkTouchMovementMethod;
 import com.xnote.lol.xnote.R;
 import com.xnote.lol.xnote.Util;
+import com.xnote.lol.xnote.XnoteLogger;
 import com.xnote.lol.xnote.buffers.ReadBuffer;
 import com.xnote.lol.xnote.models.NoteEngine;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.models.ParseNote;
 import com.xnote.lol.xnote.views.ObservableScrollView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -84,6 +87,10 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
     View mDecorView;
 
+    // timing article initialization:
+    long t0;
+    long t1;
+
     boolean mIsNoteSelected;
     ArticleFragmentInterface mListener;
 
@@ -94,6 +101,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         public void setRetainedArticle(ParseArticle article);
         public List<ParseNote> getRetainedNotes();
         public void setRetainedNotes(List<ParseNote> notes);
+        public XnoteLogger getLogger();
     }
 
     @Override
@@ -124,7 +132,9 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
         mBuffer = mListener.getRetainedBuffer();
         mArticle = mListener.getRetainedArticle();
         mNotes = mListener.getRetainedNotes();
+        t0 = System.currentTimeMillis();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -320,7 +330,9 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
      * @param activity:
      * @return Spanned
      */
-    public static Spanned htmlEscapedArticleContent(ParseArticle article, Activity activity) {
+    public static Spanned htmlEscapedArticleContent(ParseArticle article,
+                                                    Activity activity,
+                                                    XnoteLogger logger) {
         Spanned out;
         String title = "<b><h2>" + article.getTitle() + "</h2></b>";
         String beforeTitleOffset = "";
@@ -338,14 +350,20 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 Html.fromHtml(beforeTitleOffset + title);
         transparentTitle.setSpan(new ForegroundColorSpan(Color.TRANSPARENT),
                 0, transparentTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-//        String content = offset + title + timestamp + article.getContent();
-
         try {
             out = Html.fromHtml(afterTitleOffset + article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
                     new HtmlTagHandler());
         } catch (RuntimeException e) {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("ArticleId", article.getId());
+                obj.put("ArticleTitle", article.getTitle());
+                obj.put("RuntimeException", e);
+            } catch (JSONException ex) {
+                // do nothing.
+            }
+            logger.log("ArticleFragment.htmlEscapedContent.RuntimeException", obj);
             // catching the "PARAGRAPH span must start at paragraph boundary" exception:
             out = Html.fromHtml(afterTitleOffset + article.getContent(),
                     new ArticleImageGetter(article.getId(), activity),
@@ -384,15 +402,17 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public Void doInBackground(Void... params) {
-            if (getActivity() == null)
+            if (getActivity() == null) {
                 this.cancel(true);
+            }
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             mArticle = DB.getLocalArticle(mArticleId);
             String content = mArticle.getContent();
             String title = "<h2>" + mArticle.getTitle() + "</h2>";
             String timestamp = "<p>" + Util.dateFromSeconds(mArticle.getTimestamp()).toString() + "</p>";
             content = title + timestamp + content;
-            mContent = htmlEscapedArticleContent(mArticle, parent.getActivity());
+            mContent = htmlEscapedArticleContent(mArticle, parent.getActivity(),
+                    mListener.getLogger());
             mArticle.setAndroidEscapedContent(Html.toHtml(mContent));
             DB.saveArticle(mArticle);  // saving the androidEscapedContent.
             return null;
@@ -411,6 +431,7 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 mArticleView.setHighlightColor(getActivity().getResources()
                         .getColor(R.color.xnote_note_color));
                 setTitleAndTimeStampView();
+
                 if (!isRefresh) {
                     mArticleContainer.addView(mArticleView); // TODO: check!
                     ViewTreeObserver vto = mArticleView.getViewTreeObserver();
@@ -429,20 +450,42 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                     new BufferInitializeTask().execute();
                 }
             } catch (IllegalStateException e) {
-                //getActivity().finish();
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("ArticleId", mArticleId);
+                    obj.put("ArticleTitle", mArticle.getTitle());
+                } catch (JSONException jsonException) {
+                    // do nothing.
+                }
+                mListener.getLogger().log("ArticleFragment.ArticleInitialization" +
+                        ".IllegalStateException", obj);
+                getActivity().finish();
             } catch (NullPointerException e) {
-                // do nothing.
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("ArticleId", mArticleId);
+                    obj.put("ArticleTitle", mArticle.getTitle());
+                } catch (JSONException jsonException) {
+                    // do nothing.
+                }
+                mListener.getLogger().log("ArticleFragment.ArticleInitialization" +
+                        ".NullPointerException", obj);
+                getActivity().finish();
             }
         }
     }
 
 
     private void setNumberNotesView() {
-        int num = mNoteEngine.size();
-        if (num == 1) {
-            mNumberNotesView.setText(num + " note");
-        } else {
-            mNumberNotesView.setText(num + " notes");
+        try {
+            int num = mNoteEngine.size();
+            if (num == 1) {
+                mNumberNotesView.setText(num + " note");
+            } else {
+                mNumberNotesView.setText(num + " notes");
+            }
+        } catch (NullPointerException e) {
+            mListener.getLogger().log("ArticleFragment.NoteEngine.Nullpointer", null);
         }
     }
 
@@ -464,7 +507,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 mBuffer.addNoteSpan(note);  // since initializing, all notes are new!
             }
             setRetainedInformation();
-
             isUserNew = DB.isNew();
             return null;
         }
@@ -475,6 +517,18 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             redraw();  // sets text for ArticleView with mBuffer.getBuffer().
             setNumberNotesView();
             mLoadingSpinner.setVisibility(View.GONE);
+            t1 = System.currentTimeMillis();
+
+            // analytics:
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("timeTaken", t1 - t0);
+                obj.put("ArticleId", mArticleId);
+                obj.put("ArticleTitle", mArticle.getTitle());
+            } catch (JSONException e) {
+                // do nothing
+            }
+            mListener.getLogger().log("ArticleFragment.InitializationTime", obj);
         }
     }
 
@@ -494,6 +548,8 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
 
     public void addNoteFromNoteActivity(ParseNote note, int state) {
+
+        // analytics:
         new UpdateBuffersWithNoteTask(note, state).execute();
     }
 
@@ -595,8 +651,38 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 note = DB.getLocalNote(noteId);
             }
             if (noteState >= 0) {
+                // analytics:
+                if (noteState > 0) {
+                    mListener.getLogger().getPeople().increment("numberNotes", 1);
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("noteId", note.getId());
+                        obj.put("ArticleId", mArticleId);
+                        obj.put("ArticleTitle", mArticle.getTitle());
+                    } catch (JSONException e) {
+                        // do nothing.
+                    }
+                    mListener.getLogger().log("ArticleFragment.NoteAdded", obj);
+                    mListener.getLogger().getPeople().increment(Constants.NUMBER_NOTES, 1);
+                }
+
+                // actually saving it:
                 DB.saveNote(note);
             } else {
+                // analytics:
+                mListener.getLogger().getPeople().increment("numberNotes", -1);
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("noteId", note.getId());
+                    obj.put("ArticleId", mArticleId);
+                    obj.put("ArticleTitle", mArticle.getTitle());
+                } catch (JSONException e) {
+                    // do nothing.
+                }
+                mListener.getLogger().log("ArticleFragment.NoteDeleted", obj);
+                mListener.getLogger().getPeople().increment(Constants.NUMBER_NOTES, -1);
+
+                // actually deleting it:
                 DB.deleteNote(note.getId());
             }
 
@@ -630,7 +716,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Log.d(TAG, "onActionItemClicked");
             switch (item.getItemId()) {
                 case R.id.action_delete_note:
                     // delete selected note:
@@ -655,6 +740,19 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             // --------------------------------------------------------------------
             int start = mArticleView.getSelectionStart();
             int end = mArticleView.getSelectionEnd();
+
+            // analytics:
+            try {
+                JSONObject props = new JSONObject();
+                props.put("selectionStart", start);
+                props.put("ArticleId", mArticleId);
+                props.put("ArticleTitle", mArticle.getTitle());
+                mListener.getLogger().log("ArticleFragment.ArticleHighlight", props);
+            } catch (JSONException e) {
+                // do nothing.
+            }
+
+
             if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
                     end >= mArticleView.getText().length())
                 mArticleView.clearFocus();
@@ -664,7 +762,6 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                 mNewNoteButton.setVisibility(View.INVISIBLE);
                 mIsNoteSelected = true;
             } else {
-                Log.d(TAG, "Add Note button should be set to visible");
                 mNewNoteButton.setVisibility(View.VISIBLE);
             }
             return true;
