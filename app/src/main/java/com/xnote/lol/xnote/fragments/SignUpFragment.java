@@ -38,8 +38,8 @@ public class SignUpFragment extends Fragment {
     //The boolean variables keep track of preliminary validation done without using Parse
     //This allows us to make Parse calls only when necessary and also gives us freedom to define our own
     //constraints for the text field.
-    public Boolean emailIsValid = true;
-    public Boolean passwordIsValid = true;
+    public Boolean emailIsValid = false;
+    public Boolean passwordIsValid = false;
     private LoginSignUpInterface mListener;
 
 
@@ -122,6 +122,13 @@ public class SignUpFragment extends Fragment {
                             }
                         }
                     });
+                } else {
+                    if(!emailIsValid) {
+                        emailEditText.setError("Please enter your email");
+                    }
+                    if (!passwordIsValid) {
+                        passwordEditText.setError("Password must be at least 8 characters in length");
+                    }
                 }
             }
         });

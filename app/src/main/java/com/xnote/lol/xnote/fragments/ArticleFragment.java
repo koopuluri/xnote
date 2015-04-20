@@ -38,6 +38,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xnote.lol.xnote.ArticleImageGetter;
 import com.xnote.lol.xnote.Constants;
@@ -191,7 +192,10 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
                             start, end);
                     ((Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(20);
                 } else {
-                    // do nothing.
+                    //TODO:Add MixPanel analytics to see if people actually want this.
+                    CharSequence text = "Notes may not overlap at this point in time";
+                    Toast toast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         });
@@ -765,13 +769,20 @@ public class ArticleFragment extends Fragment implements ObservableScrollView.Sc
             if (start < 0 || end < 0 || start >= mArticleView.getText().length() ||
                     end >= mArticleView.getText().length())
                 mArticleView.clearFocus();
-
-            if (mNoteEngine.noteExistsWithRange(start, end)) {
-                inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
-                mNewNoteButton.setVisibility(View.INVISIBLE);
-                mIsNoteSelected = true;
-            } else {
-                mNewNoteButton.setVisibility(View.VISIBLE);
+            try {
+                if (mNoteEngine.noteExistsWithRange(start, end)) {
+                    inflater.inflate(R.menu.article_fragment_text_selection_actions, menu);
+                    mNewNoteButton.setVisibility(View.INVISIBLE);
+                    mIsNoteSelected = true;
+                } else {
+                    mNewNoteButton.setVisibility(View.VISIBLE);
+                }
+            } catch(NullPointerException e) {
+                //TODO:Super random error that showed up on adb monkey. Have no clue why it happens
+                //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean c
+                //com.xnote.lol.xnote.models.NoteEngine.noteExistsWithRange(int, int)' on a null
+                //object reference
+                //at if (mNoteEngine.noteExistsWithRange(start, end)) {
             }
             return true;
         }

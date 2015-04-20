@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.LoginSignUpInterface;
 import com.xnote.lol.xnote.R;
@@ -52,8 +51,8 @@ public class LoginFragment extends Fragment {
     //The boolean variables keep track of preliminary validation done without using Parse
     //This allows us to make Parse calls only when necessary and also gives us freedom to define our own
     //constraints for the text field.
-    public Boolean usernameIsValid = true;
-    public Boolean passwordIsValid = true;
+    public Boolean usernameIsValid = false;
+    public Boolean passwordIsValid = false;
 
     //The invalid details flag is used so that the errors can be removed from both fields when there is an
     //edit made on any one field after an invalid credentials error is thrown by Parse. This allows us to
@@ -132,6 +131,13 @@ public class LoginFragment extends Fragment {
                             }
                         }
                     });
+                } else {
+                    if(!usernameIsValid) {
+                        usernameEditText.setError("Please enter your email");
+                    }
+                    if (!passwordIsValid) {
+                        passwordEditText.setError("Please enter your password");
+                    }
                 }
             }
         });

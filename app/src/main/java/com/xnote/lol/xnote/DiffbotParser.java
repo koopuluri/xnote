@@ -47,7 +47,6 @@ public class DiffbotParser {
 
 
     /**
-     *
      * @return updated ParseArticle after parsing through Diffbot API.
      */
     public ParseArticle parse() {
@@ -65,10 +64,12 @@ public class DiffbotParser {
             if (DB.getImage(img.getUrl()) == null) {
                 int height = img.getHeightAndWidth()[0];
                 int width = img.getHeightAndWidth()[1];
-                if((height <= 2048) && (width <= 2048)) {  // todo: what the fuck is this!?
+                //Image cannot be downloaded if it is too large.
+                //TODO: Low Priority - Check why this happens and fix it
+                if((height <= 2048) && (width <= 2048)) {
                     downloadAndSaveImage(img.getUrl(), mArticle, img.getHeightAndWidth());
                 } else {
-                    // do nothing? So don't download the image?
+                    //Dont download the image, shows generic blue box.
                 }
             }
         }
@@ -108,6 +109,8 @@ public class DiffbotParser {
             query2 = URLEncoder.encode(articleURL, "UTF-8");
             query = URLEncoder.encode(token, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            return null;
+        } catch (NullPointerException e) {
             return null;
         }
         //http://stackoverflow.com/q/18150818a
@@ -254,16 +257,6 @@ public class DiffbotParser {
                 return;
             }
             DB.saveImage(img);
-
-//            // now saving the dataFile:
-//            dataFile.saveInBackground(new SaveCallback() {
-//                @Override
-//                public void done(ParseException e) {
-//                    // save the image:
-//                    Log.d(TAG, "POOOOOOOOOOOOOP");
-//                    DB.saveImage(img);
-//                }
-//            });
         } else {
             img.setError(true); // now article.getSourceImage() will return null!
             DB.saveImage(img);
@@ -293,16 +286,7 @@ public class DiffbotParser {
             } catch (ParseException e) {
                 return;
             }
-
             DB.saveImage(image);
-//            dataFile.saveInBackground(new SaveCallback() {
-//                @Override
-//                public void done(ParseException e) {
-//                    // pin the image:
-//                    Log.d(TAG, "WAAAAAAAAZAAAAAAAAA");
-//                    DB.saveImage(image);
-//                }
-//            });
         } else {
             ParseImage image = new ParseImage();
             image.setArticleId(articleId);

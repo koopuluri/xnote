@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageButton;
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.R;
@@ -32,7 +31,6 @@ import com.xnote.lol.xnote.models.NoteEngine;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,7 +128,12 @@ public class NoteActivity extends Activity implements NoteFragment.NoteFragmentL
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getCurrentNoteFragment().done();
+                try {
+                    getCurrentNoteFragment().done();
+                } catch(NullPointerException e) {
+                    //TODO: Need to understand why this can be null
+                    //ADB monkey managed to create one here in airplane mode
+                }
             }
         });
     }
