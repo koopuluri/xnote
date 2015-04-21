@@ -1,7 +1,5 @@
 package com.xnote.lol.xnote;
 
-import android.util.Log;
-
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -256,7 +254,6 @@ public class DB {
         try {
             article.save();
         } catch (ParseException e) {
-            Log.e(TAG, "saveArticleImmediatelyToCloud: " + e);
             article.setContent("<br> <h2> The article could not be saved to the cloud. It will " +
                     " not show up if you refresh or login from another device. We are working hard" +
                     " to fix this problem. </h2>");
@@ -613,7 +610,6 @@ public class DB {
         try {
             image.pin();
         } catch (ParseException e) {
-            Log.e(TAG, "saveImageLocally: " + e);
         }
     }
 

@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
+
 import com.parse.ParseUser;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.DB;
@@ -90,7 +90,6 @@ public class ReceiveActivity extends Activity {
                 }
                 finish();
             } else {
-                Log.e(TAG, "FUUUUUUUUUCK.");
 
                 // toast to tell user that article url couldn't be found:
                 Toast.makeText(getApplicationContext(),

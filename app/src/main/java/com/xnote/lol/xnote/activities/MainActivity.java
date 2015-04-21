@@ -9,14 +9,11 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-import com.xnote.lol.xnote.Constants;
 import com.xnote.lol.xnote.Controller;
 import com.xnote.lol.xnote.ParseArticleManager;
 import com.xnote.lol.xnote.ParseCallback;
@@ -28,9 +25,6 @@ import com.xnote.lol.xnote.fragments.SearchRetainedFragment;
 import com.xnote.lol.xnote.fragments.SettingsFragment;
 import com.xnote.lol.xnote.models.ParseArticle;
 import com.xnote.lol.xnote.views.SlidingTabLayout;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by koopuluri on 2/28/15.
@@ -136,6 +130,7 @@ public class MainActivity extends Activity implements SearchFragment.SearchListe
         boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
         if (isFirstRun) {
             Controller.launchTutorialActivity(this);
+            wmbPreference.edit().putBoolean("FIRSTRUN", false).apply();
         }
     }
 
